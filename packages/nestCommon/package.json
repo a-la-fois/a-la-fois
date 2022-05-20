@@ -14,26 +14,29 @@
     "clear": "rimraf dist",
     "lint": "eslint './src/**/*.ts'",
     "format": "prettier --write '**/*.{ts,tsx,css,json,yaml,yml,md}'",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "proto:gen": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./ ./src/proto/hero.proto"
   },
   "peerDependencies": {
     "@nestjs/common": "8.4.4",
     "@nestjs/core": "8.4.4",
+    "express": "4.17.3",
     "reflect-metadata": "0.1.13",
-    "rxjs": "7.5.5",
-    "express": "4.17.3"
+    "rxjs": "7.5.5"
   },
   "devDependencies": {
     "@nestjs/common": "8.4.4",
     "@nestjs/core": "8.4.4",
-    "@types/node": "16.11.26",
     "@nestjs/platform-express": "8.4.4",
     "@nestjs/testing": "8.4.4",
+    "@nestjs/websockets": "8.4.4",
     "@types/cookie": "0.5.1",
     "@types/express": "4.17.13",
     "@types/jest": "27.4.1",
     "@types/lodash": "4.14.182",
+    "@types/node": "16.11.26",
     "@types/supertest": "2.0.12",
+    "@types/ws": "8.5.3",
     "express": "4.17.3",
     "jest": "27.5.1",
     "reflect-metadata": "0.1.13",
@@ -41,7 +44,9 @@
     "rxjs": "7.5.5",
     "supertest": "6.2.2",
     "ts-jest": "27.1.4",
-    "typescript": "4.6.3"
+    "ts-proto": "1.112.2",
+    "typescript": "4.6.3",
+    "ws": "8.5.0"
   },
   "dependencies": {
     "aws-sdk": "2.1120.0",
