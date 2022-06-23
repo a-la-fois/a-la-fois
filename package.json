@@ -7,7 +7,9 @@
     "lint": "lerna run lint",
     "build:messageProxy": "yarn workspace @a-la-fois/message-proxy build",
     "build:nestCommon": "yarn workspace @a-la-fois/nest-common build",
-    "build:docHandler": "yarn workspace @a-la-fois/doc-handler build"
+    "build:docHandler": "yarn workspace @a-la-fois/doc-handler build",
+    "start:messageProxy": "yarn workspace @a-la-fois/message-proxy start",
+    "start:docHandler": "yarn workspace @a-la-fois/doc-handler start"
   },
   "workspaces": [
     "packages/*"
