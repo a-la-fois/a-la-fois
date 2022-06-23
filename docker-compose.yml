@@ -1,0 +1,27 @@
+services:
+  message-proxy:
+    container_name: messageProxy
+    build:
+      context: .
+      args:
+        - BUILD_CONTEXT=messageProxy
+      target: messageProxy
+    ports:
+      - "3000:3000"
+    networks:
+      - a-la-fois-network
+
+  doc-handler:
+    container_name: docHandler
+    build:
+      context: .
+      args:
+        - BUILD_CONTEXT=docHandler
+      target: docHandler
+    ports:
+      - "3001:3000"
+    networks:
+      - a-la-fois-network
+
+networks:
+  a-la-fois-network:
