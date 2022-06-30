@@ -1,28 +1,25 @@
 import {
-  MessageBody,
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { joinEvent, JoinPayload } from "./events/join";
-import { broadcastChangesEvent, BroadcastChangesPayload } from "./events/changes";
+import { changes, ChangesPayload } from "./events/changes";
 import { closeEvent, ClosePayload } from "./events/close";
+import { DocService } from "../doc/doc.service";
 
 @WebSocketGateway()
-export class WsGateway{
-  @SubscribeMessage('events')
-  handleEvent(@MessageBody() data: string): string {
-    console.log(data);
-    return "hi there!";
+export class WsGateway {
+  constructor(private readonly docService: DocService) {
   }
 
   @SubscribeMessage(joinEvent)
-  async onJoin(client: any, { roomId }: JoinPayload) {
-    // TODO
+  async onJoin(client: any, { docId }: JoinPayload) {
+    this.docService.joinToDoc(client, docId);
   }
 
-  @SubscribeMessage(broadcastChangesEvent)
-  async onChanges(client: any, payload: BroadcastChangesPayload) {
-    // TODO
+  @SubscribeMessage(changes)
+  async onChanges(client: any, payload: ChangesPayload) {
+    this.docService.applyDiff(client, payload);
   }
 
 

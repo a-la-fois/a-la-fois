@@ -1,5 +1,5 @@
 export interface JoinPayload {
-    roomId: string,
+    docId: string,
 }
 
 export const joinEvent = 'join'

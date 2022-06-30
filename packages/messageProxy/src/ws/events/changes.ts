@@ -1,6 +1,6 @@
-export type BroadcastChangesPayload = {
-    __id?: string;
+export type ChangesPayload = {
+    docId: string;
     changes: string;
 };
 
-export const broadcastChangesEvent = 'broadcastChanges';
+export const changes = 'changes';
