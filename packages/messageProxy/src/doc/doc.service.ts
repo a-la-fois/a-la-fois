@@ -1,34 +1,47 @@
-import { Injectable } from "@nestjs/common";
-import { DocManager } from "./DocManager";
-import { ChangesPayload } from "../ws/events/changes";
+import { Injectable } from '@nestjs/common';
+import { DocManager } from './DocManager';
+import { ChangesPayload } from '../ws/events/changes';
+import { BroadcastMessage } from '../pubsub/types';
+import { PubsubService } from '../pubsub/pubsub.service';
 
 @Injectable()
 export class DocService {
   private docs: Map<string, DocManager>;
 
-  constructor() {
+  constructor(private pubsub: PubsubService) {
     this.docs = new Map();
-  }
 
-  getOrCreateDoc(id: string): DocManager {
-    if (this.docs.has(id)) {
-      return this.docs.get(id);
-    } else {
-      const doc = new DocManager(id)
-      this.docs.set(id, doc);
-      return doc;
-    }
+    this.pubsub.addOnPublish((channel, message) => {
+      const docId = channel;
+      const broadcastMessage: BroadcastMessage = JSON.parse(message);
+
+      if (this.docs.has(docId)) {
+        const doc = this.docs.get(docId);
+        doc.broadcastDiff(broadcastMessage.client, broadcastMessage.changes);
+      }
+    });
   }
 
   applyDiff(client: WebSocket, payload: ChangesPayload) {
-    const doc = this.getOrCreateDoc(payload.docId);
+    const doc = this.docs.get(payload.docId);
 
-    doc.broadcastDiff(client, payload);
+    this.pubsub.publish(doc.id, JSON.stringify({
+      client: client,
+      changes: payload.changes,
+    }))
   }
 
   joinToDoc(client: any, docId: string): void {
-    const doc = this.getOrCreateDoc(docId);
+    let doc: DocManager;
+    if (this.docs.has(docId)) {
+      doc = this.docs.get(docId);
+    } else {
+      doc = new DocManager(docId);
+      this.docs.set(docId, doc);
+    }
     doc.addUser(client);
+
+    this.pubsub.subscribe(docId);
   }
 
 

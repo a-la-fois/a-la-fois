@@ -23,5 +23,10 @@ services:
     networks:
       - a-la-fois-network
 
+  redis:
+    image: redis:7.0.2-alpine
+    ports:
+      - "6379:6379"
+
 networks:
   a-la-fois-network:

@@ -1,11 +1,11 @@
-import { ChangesPayload } from "../ws/events/changes";
+import { Changes } from "./types";
 
 export class DocManager {
-  private readonly docId: string;
+  readonly id: string;
   connections: WebSocket[] = [];
 
   constructor(docId: string) {
-    this.docId = docId;
+    this.id = docId;
   }
 
   addUser(socket: any) {
@@ -14,13 +14,13 @@ export class DocManager {
     }
   }
 
-  broadcastDiff(authorSocket: WebSocket, diff: ChangesPayload) {
+  broadcastDiff(authorSocket: WebSocket, changes: Changes) {
     this.connections
       .filter(socket => {
         return socket !== authorSocket;
       })
       .map(socket => {
-        socket.send(diff.changes);
+        socket.send(changes);
       })
   }
 }
