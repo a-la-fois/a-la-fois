@@ -4,9 +4,7 @@ type connection = { send: Function, id: string } & Object;
 
 export class DocManager {
   readonly id: string;
-  private connections: connection[] = [];
-  // for performance issues
-  private connectionsMap: Map<string, connection> = new Map();
+  private connections: Map<string, connection> = new Map();
 
   constructor(docId: string) {
     this.id = docId;
@@ -14,22 +12,19 @@ export class DocManager {
 
   addUser(client: connection) {
     if (!this.contains(client)) {
-      this.connections.push(client);
-      this.connectionsMap.set(client.id, client);
+      this.connections.set(client.id, client);
     }
   }
 
   broadcastDiff(authorClient: connection, changes: Changes) {
-    this.connections
-      .filter(client => {
-        return client.id !== authorClient.id;
-      })
-      .map(client => {
-        client.send(changes);
-      })
+    for (const [, connection] of this.connections) {
+      if (connection.id !== authorClient.id) {
+        connection.send(changes);
+      }
+    }
   }
 
   contains(client: connection): boolean {
-    return this.connectionsMap.has(client.id)
+    return this.connections.has(client.id)
   }
 }
