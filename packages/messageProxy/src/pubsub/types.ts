@@ -1,6 +1,7 @@
 import { Changes } from "../doc/types";
+import { WebSocketClient } from '../ws/types';
 
 export type BroadcastMessage = {
-  client: WebSocket;
+  author: WebSocketClient;
   changes: Changes;
 };

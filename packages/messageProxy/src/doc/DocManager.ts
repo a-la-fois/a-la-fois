@@ -1,26 +1,35 @@
 import { Changes } from "./types";
 
+type connection = { send: Function, id: string } & Object;
+
 export class DocManager {
   readonly id: string;
-  connections: WebSocket[] = [];
+  private connections: connection[] = [];
+  // for performance issues
+  private connectionsMap: Map<string, connection> = new Map();
 
   constructor(docId: string) {
     this.id = docId;
   }
 
-  addUser(socket: any) {
-    if (this.connections.indexOf(socket) === -1) {
-      this.connections.push(socket);
+  addUser(client: connection) {
+    if (!this.contains(client)) {
+      this.connections.push(client);
+      this.connectionsMap.set(client.id, client);
     }
   }
 
-  broadcastDiff(authorSocket: WebSocket, changes: Changes) {
+  broadcastDiff(authorClient: connection, changes: Changes) {
     this.connections
-      .filter(socket => {
-        return socket !== authorSocket;
+      .filter(client => {
+        return client.id !== authorClient.id;
       })
-      .map(socket => {
-        socket.send(changes);
+      .map(client => {
+        client.send(changes);
       })
+  }
+
+  contains(client: connection): boolean {
+    return this.connectionsMap.has(client.id)
   }
 }
