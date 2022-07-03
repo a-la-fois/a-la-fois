@@ -1,0 +1,47 @@
+services:
+  message-proxy-1:
+    container_name: messageProxy1
+    build:
+      context: .
+      args:
+        - BUILD_CONTEXT=messageProxy
+      target: messageProxy
+    ports:
+      - "3000:3000"
+    networks:
+      - a-la-fois-network
+
+  message-proxy-2:
+    container_name: messageProxy2
+    build:
+      context: .
+      args:
+        - BUILD_CONTEXT=messageProxy
+      target: messageProxy
+    ports:
+      - "3001:3000"
+    networks:
+      - a-la-fois-network
+
+  doc-handler:
+    container_name: docHandler
+    build:
+      context: .
+      args:
+        - BUILD_CONTEXT=docHandler
+      target: docHandler
+    ports:
+      - "3001:3000"
+    networks:
+      - a-la-fois-network
+
+  redis:
+    container_name: redis
+    image: redis:7.0.2-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - a-la-fois-network
+
+networks:
+  a-la-fois-network:
