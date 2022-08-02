@@ -8,7 +8,13 @@ export type BroadcastMessage = {
 
 export type onPublishCallback = (channel: string, message: string) => void;
 
-export interface PubSub {
+export interface Connectable {
+  connect(): void
+
+  disconnect(): void
+}
+
+export interface PubSub extends Connectable{
   publish(topic: string, message: string): void
 
   subscribe(topic: string): void

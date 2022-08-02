@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { onPublishCallback, PubSub } from './types';
+import { Connectable, onPublishCallback, PubSub } from './types';
 import { Kafka, Producer, Consumer } from 'kafkajs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,16 +17,6 @@ export class KafkaPubsubService implements PubSub {
       clientId: 'messageProxy',
       brokers: ['kafka:9092'],
     });
-
-    this.publisher = this.kafka.producer();
-    this.subscriber = this.kafka.consumer({
-      groupId: uuidv4(),
-    });
-
-    this.subscriber.connect()
-      .then(() => console.log('Consumer connected to a kafka broker.'));
-    this.publisher.connect()
-      .then(() => console.log('Provider connected to a kafka broker.'));
   }
 
   publish(topic: string, message: string): void {
@@ -51,5 +41,25 @@ export class KafkaPubsubService implements PubSub {
 
   addOnPublish(callback: onPublishCallback) {
     this.callbacks.push(callback);
+  }
+
+  connect(): void {
+    this.publisher = this.kafka.producer();
+    this.subscriber = this.kafka.consumer({
+      groupId: uuidv4(),
+    });
+
+    this.subscriber.connect()
+      .then(() => console.log('Consumer connected to a kafka broker.'));
+    this.publisher.connect()
+      .then(() => console.log('Provider connected to a kafka broker.'));
+  }
+
+
+  disconnect(): void {
+    this.subscriber.disconnect()
+      .then(() => console.log('Consumer disconnected.'));
+    this.publisher.disconnect()
+      .then(() => console.log('Provider disconnected.'));
   }
 }

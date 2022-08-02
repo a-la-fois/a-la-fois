@@ -8,14 +8,14 @@ import { RedisPubsubService, RedisPubSubToken } from '../pubsub/redis-pubsub.ser
   imports: [PubsubModule],
   providers: [
     DocService,
-    // {
-    //   provide: KafkaPubSubToken,
-    //   useClass: KafkaPubsubService,
-    // },
-    // {
-    //   provide: RedisPubSubToken,
-    //   useClass: RedisPubsubService,
-    // },
+    {
+      provide: KafkaPubSubToken,
+      useClass: KafkaPubsubService,
+    },
+    {
+      provide: RedisPubSubToken,
+      useClass: RedisPubsubService,
+    },
   ],
   exports: [DocService],
 })

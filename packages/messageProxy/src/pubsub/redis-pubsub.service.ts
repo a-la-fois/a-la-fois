@@ -8,19 +8,7 @@ export const RedisPubSubToken = 'REDIS_PUBSUB';
 export class RedisPubsubService implements PubSub {
   private publisher: Redis;
   private subscriber: Redis;
-  private callbacks: onPublishCallback[];
-
-  constructor() {
-    console.log('Redis')
-    this.callbacks = [];
-    this.publisher = new Redis();
-    this.subscriber = new Redis();
-
-    this.subscriber.on('message',
-      (channel: string, message: string) => {
-        this.callbacks.forEach(c => c(channel, message));
-      })
-  }
+  private callbacks: onPublishCallback[] = [];
 
   publish(channel: string, message: string) {
     this.publisher.publish(channel, message);
@@ -37,5 +25,20 @@ export class RedisPubsubService implements PubSub {
         console.log(`Subscribed to ${channel}`)
       },
     )
+  }
+
+  connect(): void {
+    this.publisher = new Redis();
+    this.subscriber = new Redis();
+
+    this.subscriber.on('message',
+      (channel: string, message: string) => {
+        this.callbacks.forEach(c => c(channel, message));
+      })
+  }
+
+  disconnect(): void {
+    this.publisher.disconnect();
+    this.subscriber.disconnect();
   }
 }
