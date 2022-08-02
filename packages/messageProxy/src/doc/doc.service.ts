@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { DocManager } from './DocManager';
 import { ChangesPayload } from '../ws/events/changes';
-import { BroadcastMessage } from '../pubsub/types';
-import { PubsubService } from '../pubsub/pubsub.service';
+import { BroadcastMessage, PubSub } from '../pubsub/types';
 import { WebSocketClient } from '../ws/types';
+import { KafkaPubsubService } from '../pubsub/kafka-pubsub.service';
+
 
 @Injectable()
 export class DocService {
   private docs: Map<string, DocManager> = new Map();
 
-  constructor(private pubsub: PubsubService) {
+  constructor(private readonly pubsub: KafkaPubsubService) {
     this.pubsub.addOnPublish(this.onPublishCallback);
   }
 
