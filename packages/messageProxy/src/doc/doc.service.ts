@@ -4,15 +4,16 @@ import { ChangesPayload } from '../ws/events/changes';
 import { BroadcastMessage, PubSub } from '../pubsub/types';
 import { WebSocketClient } from '../ws/types';
 import { KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
+import { Changes, DocKey } from './types';
 
 
 @Injectable()
 export class DocService implements OnModuleDestroy {
   private docs: Map<string, DocManager> = new Map();
 
-  constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub) {
+  constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey, Changes>) {
     this.pubsub.connect();
-    this.pubsub.addOnPublish(this.onPublishCallback);
+    this.pubsub.addCallback(this.onPublishCallback);
   }
 
   applyDiff(client: WebSocketClient, payload: ChangesPayload) {

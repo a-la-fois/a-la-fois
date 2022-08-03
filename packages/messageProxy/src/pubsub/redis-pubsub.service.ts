@@ -5,7 +5,7 @@ import { onPublishCallback, PubSub } from './types';
 export const RedisPubSubToken = 'REDIS_PUBSUB';
 
 @Injectable()
-export class RedisPubsubService implements PubSub {
+export class RedisPubsubService implements PubSub<string, string> {
   private publisher: Redis;
   private subscriber: Redis;
   private callbacks: onPublishCallback[] = [];
@@ -14,7 +14,7 @@ export class RedisPubsubService implements PubSub {
     this.publisher.publish(channel, message);
   }
 
-  addOnPublish(callback: onPublishCallback) {
+  addCallback(callback: onPublishCallback) {
     this.callbacks.push(callback);
   }
 
@@ -25,6 +25,10 @@ export class RedisPubsubService implements PubSub {
         console.log(`Subscribed to ${channel}`)
       },
     )
+  }
+
+  unsubscribe(key: string): void {
+    this.subscriber.unsubscribe(key);
   }
 
   connect(): void {
@@ -41,4 +45,6 @@ export class RedisPubsubService implements PubSub {
     this.publisher.disconnect();
     this.subscriber.disconnect();
   }
+
+
 }

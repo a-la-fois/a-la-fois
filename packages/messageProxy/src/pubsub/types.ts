@@ -6,7 +6,7 @@ export type BroadcastMessage = {
   changes: Changes;
 };
 
-export type onPublishCallback = (channel: string, message: string) => void;
+export type onPublishCallback = (key: string, message: Changes) => void;
 
 export interface Connectable {
   connect(): void
@@ -14,10 +14,12 @@ export interface Connectable {
   disconnect(): void
 }
 
-export interface PubSub extends Connectable{
-  publish(topic: string, message: string): void
+export interface PubSub<Key, Message> extends Connectable {
+  publish(key: Key, message: Message): void
 
-  subscribe(topic: string): void
+  subscribe(key: Key): void
 
-  addOnPublish(callback: onPublishCallback)
+  unsubscribe(key: Key): void
+
+  addCallback(callback: (Key, Message) => void)
 }

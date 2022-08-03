@@ -1,16 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { Connectable, onPublishCallback, PubSub } from './types';
+import { onPublishCallback, PubSub } from './types';
 import { Kafka, Producer, Consumer } from 'kafkajs';
 import { v4 as uuidv4 } from 'uuid';
 
+
 export const KafkaPubSubToken = 'KAFKA_PUBSUB';
+const KAFKA_TOPIC = 'changes'
+
 
 @Injectable()
-export class KafkaPubsubService implements PubSub {
+export class KafkaPubsubService implements PubSub<string, string> {
   private kafka: Kafka;
   private publisher: Producer;
   private subscriber: Consumer;
   protected callbacks: onPublishCallback[] = [];
+  private subscribedKeys: Set<string> = new Set<string>();
 
   constructor() {
     this.kafka = new Kafka({
@@ -19,27 +23,28 @@ export class KafkaPubsubService implements PubSub {
     });
   }
 
-  publish(topic: string, message: string): void {
+  publish(key: string, message: string): void {
     this.publisher.send({
-      topic,
-      messages: [
-        { value: message },
-      ],
+      topic: KAFKA_TOPIC,
+      messages: [{
+        key: key,
+        value: message,
+      }],
     })
+      // TODO: remove log
       .then(console.log)
       .catch(console.log);
   }
 
-  subscribe(topic: string): void {
-    this.subscriber.subscribe({
-      topic,
-      fromBeginning: false,
-    })
-      .then(console.log)
-      .catch(console.log);
+  subscribe(key: string): void {
+    this.subscribedKeys.add(key);
   }
 
-  addOnPublish(callback: onPublishCallback) {
+  unsubscribe(key: string): void {
+    this.subscribedKeys.delete(key);
+  }
+
+  addCallback(callback: onPublishCallback) {
     this.callbacks.push(callback);
   }
 
@@ -53,6 +58,24 @@ export class KafkaPubsubService implements PubSub {
       .then(() => console.log('Consumer connected to a kafka broker.'));
     this.publisher.connect()
       .then(() => console.log('Provider connected to a kafka broker.'));
+
+    this.subscriber.subscribe({
+      topic: KAFKA_TOPIC,
+      fromBeginning: false,
+    })
+
+    this.subscriber.run({
+      eachMessage: async ({ topic, partition, message, heartbeat, pause }) => {
+        const key = message.key.toString();
+
+        // Check if we actually subscribed to this key's messages
+        if (this.subscribedKeys.has(key)) {
+          this.callbacks.forEach(
+            callback => callback(key, message.value.toString())
+          );
+        }
+      },
+    })
   }
 
 
@@ -62,4 +85,6 @@ export class KafkaPubsubService implements PubSub {
     this.publisher.disconnect()
       .then(() => console.log('Provider disconnected.'));
   }
+
+
 }
