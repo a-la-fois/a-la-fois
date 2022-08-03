@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { onPublishCallback, PubSub } from './types';
 
+
 export const RedisPubSubToken = 'REDIS_PUBSUB';
+
 
 @Injectable()
 export class RedisPubsubService implements PubSub<string, string> {
@@ -45,6 +47,4 @@ export class RedisPubsubService implements PubSub<string, string> {
     this.publisher.disconnect();
     this.subscriber.disconnect();
   }
-
-
 }

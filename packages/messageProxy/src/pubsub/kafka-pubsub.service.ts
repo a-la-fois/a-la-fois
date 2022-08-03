@@ -78,13 +78,10 @@ export class KafkaPubsubService implements PubSub<string, string> {
     })
   }
 
-
   disconnect(): void {
     this.subscriber.disconnect()
       .then(() => console.log('Consumer disconnected.'));
     this.publisher.disconnect()
       .then(() => console.log('Provider disconnected.'));
   }
-
-
 }
