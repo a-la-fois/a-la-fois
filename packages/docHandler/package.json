@@ -12,6 +12,7 @@
 
   },
   "dependencies": {
+    "@a-la-fois/nest-common": "*",
     "@dapr/dapr": "2.3.1"
   }
 }

@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DaprClient } from '@dapr/dapr';
+import { DaprClient, ActorProxyBuilder, ActorId } from '@dapr/dapr';
+import { IDocHandler } from '@a-la-fois/nest-common/src/actor/docHandler.interface';
+// omg...
+import { DocHandler } from '@a-la-fois/doc-handler/dist/DocHandler';
 
 @Injectable()
 export class DaprService {
-  private daprClient: DaprClient;
+  private readonly daprClient: DaprClient;
+  private builder: ActorProxyBuilder<IDocHandler>;
+  private actors: Map<string, IDocHandler> = new Map();
 
   constructor(
     private readonly configService: ConfigService
@@ -13,5 +18,22 @@ export class DaprService {
     const daprPort = this.configService.get<string>('dapr.port');
 
     this.daprClient = new DaprClient(daprHost, daprPort);
+
+    this.builder = new ActorProxyBuilder<IDocHandler>(DocHandler, this.daprClient);
+  }
+
+  sendChanges(key: string, changes: string) {
+    let actor: IDocHandler = this.actors.get(key);
+
+    if (!actor) {
+      actor = this.createActor(key);
+      this.actors.set(key, actor);
+    }
+
+    actor.applyDiff(changes);
+  }
+
+  private createActor(key: string): IDocHandler {
+    return this.builder.build(new ActorId(key));
   }
 }

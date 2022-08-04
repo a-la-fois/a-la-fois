@@ -5,13 +5,16 @@ import { BroadcastMessage, PubSub } from '../pubsub/types';
 import { WebSocketClient } from '../ws/types';
 import { KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
 import { Changes, DocKey } from './types';
-
+import { DaprService } from '../dapr/dapr.service';
 
 @Injectable()
 export class DocService implements OnModuleDestroy {
   private docs: Map<string, DocManager> = new Map();
 
-  constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey, Changes>) {
+  constructor(
+    @Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey, Changes>,
+    private daprService: DaprService,
+  ) {
     this.pubsub.connect();
     this.pubsub.addCallback(this.onPublishCallback);
   }
@@ -25,6 +28,8 @@ export class DocService implements OnModuleDestroy {
       author: client,
       changes: payload.changes,
     }))
+
+    this.daprService.sendChanges(doc.id, payload.changes);
   }
 
   joinToDoc(client: WebSocketClient, docId: string): void {

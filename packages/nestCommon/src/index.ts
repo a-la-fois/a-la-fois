@@ -1,3 +1,4 @@
+export * from './actor';
 export * from './asyncStorage';
 export * from './cookie';
 export * from './memoize';
