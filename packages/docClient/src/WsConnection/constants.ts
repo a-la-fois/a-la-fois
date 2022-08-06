@@ -1,0 +1,8 @@
+export const WS_CLOSE_STATUS_NORMAL = 1000;
+export const WS_CLOSE_STATUS_ABNORMAL = 1006;
+export const WS_CLOSE_STATUS_OFFLINE = 4000;
+
+export const WS_READY_STATE_CONNECTING = 0;
+export const WS_READY_STATE_OPEN = 1;
+export const WS_READY_STATE_CLOSING = 2;
+export const WS_READY_STATE_CLOSED = 3;
