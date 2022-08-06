@@ -1,9 +1,10 @@
 import { Module } from "@nestjs/common";
-import { PubsubService } from './pubsub.service';
+import { RedisPubsubService } from './redis-pubsub.service';
+import { KafkaPubsubService } from './kafka-pubsub.service';
 
 @Module({
   imports: [],
-  providers: [PubsubService],
-  exports: [PubsubService],
+  providers: [KafkaPubsubService, RedisPubsubService],
+  exports: [KafkaPubsubService, RedisPubsubService],
 })
 export class PubsubModule {}

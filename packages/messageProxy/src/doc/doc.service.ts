@@ -1,16 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { DocManager } from './DocManager';
 import { ChangesPayload } from '../ws/events/changes';
-import { BroadcastMessage } from '../pubsub/types';
-import { PubsubService } from '../pubsub/pubsub.service';
+import { BroadcastMessage, PubSub } from '../pubsub/types';
 import { WebSocketClient } from '../ws/types';
+import { KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
+import { Changes, DocKey } from './types';
+
 
 @Injectable()
-export class DocService {
+export class DocService implements OnModuleDestroy {
   private docs: Map<string, DocManager> = new Map();
 
-  constructor(private pubsub: PubsubService) {
-    this.pubsub.addOnPublish(this.onPublishCallback);
+  constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey, Changes>) {
+    this.pubsub.connect();
+    this.pubsub.addCallback(this.onPublishCallback);
   }
 
   applyDiff(client: WebSocketClient, payload: ChangesPayload) {
@@ -51,6 +54,11 @@ export class DocService {
         doc.broadcastDiff(broadcastMessage.author, broadcastMessage.changes);
       }
     }
+  }
+
+  onModuleDestroy() {
+    this.pubsub.disconnect();
+    //TODO: Close websocket connections
   }
 
 }
