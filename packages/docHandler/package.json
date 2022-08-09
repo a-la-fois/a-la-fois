@@ -1,12 +1,15 @@
 {
   "name": "@a-la-fois/doc-handler",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
-    "build": "rimraf dist && tsc",
+    "build": "npm run clear && tsc --build",
     "start": "yarn build && node dist/main.js",
+    "clear": "rimraf dist",
     "start:dev": "npm run build && nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/index.ts\"",
     "start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 50001 --dapr-http-port 50000 --config ./dapr-config.yaml yarn start"
 

@@ -1,5 +1,5 @@
 import { AbstractActor } from '@dapr/dapr';
-import { Changes, IDocHandler } from '@a-la-fois/nest-common/src/actor/docHandler.interface';
+import { Changes, IDocHandler } from './docHandler.interface';
 
 export class DocHandler extends AbstractActor implements IDocHandler {
   async applyDiff(changes: Changes): Promise<void> {

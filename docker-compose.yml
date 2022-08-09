@@ -34,16 +34,16 @@ services:
 #      - "6379:6379"
 #    networks:
 #      - a-la-fois-network
-
-  doc-handler:
-    container_name: docHandler
-    build:
-      context: .
-      args:
-        - BUILD_CONTEXT=docHandler
-      target: docHandler
-    networks:
-      - a-la-fois-network
+#
+#  doc-handler:
+#    container_name: docHandler
+#    build:
+#      context: .
+#      args:
+#        - BUILD_CONTEXT=docHandler
+#      target: docHandler
+#    networks:
+#      - a-la-fois-network
 
   zookeeper:
     container_name: zookeeper

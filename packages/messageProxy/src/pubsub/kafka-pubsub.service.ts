@@ -68,7 +68,7 @@ export class KafkaPubsubService implements PubSub<string, string> {
       eachMessage: async ({ topic, partition, message, heartbeat, pause }) => {
         const key = message.key.toString();
 
-        // Check if we actually subscribed to this key's messages
+        // Check if we are actually subscribed to this key's messages
         if (this.subscribedKeys.has(key)) {
           this.callbacks.forEach(
             callback => callback(key, message.value.toString())

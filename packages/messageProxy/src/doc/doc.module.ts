@@ -3,9 +3,10 @@ import { DocService } from './doc.service';
 import { PubsubModule } from '../pubsub/pubsub.module';
 import { KafkaPubsubService, KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
 import { RedisPubsubService, RedisPubSubToken } from '../pubsub/redis-pubsub.service';
+import { DaprModule } from '../dapr/dapr.module';
 
 @Module({
-  imports: [PubsubModule],
+  imports: [PubsubModule, DaprModule],
   providers: [
     DocService,
     {

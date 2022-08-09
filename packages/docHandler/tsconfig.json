@@ -1,13 +1,15 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-   "target": "es2017",
+    "target": "es2019",
     "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "moduleResolution": "node",
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
-  }
+    "declaration": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "exclude": [ "node_modules", "dist" ]
 }

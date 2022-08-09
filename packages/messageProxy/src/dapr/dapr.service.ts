@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DaprClient, ActorProxyBuilder, ActorId } from '@dapr/dapr';
-import { IDocHandler } from '@a-la-fois/nest-common/src/actor/docHandler.interface';
-// omg...
-import { DocHandler } from '@a-la-fois/doc-handler/dist/DocHandler';
+import { IDocHandler, DocHandler } from '@a-la-fois/doc-handler';
 
 @Injectable()
 export class DaprService {
