@@ -10,7 +10,7 @@
     "build:docHandler": "yarn workspace @a-la-fois/doc-handler build",
     "start:messageProxy": "yarn workspace @a-la-fois/message-proxy start",
     "start:docHandler": "yarn workspace @a-la-fois/doc-handler start",
-    "dapr:messageProxy:run": "dapr run --app-id messageProxy --app-port 3000 --dapr-http-port 3001 yarn workspace @a-la-fois/message-proxy start"
+    "dapr:messageProxy:run": "dapr run --app-id messageProxy --app-port 3000 --dapr-http-port 3500 yarn workspace @a-la-fois/message-proxy start"
   },
   "workspaces": [
     "packages/*"
