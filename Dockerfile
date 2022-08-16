@@ -6,6 +6,7 @@ WORKDIR /base
 
 COPY package.json .
 COPY yarn.lock .
+COPY tsconfig.base.json .
 COPY ./packages ./packages
 
 RUN yarn install

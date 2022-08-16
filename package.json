@@ -11,7 +11,7 @@
     "build:docHandler": "yarn workspace @a-la-fois/doc-handler build",
     "start:messageProxy": "yarn workspace @a-la-fois/message-proxy start",
     "start:docHandler": "yarn workspace @a-la-fois/doc-handler start",
-    "dapr:messageProxy:run": "dapr run --app-id messageProxy --app-port 3000 yarn workspace @a-la-fois/message-proxy start"
+    "dapr:messageProxy:run": "dapr run --app-id messageProxy --app-port 3000 --dapr-http-port 3500 yarn workspace @a-la-fois/message-proxy start"
   },
   "workspaces": [
     "packages/*"
@@ -26,5 +26,8 @@
     "prettier": "2.6.2",
     "rimraf": "3.0.2",
     "typescript": "4.6.3"
+  },
+  "dependencies": {
+    "@nestjs/config": "2.2.0"
   }
 }

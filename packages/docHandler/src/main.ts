@@ -1,16 +1,21 @@
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { DaprServer } from '@dapr/dapr';
+import { DocHandler } from './docHandler';
 
-async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+const daprHost = "127.0.0.1";
+const daprPort = "3500";
+const serverHost = "127.0.0.1";
+const serverPort = "3000";
 
-    app.useGlobalPipes(
-        new ValidationPipe({
-            whitelist: true,
-        })
-    );
+async function start() {
+  const server = new DaprServer(serverHost, serverPort, daprHost, daprPort);
 
-    await app.listen(3000);
+  await server.actor.init();
+  await server.actor.registerActor(DocHandler);
+  await server.start();
 }
-bootstrap();
+
+
+start().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

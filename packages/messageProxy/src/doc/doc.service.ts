@@ -4,15 +4,19 @@ import { ChangesPayload, Changes } from '../messages';
 import { BroadcastMessage, PubSub } from '../pubsub/types';
 import { WebSocketClient } from '../ws/types';
 import { KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
+import { DaprService } from '../dapr/dapr.service';
 import { DocKey } from './types';
 
 @Injectable()
 export class DocService implements OnModuleDestroy {
     private docs: Map<string, DocManager> = new Map();
 
-    constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey, Changes>) {
-        this.pubsub.connect();
-        this.pubsub.addCallback(this.onPublishCallback);
+    constructor(
+        @Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey, Changes>,
+        private daprService: DaprService,
+    ) {
+            this.pubsub.connect();
+            this.pubsub.addCallback(this.onPublishCallback);
     }
 
     applyDiff(client: WebSocketClient, payload: ChangesPayload) {
@@ -27,6 +31,8 @@ export class DocService implements OnModuleDestroy {
                 changes: payload.changes,
             })
         );
+
+        this.daprService.sendChanges(doc.id, payload.changes);
     }
 
     joinToDoc(client: WebSocketClient, docId: string): void {
