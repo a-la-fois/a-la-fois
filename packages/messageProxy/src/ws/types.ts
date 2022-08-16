@@ -1,1 +1,1 @@
-export type WebSocketClient = { id: string; } & WebSocket;
+export type WebSocketClient = { id: string } & WebSocket;
