@@ -31,14 +31,15 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
-    "@a-la-fois/nest-common": "*",
     "@a-la-fois/doc-handler": "*",
+    "@a-la-fois/nest-common": "*",
     "@nestjs/common": "8.4.4",
     "@nestjs/core": "8.4.4",
     "@nestjs/platform-express": "8.4.4",
     "@nestjs/platform-ws": "8.4.7",
     "@nestjs/websockets": "8.4.7",
     "kafkajs": "2.1.0",
+    "node-rdkafka": "2.13.0",
     "reflect-metadata": "0.1.13",
     "uuid": "8.3.2"
   },

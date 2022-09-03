@@ -1,42 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { onPublishCallback, PubSub } from './types';
-import { Kafka, Producer, Consumer } from 'kafkajs';
-import { v4 as uuidv4 } from 'uuid';
 import { DocKey } from '../doc/types';
 import { Changes } from '../messages';
+import { Producer, KafkaConsumer, ProducerStream } from 'node-rdkafka';
 
 export const KafkaPubSubToken = 'KAFKA_PUBSUB';
 const KAFKA_TOPIC = 'changes';
 
 @Injectable()
 export class KafkaPubsubService implements PubSub<DocKey, Changes> {
-    private kafka: Kafka;
-    private publisher: Producer;
-    private subscriber: Consumer;
+    private publisherStream: ProducerStream;
+    private subscriber: KafkaConsumer;
     protected callbacks: onPublishCallback[] = [];
     private subscribedKeys: Set<DocKey> = new Set<DocKey>();
 
-    constructor() {
-        this.kafka = new Kafka({
-            clientId: 'messageProxy',
-            brokers: ['localhost:9092'],
-        });
-    }
-
     publish(key: DocKey, message: Changes): void {
-        this.publisher
-            .send({
-                topic: KAFKA_TOPIC,
-                messages: [
-                    {
-                        key: key,
-                        value: message,
-                    },
-                ],
-            })
-            // TODO: remove log
-            .then(console.log)
-            .catch(console.log);
+        if (!this.publisherStream.write(Buffer.from(message))) {
+            console.error('The queue has been filled up!');
+        }
     }
 
     subscribe(key: DocKey): void {
@@ -52,33 +33,52 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
     }
 
     connect(): void {
-        this.publisher = this.kafka.producer();
-        this.subscriber = this.kafka.consumer({
-            groupId: uuidv4(),
+        this.publisherStream = Producer.createWriteStream(
+            {
+                'metadata.broker.list': 'kafka-host1:9092,kafka-host2:9092',
+            },
+            {},
+            {
+                topic: 'topic-name',
+            }
+        );
+
+        this.publisherStream.on('error', function (err) {
+            // Here's where we'll know if something went wrong sending to Kafka
+            console.error('Error in our kafka stream');
+            console.error(err);
         });
 
-        this.subscriber.connect().then(() => console.log('Consumer connected to a kafka broker.'));
-        this.publisher.connect().then(() => console.log('Provider connected to a kafka broker.'));
+        this.subscriber = new KafkaConsumer(
+            {
+                'group.id': 'kafka',
+                'bootstrap.servers': 'localhost:9092',
+            },
+            {}
+        );
 
-        this.subscriber.subscribe({
-            topic: KAFKA_TOPIC,
-            fromBeginning: false,
-        });
+        // TODO Wait for the publisher to connect
+        this.subscriber.connect();
 
-        this.subscriber.run({
-            eachMessage: async ({ topic, partition, message, heartbeat, pause }) => {
-                const key = message.key.toString();
+        this.subscriber
+            .on('ready', () => {
+                this.subscriber.subscribe([KAFKA_TOPIC]);
+                this.subscriber.consume();
+            })
+            .on('data', (data) => {
+                console.log(data.key + ':' + data.value.toString());
+
+                const key = data.key.toString();
 
                 // Check if we are actually subscribed to this key's messages
                 if (this.subscribedKeys.has(key)) {
-                    this.callbacks.forEach((callback) => callback(key, message.value.toString()));
+                    this.callbacks.forEach((callback) => callback(key, data.value.toString()));
                 }
-            },
-        });
+            });
     }
 
     disconnect(): void {
-        this.subscriber.disconnect().then(() => console.log('Consumer disconnected.'));
-        this.publisher.disconnect().then(() => console.log('Provider disconnected.'));
+        this.subscriber.disconnect();
+        this.publisherStream.close();
     }
 }
