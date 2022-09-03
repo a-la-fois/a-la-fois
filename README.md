@@ -2,13 +2,18 @@
 
 ## Requirements
 node 16+
-## Start
+
+## Bootstrap
 ```bash
 npm i -G yarn # if you don't have yarn
 yarn # in project root to install dependencies
+yarn bootstrap
 ```
 
+## Launch dev
+docker-compose required
 
 ```bash
-docker-compose up
+yarn build
+yarn dev
 ```
