@@ -13,6 +13,7 @@
     "build:nestCommon": "yarn workspace @a-la-fois/nest-common build",
     "build:docHandler": "yarn workspace @a-la-fois/doc-handler build",
     "build:docClient": "yarn workspace @a-la-fois/doc-client build",
+    "build:examples": "yarn workspace @a-la-fois/examples build",
     "start:messageProxy": "yarn workspace @a-la-fois/message-proxy start",
     "start:messageProxy:dapr": "yarn workspace @a-la-fois/message-proxy start:dapr",
     "start:messageProxy:dapr:dev": "yarn workspace @a-la-fois/message-proxy start:dapr:dev",

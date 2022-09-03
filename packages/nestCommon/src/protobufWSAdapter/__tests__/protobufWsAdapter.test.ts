@@ -6,10 +6,7 @@ import { packMessage, unpackMessage } from '../lib/message';
 
 import { ProtobufWsAdapter } from '../protobufWsAdapter';
 
-import {
-    heroRequestType,
-    ProtobufWsAdapterTestModule,
-} from './protobufWSAdapterTest.module';
+import { heroRequestType, ProtobufWsAdapterTestModule } from './protobufWsAdapterTest.module';
 
 const waitOpen = async (ws: WebSocket) => {
     return new Promise((resolve) => {
