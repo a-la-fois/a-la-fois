@@ -1,6 +1,6 @@
 import { AbstractActor } from '@dapr/dapr';
 import { IDocHandler } from './docHandler.interface';
-import { Changes, SyncCompletePayload, SyncResponsePayload, SyncStartPayload } from './messages';
+import { Changes, SyncCompletePayload, SyncResponsePayload, SyncStartPayload } from '../messages';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { fromUint8Array, toUint8Array } from 'js-base64';
 

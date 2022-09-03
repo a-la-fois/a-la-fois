@@ -1,4 +1,4 @@
-import { Changes, SyncCompletePayload, SyncResponsePayload, SyncStartPayload } from './messages';
+import { Changes, SyncCompletePayload, SyncResponsePayload, SyncStartPayload } from '../messages';
 
 export interface IDocHandler {
     applyDiff(changes: Changes): Promise<void>;

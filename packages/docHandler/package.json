@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build": "npm run clear && tsc --build",
+    "build:lib": "tsc --project ./tsconfig.build.lib.json",
     "start": "yarn build && node dist/main.js",
     "clear": "rimraf dist",
     "start:dev": "npm run build && nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/index.ts\"",
