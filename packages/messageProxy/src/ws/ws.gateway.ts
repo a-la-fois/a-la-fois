@@ -13,6 +13,8 @@ import {
     pongEvent,
     SyncStartPayload,
     syncStartEvent,
+    SyncResponseMessage,
+    syncResponseEvent,
     SyncCompletePayload,
     syncCompleteEvent,
 } from '../messages';
@@ -40,7 +42,13 @@ export class WsGateway implements OnGatewayConnection {
 
     @SubscribeMessage(syncStartEvent)
     async onSyncStart(client: WebSocketClient, payload: SyncStartPayload) {
-        return await this.docService.syncStart(client, payload);
+        const data = await this.docService.syncStart(client, payload);
+        const message: SyncResponseMessage = {
+            event: syncResponseEvent,
+            data,
+        };
+
+        return message;
     }
 
     @SubscribeMessage(syncCompleteEvent)

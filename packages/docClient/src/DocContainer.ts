@@ -32,6 +32,10 @@ export class DocContainer {
     }
 
     async init() {
+        this.messenger.sendJoin({ docId: this.id });
+        // TODO
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         await this.sync();
     }
 

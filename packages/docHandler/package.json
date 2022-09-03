@@ -9,7 +9,7 @@
     "start": "yarn build && node dist/main.js",
     "clear": "rimraf dist",
     "start:dev": "npm run build && nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/index.ts\"",
-    "start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 50001 --dapr-http-port 3500 --config ./dapr-config.yaml yarn start"
+    "start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 50001 --dapr-http-port 3500 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents yarn start"
   },
   "dependencies": {
     "@a-la-fois/nest-common": "*",

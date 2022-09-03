@@ -9,10 +9,14 @@ export const MonacoPage = () => {
     const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
 
     useEffect(() => {
-        // TODO: set url
-        const client = new Client({ url: 'ws://localhost' });
+        const init = async () => {
+            const client = new Client({ url: 'ws://localhost:3000' });
+            await client.connect();
 
-        setClient(client);
+            setClient(client);
+        };
+
+        init();
     }, []);
 
     const handleMount: NonNullable<EditorProps['onMount']> = useCallback((editor) => {
