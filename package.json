@@ -1,13 +1,13 @@
 {
   "name": "@a-la-fois/a-la-fois",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "lint": "lerna run lint",
     "clean": "rimraf node_modules",
-    "build": "yarn build:docClient && yarn build:docHandler && yarn build:messageProxy",
+    "build": "yarn build:nestCommon && yarn build:docHandler && yarn build:messageProxy && yarn build:docClient",
     "dev": "./dev.sh",
     "build:messageProxy": "yarn workspace @a-la-fois/message-proxy build",
     "build:nestCommon": "yarn workspace @a-la-fois/nest-common build",

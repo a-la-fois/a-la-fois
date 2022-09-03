@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/doc-handler",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "main": "./lib/cjs/library/index.js",
   "module": "./lib/esm/library/index.js",

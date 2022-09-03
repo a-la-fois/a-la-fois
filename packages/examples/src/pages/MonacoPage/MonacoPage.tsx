@@ -14,7 +14,6 @@ export const MonacoPage = () => {
         const init = async () => {
             const client = new Client({ url: 'ws://localhost:3000' });
             await client.connect();
-            setConnected(true);
 
             setClient(client);
         };
@@ -31,6 +30,7 @@ export const MonacoPage = () => {
             const init = async () => {
                 // TODO: set docId
                 const docContainer = await client.getDoc('1');
+                setConnected(true);
                 const code = docContainer.doc.getText('code');
 
                 new MonacoBinding(code, editor.getModel()!, new Set([editor]));
