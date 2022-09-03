@@ -11,6 +11,10 @@ import {
     pingEvent,
     PongMessage,
     pongEvent,
+    SyncStartPayload,
+    syncStartEvent,
+    SyncCompletePayload,
+    syncCompleteEvent,
 } from '../messages';
 import { DocService } from '../doc/doc.service';
 import { WebSocketClient } from './types';
@@ -32,6 +36,16 @@ export class WsGateway implements OnGatewayConnection {
     @SubscribeMessage(changesEvent)
     async onChanges(client: WebSocketClient, payload: ChangesPayload) {
         this.docService.applyDiff(client, payload);
+    }
+
+    @SubscribeMessage(syncStartEvent)
+    async onSyncStart(client: WebSocketClient, payload: SyncStartPayload) {
+        return await this.docService.syncStart(client, payload);
+    }
+
+    @SubscribeMessage(syncCompleteEvent)
+    async onSyncComplete(client: WebSocketClient, payload: SyncCompletePayload) {
+        this.docService.syncComplete(client, payload);
     }
 
     @SubscribeMessage(closeEvent)

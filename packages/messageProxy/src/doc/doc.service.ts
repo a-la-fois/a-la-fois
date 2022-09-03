@@ -29,7 +29,7 @@ export class DocService implements OnModuleDestroy {
             JSON.stringify({
                 author: client,
                 changes: payload.changes,
-            })
+            } as BroadcastMessage)
         );
 
         this.actorService.sendChanges(payload);
@@ -56,7 +56,7 @@ export class DocService implements OnModuleDestroy {
         this.pubsub.subscribe(docId);
     }
 
-    private onPublishCallback = (channel: string, message: string) => {
+    private onPublishCallback = (channel: DocKey, message: string) => {
         const docId = channel;
         const broadcastMessage: BroadcastMessage = JSON.parse(message);
 

@@ -10,10 +10,12 @@ export class DocHandler extends AbstractActor implements IDocHandler {
 
     async onActivate(): Promise<void> {
         this.doc = new Doc();
+        console.log('onActivate');
         // TODO: Upload from a db
     }
 
     async applyDiff(changes: Changes): Promise<void> {
+        console.log(`applying changes ${changes}`);
         applyUpdate(this.doc, toUint8Array(changes));
         // TODO: Save changes and state
     }
