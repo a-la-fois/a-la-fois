@@ -12,10 +12,11 @@
     "clear": "rimraf dist",
     "start:dev": "npm run build && nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/index.ts\"",
     "start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 50001 --dapr-http-port 3500 --config ./dapr-config.yaml yarn start"
-
   },
   "dependencies": {
     "@a-la-fois/nest-common": "*",
-    "@dapr/dapr": "2.3.1"
+    "@dapr/dapr": "2.3.1",
+    "js-base64": "3.7.2",
+    "yjs": "13.5.41"
   }
 }
