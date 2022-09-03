@@ -7,3 +7,8 @@ node 16+
 npm i -G yarn # if you don't have yarn
 yarn # in project root to install dependencies
 ```
+
+
+```bash
+docker-compose up
+```

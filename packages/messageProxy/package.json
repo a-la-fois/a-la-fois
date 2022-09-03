@@ -4,12 +4,15 @@
   "description": "",
   "author": "",
   "private": true,
-  "main": "lib/library/index.js",
+  "main": "./lib/cjs/library/index.js",
+  "exports": {
+    ".": "./lib/esm/library/index.js"
+  },
   "scripts": {
     "prebuild": "rimraf dist lib",
     "build": "yarn build:server && yarn build:lib",
     "build:server": "nest build",
-    "build:lib": "tsc --project ./tsconfig.build.lib.json",
+    "build:lib": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

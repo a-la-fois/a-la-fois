@@ -2,7 +2,6 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
     "suppressImplicitAnyIndexErrors": true,
     "strictPropertyInitialization": true,
     "strict": true,
