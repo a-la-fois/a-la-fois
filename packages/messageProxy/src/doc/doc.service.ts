@@ -4,7 +4,7 @@ import { ChangesPayload, Changes } from '../messages';
 import { BroadcastMessage, PubSub } from '../pubsub/types';
 import { WebSocketClient } from '../ws/types';
 import { KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
-import { DaprService } from '../dapr/dapr.service';
+import { ActorService } from '../actor/actor.service';
 import { DocKey } from './types';
 
 @Injectable()
@@ -13,10 +13,10 @@ export class DocService implements OnModuleDestroy {
 
     constructor(
         @Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey, Changes>,
-        private daprService: DaprService,
+        private daprService: ActorService
     ) {
-            this.pubsub.connect();
-            this.pubsub.addCallback(this.onPublishCallback);
+        this.pubsub.connect();
+        this.pubsub.addCallback(this.onPublishCallback);
     }
 
     applyDiff(client: WebSocketClient, payload: ChangesPayload) {

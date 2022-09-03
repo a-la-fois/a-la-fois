@@ -1,2 +1,2 @@
-export * from './docHandler.interface';
-export * from './docHandler';
+export * from './actor/docHandler.interface';
+export * from './actor/docHandler';

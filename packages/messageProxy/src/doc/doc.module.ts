@@ -3,22 +3,21 @@ import { DocService } from './doc.service';
 import { PubsubModule } from '../pubsub/pubsub.module';
 import { KafkaPubsubService, KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
 import { RedisPubsubService, RedisPubSubToken } from '../pubsub/redis-pubsub.service';
-import { DaprModule } from '../dapr/dapr.module';
+import { ActorModule } from '../actor/actor.module';
 
 @Module({
-  imports: [PubsubModule, DaprModule],
-  providers: [
-    DocService,
-    {
-      provide: KafkaPubSubToken,
-      useClass: KafkaPubsubService,
-    },
-    {
-      provide: RedisPubSubToken,
-      useClass: RedisPubsubService,
-    },
-  ],
-  exports: [DocService],
+    imports: [PubsubModule, ActorModule],
+    providers: [
+        DocService,
+        {
+            provide: KafkaPubSubToken,
+            useClass: KafkaPubsubService,
+        },
+        {
+            provide: RedisPubSubToken,
+            useClass: RedisPubsubService,
+        },
+    ],
+    exports: [DocService],
 })
-export class DocModule {
-}
+export class DocModule {}
