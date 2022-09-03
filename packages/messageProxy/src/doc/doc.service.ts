@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { DocManager } from './DocManager';
-import { ChangesPayload, Changes } from '../messages';
+import { ChangesPayload, Changes, SyncStartPayload, SyncResponsePayload, SyncCompletePayload } from '../messages';
 import { BroadcastMessage, PubSub } from '../pubsub/types';
 import { WebSocketClient } from '../ws/types';
 import { KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
@@ -13,7 +13,7 @@ export class DocService implements OnModuleDestroy {
 
     constructor(
         @Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey, Changes>,
-        private daprService: ActorService
+        private actorService: ActorService
     ) {
         this.pubsub.connect();
         this.pubsub.addCallback(this.onPublishCallback);
@@ -32,10 +32,18 @@ export class DocService implements OnModuleDestroy {
             })
         );
 
-        this.daprService.sendChanges(doc.id, payload.changes);
+        this.actorService.sendChanges(payload);
     }
 
-    joinToDoc(client: WebSocketClient, docId: string): void {
+    async syncStart(client: WebSocketClient, payload: SyncStartPayload): Promise<SyncResponsePayload> {
+        return await this.actorService.syncStart(payload);
+    }
+
+    syncComplete(client: WebSocketClient, payload: SyncCompletePayload) {
+        this.actorService.syncComplete(payload);
+    }
+
+    joinToDoc(client: WebSocketClient, docId: DocKey): void {
         let doc: DocManager;
         if (this.docs.has(docId)) {
             doc = this.docs.get(docId);

@@ -1,6 +1,6 @@
 import { AbstractActor } from '@dapr/dapr';
 import { IDocHandler } from './docHandler.interface';
-import { Changes, SyncCompletePayload, SyncResponsePayload, SyncStartPayload } from '../messages';
+import { Changes, StateVector, SyncCompleteActorType, SyncResponseActorType } from '../messages';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { fromUint8Array, toUint8Array } from 'js-base64';
 
@@ -18,7 +18,7 @@ export class DocHandler extends AbstractActor implements IDocHandler {
         // TODO: Save changes and state
     }
 
-    async syncStart({ vector }: SyncStartPayload): Promise<SyncResponsePayload> {
+    async syncStart(vector: StateVector): Promise<SyncResponseActorType> {
         const responseVector = Buffer.from(encodeStateVector(this.doc));
         const changes = encodeStateAsUpdate(this.doc, toUint8Array(vector));
 
@@ -28,7 +28,7 @@ export class DocHandler extends AbstractActor implements IDocHandler {
         };
     }
 
-    async syncComplete({ changes }: SyncCompletePayload): Promise<void> {
+    async syncComplete({ changes }: SyncCompleteActorType): Promise<void> {
         this.applyDiff(changes);
     }
 }

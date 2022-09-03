@@ -1,5 +1,5 @@
 import { DaprServer } from '@dapr/dapr';
-import { DocHandler } from './actor/docHandler';
+import { DocHandler } from './actor';
 
 const daprHost = '127.0.0.1';
 const daprPort = '3500';
