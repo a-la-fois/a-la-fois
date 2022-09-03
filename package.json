@@ -2,11 +2,13 @@
   "name": "@a-la-fois/a-la-fois",
   "private": true,
   "version": "0.0.0",
+  "license": "MIT",
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "lint": "lerna run lint",
     "clean": "rimraf node_modules",
     "build": "yarn build:docHandler && yarn build:messageProxy",
+    "dev": "./dev.sh",
     "build:messageProxy": "yarn workspace @a-la-fois/message-proxy build",
     "build:nestCommon": "yarn workspace @a-la-fois/nest-common build",
     "build:docHandler": "yarn workspace @a-la-fois/doc-handler build",
@@ -15,7 +17,8 @@
     "start:messageProxy:dapr:dev": "yarn workspace @a-la-fois/message-proxy start:dapr:dev",
     "start:docHandler": "yarn workspace @a-la-fois/doc-handler start",
     "start:docHandler:dapr": "yarn workspace @a-la-fois/doc-handler start:dapr",
-    "start:docHandler:dapr:dev": "yarn workspace @a-la-fois/doc-handler start:dapr:dev"
+    "start:docHandler:dapr:dev": "yarn workspace @a-la-fois/doc-handler start:dapr:dev",
+    "start:examples:dev": "yarn workspace @a-la-fois/examples dev"
   },
   "workspaces": [
     "packages/*"

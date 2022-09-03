@@ -3,15 +3,18 @@ import Editor, { EditorProps } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import { useCallback, useEffect, useState } from 'react';
 import { MonacoBinding } from 'y-monaco';
+import { ConnectionOverlay } from '~/shared/components/ConnectionOverlay';
 
 export const MonacoPage = () => {
     const [client, setClient] = useState<Client | null>(null);
     const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
+    const [connected, setConnected] = useState(false);
 
     useEffect(() => {
         const init = async () => {
             const client = new Client({ url: 'ws://localhost:3000' });
             await client.connect();
+            setConnected(true);
 
             setClient(client);
         };
@@ -37,5 +40,10 @@ export const MonacoPage = () => {
         }
     }, [client, editor]);
 
-    return <Editor height="90vh" defaultLanguage="javascript" onMount={handleMount} />;
+    return (
+        <div>
+            {!connected && <ConnectionOverlay />}
+            <Editor height="90vh" defaultLanguage="javascript" onMount={handleMount} />
+        </div>
+    );
 };
