@@ -1,12 +1,12 @@
-export type SyncStartPayload = {
-    vector: string;
+import { Changes } from './changes';
+
+export type StateVector = string;
+
+export type SyncResponseActorType = {
+    vector: StateVector;
+    changes: Changes;
 };
 
-export type SyncResponsePayload = {
-    vector: string;
-    changes: string;
-};
-
-export type SyncCompletePayload = {
-    changes: string;
+export type SyncCompleteActorType = {
+    changes: Changes;
 };

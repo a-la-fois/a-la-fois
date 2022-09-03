@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DaprClient, ActorProxyBuilder, ActorId } from '@dapr/dapr';
 import { IDocHandler, DocHandler } from '@a-la-fois/doc-handler';
+import { SyncResponseActorType } from '@a-la-fois/doc-handler';
+import { ChangesPayload, SyncCompletePayload, SyncResponsePayload, SyncStartPayload } from '../messages';
 
 @Injectable()
 export class ActorService {
@@ -18,18 +20,36 @@ export class ActorService {
         this.builder = new ActorProxyBuilder<IDocHandler>(DocHandler, this.actorClient);
     }
 
-    sendChanges(key: string, changes: string) {
+    async sendChanges(payload: ChangesPayload): Promise<void> {
+        const actor: IDocHandler = this.getOrCreateActor(payload.docId);
+
+        actor.applyDiff(payload.changes);
+    }
+
+    async syncStart(payload: SyncStartPayload): Promise<SyncResponsePayload> {
+        const actor: IDocHandler = this.getOrCreateActor(payload.docId);
+
+        const response: SyncResponseActorType = await actor.syncStart(payload.vector);
+        return {
+            docId: payload.docId,
+            vector: response.vector,
+            changes: response.changes,
+        };
+    }
+
+    async syncComplete(payload: SyncCompletePayload): Promise<void> {
+        const actor: IDocHandler = this.getOrCreateActor(payload.docId);
+        actor.syncComplete(payload.changes);
+    }
+
+    private getOrCreateActor(key: string): IDocHandler {
         let actor: IDocHandler = this.actors.get(key);
 
         if (!actor) {
-            actor = this.createActor(key);
+            actor = this.builder.build(new ActorId(key));
             this.actors.set(key, actor);
         }
 
-        actor.applyDiff(changes);
-    }
-
-    private createActor(key: string): IDocHandler {
-        return this.builder.build(new ActorId(key));
+        return actor;
     }
 }

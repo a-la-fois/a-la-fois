@@ -1,11 +1,8 @@
 {
   "name": "@a-la-fois/doc-handler",
   "version": "1.0.0",
-  "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist/**/*"
-  ],
+  "main": "lib/library/index.js",
   "scripts": {
     "build": "npm run clear && tsc --build",
     "build:lib": "tsc --project ./tsconfig.build.lib.json",
