@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DaprClient, ActorProxyBuilder, ActorId } from '@dapr/dapr';
-import { IDocHandler, DocHandler } from '@a-la-fois/doc-handler';
-import { SyncResponseActorType } from '@a-la-fois/doc-handler';
+import { IDocHandler, DocHandler, SyncResponseActorType } from '@a-la-fois/doc-handler';
 import { ChangesPayload, SyncCompletePayload, SyncResponsePayload, SyncStartPayload } from '../messages';
 
 @Injectable()
@@ -39,7 +38,7 @@ export class ActorService {
 
     async syncComplete(payload: SyncCompletePayload): Promise<void> {
         const actor: IDocHandler = this.getOrCreateActor(payload.docId);
-        actor.syncComplete(payload.changes);
+        actor.syncComplete({ changes: payload.changes });
     }
 
     private getOrCreateActor(key: string): IDocHandler {

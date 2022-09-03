@@ -5,8 +5,12 @@
   "author": "",
   "private": true,
   "main": "./lib/cjs/library/index.js",
+  "module": "./lib/esm/library/index.js",
+  "types": "./lib/esm/library/index.d.ts",
   "exports": {
-    ".": "./lib/esm/library/index.js"
+    "require": "./lib/cjs/library/index.js",
+    "import": "./lib/esm/library/index.js",
+    "types": "./lib/esm/library/index.d.ts"
   },
   "scripts": {
     "prebuild": "rimraf dist lib",
@@ -19,6 +23,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "start:dapr": "dapr run --app-id messageProxy --app-port 3000 --dapr-http-port 3500 --placement-host-address localhost:50006 --components-path ../../daprComponents yarn start",
+    "start:dapr:dev": "dapr run --app-id messageProxy --app-port 3000 --dapr-http-port 3500 --placement-host-address localhost:50006 --components-path ../../daprComponents yarn start:dev",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",

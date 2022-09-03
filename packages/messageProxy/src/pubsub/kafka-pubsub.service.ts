@@ -19,7 +19,7 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
     constructor() {
         this.kafka = new Kafka({
             clientId: 'messageProxy',
-            brokers: ['kafka:9092'],
+            brokers: ['localhost:9092'],
         });
     }
 

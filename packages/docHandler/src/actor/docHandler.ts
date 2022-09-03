@@ -5,8 +5,7 @@ import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { fromUint8Array, toUint8Array } from 'js-base64';
 
 export class DocHandler extends AbstractActor implements IDocHandler {
-    // @ts-ignore
-    private doc: Doc;
+    private doc!: Doc;
 
     async onActivate(): Promise<void> {
         this.doc = new Doc();

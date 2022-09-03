@@ -1,15 +1,24 @@
 {
   "name": "@a-la-fois/doc-handler",
   "version": "1.0.0",
-  "types": "dist/index.d.ts",
-  "main": "lib/library/index.js",
+  "main": "./lib/cjs/library/index.js",
+  "module": "./lib/esm/library/index.js",
+  "types": "./lib/esm/library/index.d.ts",
+  "exports": {
+    "require": "./lib/cjs/library/index.js",
+    "import": "./lib/esm/library/index.js",
+    "types": "./lib/esm/library/index.d.ts"
+  },
   "scripts": {
-    "build": "npm run clear && tsc --build",
-    "build:lib": "tsc --project ./tsconfig.build.lib.json",
-    "start": "yarn build && node dist/main.js",
-    "clear": "rimraf dist",
-    "start:dev": "npm run build && nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/index.ts\"",
-    "start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 50001 --dapr-http-port 3500 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents yarn start"
+    "build": "yarn build:server && yarn build:lib",
+    "build:server": "yarn clear && tsc --build",
+    "build:lib": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
+    "start": "node dist/main.js",
+    "start:dev": "yarn start",
+    "start:dev_": "yarn build && nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/index.ts\"",
+    "clear": "rimraf dist && rimraf lib",
+    "start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents yarn start",
+    "start:dapr:dev": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents yarn start:dev"
   },
   "dependencies": {
     "@a-la-fois/nest-common": "*",
