@@ -1,7 +1,7 @@
 export default () => ({
     kafka: {
         changesTopic: process.env.KAFKA_CHANGES_TOPIC || 'changes',
-        host: process.env.KAFKA_HOSTS || 'localhost:9092',
+        host: process.env.KAFKA_HOSTS || '127.0.0.1:9092',
         caPath: process.env.KAFKA_CA_PATH || '',
     },
     dapr: {

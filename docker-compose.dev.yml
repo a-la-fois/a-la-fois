@@ -13,7 +13,8 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
   kafka:
-    image: 'bitnami/kafka:latest'
+    image: 'bitnami/kafka:3.0'
+    hostname: kafka
     ports:
       - '9092:9092'
     environment:

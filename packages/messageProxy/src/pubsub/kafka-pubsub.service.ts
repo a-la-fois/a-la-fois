@@ -28,10 +28,12 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
         const password: string = this.configService.get<string>('kafka.password');
         const mechanism: string = this.configService.get<string>('kafka.mechanism');
 
-        let sslParams: sslParams = false;
+        let sslParams: KafkaConfig | Object = {};
         if (caCertPath) {
             sslParams = {
-                ca: [readFileSync(caCertPath)],
+                ssl: {
+                    ca: [readFileSync(caCertPath)],
+                },
             };
         }
 
@@ -48,9 +50,7 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
         this.kafka = new Kafka({
             clientId: 'messageProxy',
             brokers: this.configService.get<string>('kafka.host').split(','),
-            ssl: {
-                ...sslParams,
-            },
+            ...sslParams,
             ...saslParams,
         });
     }
