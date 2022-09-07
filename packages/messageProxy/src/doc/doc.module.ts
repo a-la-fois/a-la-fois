@@ -4,9 +4,10 @@ import { PubsubModule } from '../pubsub/pubsub.module';
 import { KafkaPubsubService, KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
 import { RedisPubsubService, RedisPubSubToken } from '../pubsub/redis-pubsub.service';
 import { ActorModule } from '../actor/actor.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-    imports: [PubsubModule, ActorModule],
+    imports: [PubsubModule, ActorModule, ConfigModule],
     providers: [
         DocService,
         {

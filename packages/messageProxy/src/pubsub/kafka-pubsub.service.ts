@@ -2,24 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { onPublishCallback, PubSub } from './types';
 import { DocKey } from '../doc/types';
 import { Changes } from '../messages';
-import { Producer, KafkaConsumer, ProducerStream } from 'node-rdkafka';
+import { Producer, KafkaConsumer } from 'node-rdkafka';
 import { ConfigService } from '@nestjs/config';
 
 export const KafkaPubSubToken = 'KAFKA_PUBSUB';
 
 @Injectable()
 export class KafkaPubsubService implements PubSub<DocKey, Changes> {
-    private publisherStream: ProducerStream;
+    private publisher: Producer;
     private subscriber: KafkaConsumer;
     protected callbacks: onPublishCallback[] = [];
     private subscribedKeys: Set<DocKey> = new Set<DocKey>();
+    private changesTopic: string;
 
-    constructor(private readonly configService: ConfigService) {}
+    constructor(private readonly configService: ConfigService) {
+        this.changesTopic = this.configService.get<string>('kafka.changesTopic');
+    }
 
     publish(key: DocKey, message: Changes): void {
-        if (!this.publisherStream.write(Buffer.from(message))) {
-            console.error('The queue has been filled up!');
-        }
+        this.publisher.produce(this.changesTopic, null, Buffer.from(message), key);
     }
 
     subscribe(key: DocKey): void {
@@ -35,21 +36,19 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
     }
 
     connect(): void {
-        this.publisherStream = Producer.createWriteStream(
-            {
-                'metadata.broker.list': this.configService.get<string>('kafka.host'),
-            },
-            {},
-            {
-                topic: 'topic-name',
-            }
-        );
+        this.publisher = new Producer({
+            'metadata.broker.list': this.configService.get<string>('kafka.host'),
+            dr_cb: true,
+        });
 
-        this.publisherStream.on('error', function (err) {
-            // Here's where we'll know if something went wrong sending to Kafka
-            console.error('Error in our kafka stream');
+        this.publisher.connect();
+
+        this.publisher.on('event.error', (err) => {
+            console.error('Error from producer');
             console.error(err);
         });
+
+        this.publisher.setPollInterval(this.configService.get<number>('kafka.pollInterval'));
 
         this.subscriber = new KafkaConsumer(
             {
@@ -81,6 +80,6 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
 
     disconnect(): void {
         this.subscriber.disconnect();
-        this.publisherStream.close();
+        this.publisher.disconnect();
     }
 }
