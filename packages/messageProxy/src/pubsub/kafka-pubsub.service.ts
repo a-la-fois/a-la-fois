@@ -3,9 +3,9 @@ import { onPublishCallback, PubSub } from './types';
 import { DocKey } from '../doc/types';
 import { Changes } from '../messages';
 import { Producer, KafkaConsumer, ProducerStream } from 'node-rdkafka';
+import { ConfigService } from '@nestjs/config';
 
 export const KafkaPubSubToken = 'KAFKA_PUBSUB';
-const KAFKA_TOPIC = 'changes';
 
 @Injectable()
 export class KafkaPubsubService implements PubSub<DocKey, Changes> {
@@ -13,6 +13,8 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
     private subscriber: KafkaConsumer;
     protected callbacks: onPublishCallback[] = [];
     private subscribedKeys: Set<DocKey> = new Set<DocKey>();
+
+    constructor(private readonly configService: ConfigService) {}
 
     publish(key: DocKey, message: Changes): void {
         if (!this.publisherStream.write(Buffer.from(message))) {
@@ -35,7 +37,7 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
     connect(): void {
         this.publisherStream = Producer.createWriteStream(
             {
-                'metadata.broker.list': 'kafka-host1:9092,kafka-host2:9092',
+                'metadata.broker.list': this.configService.get<string>('kafka.host'),
             },
             {},
             {
@@ -52,7 +54,7 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
         this.subscriber = new KafkaConsumer(
             {
                 'group.id': 'kafka',
-                'bootstrap.servers': 'localhost:9092',
+                'bootstrap.servers': this.configService.get<string>('kafka.host'),
             },
             {}
         );
@@ -62,7 +64,7 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
 
         this.subscriber
             .on('ready', () => {
-                this.subscriber.subscribe([KAFKA_TOPIC]);
+                this.subscriber.subscribe([this.configService.get<string>('kafka.changesTopic')]);
                 this.subscriber.consume();
             })
             .on('data', (data) => {
