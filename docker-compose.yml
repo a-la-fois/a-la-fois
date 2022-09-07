@@ -9,6 +9,8 @@ services:
       args:
         - BUILD_CONTEXT=messageProxy
       target: messageProxy
+    environment:
+      - KAFKA_HOST=kafka:9092
     ports:
       - "3000:3000"
     networks:
@@ -29,7 +31,7 @@ services:
       "--components-path", "./components",
     ]
     volumes:
-      - "./daprComponents/:/components"
+      - "./daprComponents/test/:/components"
     network_mode: "service:message-proxy-1"
 
   message-proxy-2:
@@ -42,6 +44,8 @@ services:
       args:
         - BUILD_CONTEXT=messageProxy
       target: messageProxy
+    environment:
+      - KAFKA_HOST=kafka:9092
     ports:
       - "3001:3000"
     networks:
@@ -62,7 +66,7 @@ services:
       "--components-path", "./components",
     ]
     volumes:
-      - "./daprComponents/:/components"
+      - "./daprComponents/test/:/components"
     network_mode: "service:message-proxy-2"
 
   redis:
@@ -98,7 +102,7 @@ services:
       "--components-path", "./components",
     ]
     volumes:
-      - "./daprComponents/:/components"
+      - "./daprComponents/test/:/components"
     network_mode: "service:doc-handler"
 
   zookeeper:
