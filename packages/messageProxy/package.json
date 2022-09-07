@@ -38,7 +38,6 @@
     "@nestjs/platform-express": "8.4.4",
     "@nestjs/platform-ws": "8.4.7",
     "@nestjs/websockets": "8.4.7",
-    "kafkajs": "2.1.0",
     "node-rdkafka": "2.13.0",
     "reflect-metadata": "0.1.13",
     "uuid": "8.3.2"
