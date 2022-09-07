@@ -4,10 +4,12 @@ import { onPublishCallback, PubSub } from './types';
 import { DocKey } from '../doc/types';
 import { Changes } from '../messages';
 import { ConfigService } from '@nestjs/config';
-import { Kafka, Producer, Consumer } from 'kafkajs';
+import { Kafka, Producer, Consumer, KafkaConfig } from 'kafkajs';
 import { v4 as uuidv4 } from 'uuid';
 
 export const KafkaPubSubToken = 'KAFKA_PUBSUB';
+
+type sslParams = KafkaConfig['ssl'];
 
 @Injectable()
 export class KafkaPubsubService implements PubSub<DocKey, Changes> {
@@ -26,15 +28,19 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
         const password: string = this.configService.get<string>('kafka.password');
         const mechanism: string = this.configService.get<string>('kafka.mechanism');
 
-        let sslParams = {};
+        let sslParams: sslParams = false;
         if (caCertPath) {
-            sslParams = { ca: [readFileSync(caCertPath)] };
+            sslParams = {
+                ca: [readFileSync(caCertPath)],
+            };
         }
 
         const saslParams = {
-            mechanism,
-            username,
-            password,
+            sasl: {
+                mechanism,
+                username,
+                password,
+            },
         }
             ? username && password
             : {};
@@ -42,7 +48,9 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
         this.kafka = new Kafka({
             clientId: 'messageProxy',
             brokers: this.configService.get<string>('kafka.host').split(','),
-            ...sslParams,
+            ssl: {
+                ...sslParams,
+            },
             ...saslParams,
         });
     }
