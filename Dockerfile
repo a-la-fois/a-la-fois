@@ -1,24 +1,8 @@
-FROM node:18-buster as builder
+FROM node:18-alpine as builder
 
 ARG BUILD_CONTEXT
 
 WORKDIR /base
-
-# node-rdkafka dependencies
-# RUN apt-get update && apt-get install -y \
-#   bash \
-#   g++ \
-#   ca-certificates \
-#   lz4-dev \
-#   musl-dev \
-#   cyrus-sasl-dev \
-#   openssl-dev \
-#   make \
-#   python3 \
-#   && rm -rf /var/lib/apt/lists/*
-
-# RUN apk add --no-cache --virtual .build-deps gcc zlib-dev libc-dev bsd-compat-headers py-setuptools bash
-# RUN rm -rf node_modules/node-rdkafka/deps node_modules/node-rdkafka/build/deps/*.a
 
 COPY package.json .
 COPY yarn.lock .
