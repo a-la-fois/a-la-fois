@@ -3,16 +3,17 @@ services:
     container_name: messageProxy1
     depends_on:
       - kafka
-      - doc-handler
+      - doc-handler-1
+      - doc-handler-2
     build:
       context: .
       args:
         - BUILD_CONTEXT=messageProxy
       target: messageProxy
-    environment:
-      - KAFKA_HOST=kafka:9092
     ports:
       - "3000:3000"
+    environment:
+      - KAFKA_HOSTS=kafka:9092
   message-proxy-1-dapr:
     container_name: mp1-dapr
     image: "daprio/daprd:edge"
@@ -25,43 +26,42 @@ services:
       "--app-protocol", "http",
       "--app-port", "3000",
       "--placement-host-address", "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
-      "--components-path", "./components",
-    ]
+      "--components-path", "./components"]
     volumes:
-      - "./daprComponents/test/:/components"
+      - "./daprComponents/complete/:/components"
     network_mode: "service:message-proxy-1"
 
   message-proxy-2:
-    container_name: messageProxy2
-    depends_on:
-      - kafka
-      - doc-handler
-    build:
-      context: .
-      args:
-        - BUILD_CONTEXT=messageProxy
-      target: messageProxy
-    environment:
-      - KAFKA_HOST=kafka:9092
-    ports:
-      - "3001:3000"
+     container_name: messageProxy2
+     depends_on:
+       - kafka
+       - doc-handler-1
+       - doc-handler-2
+     build:
+       context: .
+       args:
+         - BUILD_CONTEXT=messageProxy
+       target: messageProxy
+     environment:
+       - KAFKA_HOSTS=kafka:9092
+     ports:
+       - "3001:3000"
   message-proxy-2-dapr:
-    container_name: mp2-dapr
-    image: "daprio/daprd:edge"
-    depends_on:
-      - message-proxy-2
-      - placement
-    command: [
-      "./daprd",
-      "--app-id", "docHandler",
-      "--app-protocol", "http",
-      "--app-port", "3000",
-      "--placement-host-address", "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
-      "--components-path", "./components",
-    ]
-    volumes:
-      - "./daprComponents/test/:/components"
-    network_mode: "service:message-proxy-2"
+     container_name: mp2-dapr
+     image: "daprio/daprd:edge"
+     depends_on:
+       - message-proxy-2
+       - placement
+     command: [
+       "./daprd",
+       "--app-id", "docHandler",
+       "--app-protocol", "http",
+       "--app-port", "3000",
+       "--placement-host-address", "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+       "--components-path", "./components"]
+     volumes:
+       - "./daprComponents/complete/:/components"
+     network_mode: "service:message-proxy-2"
 
   redis:
     container_name: redis
@@ -69,18 +69,23 @@ services:
     ports:
       - "6378:6379"
 
-  doc-handler:
-    container_name: docHandler
+  doc-handler-1:
+    container_name: docHandler1
     build:
       context: .
       args:
         - BUILD_CONTEXT=docHandler
       target: docHandler
-  doc-handler-dapr:
-    container_name: docHandler-dapr
+    environment:
+      - DAPR_PORT=3500
+      - DAPR_HOST=127.0.0.1
+      - SERVER_HOST=docHandler
+      - SERVER_PORT=3000
+  doc-handler-1-dapr:
+    container_name: docHandler-dapr-1
     image: "daprio/daprd:edge"
     depends_on:
-      - doc-handler
+      - doc-handler-1
       - redis
       - placement
     command: [
@@ -89,11 +94,41 @@ services:
       "--app-protocol", "http",
       "--app-port", "3000",
       "--placement-host-address", "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
-      "--components-path", "./components",
-    ]
+      "--components-path", "./components"]
     volumes:
-      - "./daprComponents/test/:/components"
-    network_mode: "service:doc-handler"
+      - "./daprComponents/complete/:/components"
+    network_mode: "service:doc-handler-1"
+
+  
+  doc-handler-2:
+    container_name: docHandler2
+    build:
+      context: .
+      args:
+        - BUILD_CONTEXT=docHandler
+      target: docHandler
+    environment:
+      - DAPR_PORT=3500
+      - DAPR_HOST=127.0.0.1
+      - SERVER_HOST=docHandler
+      - SERVER_PORT=3000
+  doc-handler-2-dapr:
+    container_name: docHandler-dapr-2
+    image: "daprio/daprd:edge"
+    depends_on:
+      - doc-handler-2
+      - redis
+      - placement
+    command: [
+      "./daprd",
+      "--app-id", "docHandler",
+      "--app-protocol", "http",
+      "--app-port", "3000",
+      "--placement-host-address", "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--components-path", "./components"]
+    volumes:
+      - "./daprComponents/complete/:/components"
+    network_mode: "service:doc-handler-2"
 
   zookeeper:
     container_name: zookeeper
@@ -114,7 +149,7 @@ services:
     environment:
       - KAFKA_BROKER_ID=1
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
 

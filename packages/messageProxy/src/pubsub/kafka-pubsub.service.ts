@@ -49,7 +49,7 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
 
         this.kafka = new Kafka({
             clientId: 'messageProxy',
-            brokers: this.configService.get<string>('kafka.host').split(','),
+            brokers: this.configService.get<string>('kafka.hosts').split(','),
             ...sslParams,
             ...saslParams,
         });

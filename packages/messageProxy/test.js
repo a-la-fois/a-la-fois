@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const kafka = new Kafka({
     clientId: 'messageProxy',
-    brokers: ['127.0.0.1:9092'],
+    brokers: ['kafka:9092'],
 });
 
 const publisher = kafka.producer();
