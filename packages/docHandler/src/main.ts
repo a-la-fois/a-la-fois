@@ -1,13 +1,12 @@
 import { DaprServer } from '@dapr/dapr';
+import mongoose from 'mongoose';
 import { DocHandler } from './actor';
-
-const daprHost = process.env.DAPR_HOST || '127.0.0.1';
-const daprPort = process.env.DAPR_PORT || '3501';
-const serverHost = process.env.SERVER_HOST || '127.0.0.1';
-const serverPort = process.env.SERVER_PORT || '3001';
+import Config from './config';
 
 async function start() {
-    const server = new DaprServer(serverHost, serverPort, daprHost, daprPort);
+    mongoose.connect(Config.mongoUri);
+
+    const server = new DaprServer(Config.serverHost, Config.serverPort, Config.daprHost, Config.daprPort);
 
     await server.actor.init();
     await server.actor.registerActor(DocHandler);

@@ -1,31 +1,32 @@
 {
-"name": "@a-la-fois/doc-handler",
-"version": "0.0.1",
-"license": "MIT",
-"main": "./lib/cjs/library/index.js",
-"module": "./lib/esm/library/index.js",
-"types": "./lib/esm/library/index.d.ts",
-"exports": {
-"require": "./lib/cjs/library/index.js",
-"import": "./lib/esm/library/index.js",
-"types": "./lib/esm/library/index.d.ts"
-},
-"scripts": {
-"build": "yarn build:server && yarn build:lib",
-"build:server": "yarn clear && tsc --build",
-"build:lib": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
-"start": "node dist/main.js",
-"start:dev": "nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/main.ts\"",
-"clear": "rimraf dist && rimraf lib",
-"start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents/dev yarn start",
-"start:dapr:dev": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents/dev yarn start:dev"
-},
-"dependencies": {
-"@a-la-fois/nest-common": "*",
-"@dapr/dapr": "2.3.1",
-"js-base64": "3.7.2",
-"nodemon": "2.0.19",
-"ts-node": "10.7.0",
-"yjs": "13.5.41"
-}
+  "name": "@a-la-fois/doc-handler",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "./lib/cjs/library/index.js",
+  "module": "./lib/esm/library/index.js",
+  "types": "./lib/esm/library/index.d.ts",
+  "exports": {
+    "require": "./lib/cjs/library/index.js",
+    "import": "./lib/esm/library/index.js",
+    "types": "./lib/esm/library/index.d.ts"
+  },
+  "scripts": {
+    "build": "yarn build:server && yarn build:lib",
+    "build:server": "yarn clear && tsc --build",
+    "build:lib": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
+    "start": "node dist/main.js",
+    "start:dev": "nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/main.ts\"",
+    "clear": "rimraf dist && rimraf lib",
+    "start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents/dev yarn start",
+    "start:dapr:dev": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents/dev yarn start:dev"
+  },
+  "dependencies": {
+    "@a-la-fois/nest-common": "*",
+    "@dapr/dapr": "2.3.1",
+    "js-base64": "3.7.2",
+    "mongoose": "6.6.0",
+    "nodemon": "2.0.19",
+    "ts-node": "10.7.0",
+    "yjs": "13.5.41"
+  }
 }
