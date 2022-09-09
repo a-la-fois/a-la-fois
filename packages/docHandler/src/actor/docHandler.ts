@@ -21,8 +21,6 @@ export class DocHandler extends AbstractActor implements IDocHandler {
     async onActivate(): Promise<void> {
         this.ydoc = new YDoc();
         const doc: IDoc | null = await Doc.findOne({ docId: this.getId() });
-        console.log(doc);
-        console.log(`docs = ${await Doc.find().exec()}`);
 
         if (doc) {
             applyUpdate(this.ydoc, doc.state);
