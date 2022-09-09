@@ -5,6 +5,12 @@ services:
     ports:
       - "6379:6379"
 
+  mongo:
+    container_name: mongo
+    image: mongo:5.0.12
+    ports:
+      - "27017:27017"
+
   zookeeper:
     image: 'bitnami/zookeeper:latest'
     ports:
