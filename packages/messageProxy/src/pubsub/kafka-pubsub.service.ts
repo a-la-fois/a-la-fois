@@ -4,12 +4,10 @@ import { onPublishCallback, PubSub } from './types';
 import { DocKey } from '../doc/types';
 import { Changes } from '../messages';
 import { ConfigService } from '@nestjs/config';
-import { Kafka, Producer, Consumer, KafkaConfig } from 'kafkajs';
+import { Kafka, Producer, Consumer } from 'kafkajs';
 import { v4 as uuidv4 } from 'uuid';
 
 export const KafkaPubSubToken = 'KAFKA_PUBSUB';
-
-type sslParams = KafkaConfig['ssl'];
 
 @Injectable()
 export class KafkaPubsubService implements PubSub<DocKey, Changes> {
@@ -26,32 +24,31 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
         const caCertPath: string = this.configService.get<string>('kafka.caPath');
         const username: string = this.configService.get<string>('kafka.username');
         const password: string = this.configService.get<string>('kafka.password');
-        const mechanism: string = this.configService.get<string>('kafka.mechanism');
+        const mechanism = this.configService.get<string>('kafka.mechanism');
 
-        let sslParams: KafkaConfig | Object = {};
+        // TODO: kafka config constructor
+        let ssl = {};
         if (caCertPath) {
-            sslParams = {
-                ssl: {
-                    ca: [readFileSync(caCertPath)],
-                },
+            ssl = {
+                ca: [readFileSync(caCertPath)],
             };
         }
 
-        const saslParams = {
-            sasl: {
-                mechanism,
-                username,
-                password,
-            },
-        }
-            ? username && password
-            : {};
+        const sasl =
+            username && password
+                ? {
+                      mechanism,
+                      username,
+                      password,
+                  }
+                : {};
 
         this.kafka = new Kafka({
             clientId: 'messageProxy',
             brokers: this.configService.get<string>('kafka.hosts').split(','),
-            ...sslParams,
-            ...saslParams,
+            ssl,
+            // @ts-ignore
+            sasl,
         });
     }
 

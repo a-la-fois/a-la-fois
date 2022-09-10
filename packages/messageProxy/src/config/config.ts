@@ -5,6 +5,7 @@ export default () => ({
         caPath: process.env.KAFKA_CA_PATH || '',
         username: process.env.KAFKA_USERNAME || '',
         password: process.env.KAFKA_PASSWORD || '',
+        mechanism: process.env.KAFKA_SASL_MECHANISM || '',
     },
     dapr: {
         host: process.env.DAPR_SIDECAR_HOST || '127.0.0.1',
