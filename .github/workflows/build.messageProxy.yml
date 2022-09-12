@@ -26,6 +26,9 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
+          build-args:
+            - BUILD_CONTEXT=messageProxy
+          target: "messageProxy"
           tags: |
             ghcr.io/a-la-fois/message-proxy:latest
             ghcr.io/a-la-fois/message-proxy:0.0.1
