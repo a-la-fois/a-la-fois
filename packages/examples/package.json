@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "type": "module",
+  "homepage": "https://a-la-fois.github.io/a-la-fois/",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
