@@ -12,7 +12,7 @@ export const MonacoPage = () => {
 
     useEffect(() => {
         const init = async () => {
-            const client = new Client({ url: 'ws://localhost:3000' });
+            const client = new Client({ url: 'ws://130.193.53.53:3000' });
             await client.connect();
 
             setClient(client);
