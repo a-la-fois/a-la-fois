@@ -1,0 +1,31 @@
+name: Build and push messageProxy
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "packages/messageProxy"
+  workflow_dispatch:
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/a-la-fois/messageProxy:latest
+            ghcr.io/a-la-fois/messageProxy:0.0.1
