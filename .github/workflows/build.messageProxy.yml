@@ -27,5 +27,5 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/a-la-fois/messageProxy:latest
-            ghcr.io/a-la-fois/messageProxy:0.0.1
+            ghcr.io/a-la-fois/message-proxy:latest
+            ghcr.io/a-la-fois/message-proxy:0.0.1
