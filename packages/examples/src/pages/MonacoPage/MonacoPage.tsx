@@ -13,8 +13,16 @@ export const MonacoPage = () => {
 
     useEffect(() => {
         const init = async () => {
+            console.log('init', serverUrl);
             const client = new Client({ url: serverUrl });
-            await client.connect();
+            console.log('client created');
+            try {
+                await client.connect();
+            } catch (err) {
+                console.log('err', err);
+            }
+
+            console.log('after connect');
 
             setClient(client);
         };
