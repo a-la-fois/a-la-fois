@@ -4,6 +4,7 @@ import type * as monaco from 'monaco-editor';
 import { useCallback, useEffect, useState } from 'react';
 import { MonacoBinding } from 'y-monaco';
 import { ConnectionOverlay } from '~/shared/components/ConnectionOverlay';
+import { serverUrl } from '~/config';
 
 export const MonacoPage = () => {
     const [client, setClient] = useState<Client | null>(null);
@@ -12,7 +13,7 @@ export const MonacoPage = () => {
 
     useEffect(() => {
         const init = async () => {
-            const client = new Client({ url: 'ws://130.193.53.53:3000' });
+            const client = new Client({ url: serverUrl });
             await client.connect();
 
             setClient(client);

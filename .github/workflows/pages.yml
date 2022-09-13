@@ -61,7 +61,7 @@ jobs:
       - name: Build deps
         run: yarn build
       - name: Build examples
-        run: yarn build:examples
+        run: BASE_PATH="/a-la-fois" VITE_SERVER_URL="ws://130.193.53.53:3000" yarn build:examples
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
