@@ -2,6 +2,10 @@ FROM node:18-alpine as builder
 
 ARG BUILD_CONTEXT
 
+# For examples
+ARG SERVER_URL
+ENV VITE_SERVER_URL=$SERVER_URL
+
 WORKDIR /base
 
 COPY package.json .
@@ -33,3 +37,9 @@ CMD ["node", "./packages/messageProxy/dist/main.js"]
 # run docHandler
 FROM base-runner as docHandler
 CMD ["node", "./packages/docHandler/dist/main.js"]
+
+
+# run examples
+FROM nginx:alpine as examples
+
+COPY --from=builder /base/packages/examples/dist /usr/share/nginx/html
