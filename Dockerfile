@@ -42,4 +42,5 @@ CMD ["node", "./packages/docHandler/dist/main.js"]
 # run examples
 FROM nginx:alpine as examples
 
+COPY ./packages/examples/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /base/packages/examples/dist /usr/share/nginx/html
