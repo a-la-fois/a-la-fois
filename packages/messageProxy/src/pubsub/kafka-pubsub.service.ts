@@ -27,28 +27,26 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
         const mechanism = this.configService.get<string>('kafka.mechanism');
 
         // TODO: kafka config constructor
-        let ssl = {};
+        const params = {};
+
         if (caCertPath) {
-            ssl = {
+            params['ssl'] = {
                 ca: [readFileSync(caCertPath)],
             };
         }
 
-        const sasl =
-            username && password
-                ? {
-                      mechanism,
-                      username,
-                      password,
-                  }
-                : {};
+        if (username && password) {
+            params['sasl'] = {
+                mechanism,
+                username,
+                password,
+            };
+        }
 
         this.kafka = new Kafka({
             clientId: 'messageProxy',
             brokers: this.configService.get<string>('kafka.hosts').split(','),
-            ssl,
-            // @ts-ignore
-            sasl,
+            ...params,
         });
     }
 
