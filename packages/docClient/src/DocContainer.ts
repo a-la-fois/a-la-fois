@@ -6,6 +6,9 @@ import {
     BroadcastChangesPayload,
     syncResponseEvent,
     SyncResponsePayload,
+    joinResponseEvent,
+    JoinResponsePayload,
+    JoinResponseStatus,
 } from '@a-la-fois/message-proxy';
 
 const ORIGIN_APPLY_CHANGES = '__apply__';
@@ -29,14 +32,15 @@ export class DocContainer {
         this.doc.on('update', this.handleChange);
 
         this.messenger.on(broadcastChangesEvent, this.handleReceiveChanges);
+        this.messenger.on(joinResponseEvent, (data: JoinResponsePayload) => {
+            if (data.status == JoinResponseStatus.ok) {
+                this.sync();
+            }
+        });
     }
 
     async init() {
         this.messenger.sendJoin({ docId: this.id });
-        // TODO
-        // await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        await this.sync();
     }
 
     dispose() {

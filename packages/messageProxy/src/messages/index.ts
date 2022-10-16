@@ -2,6 +2,7 @@ export * from './broadcastChanges';
 export * from './changes';
 export * from './close';
 export * from './join';
+export * from './joinResponse';
 export * from './message';
 export * from './ping';
 export * from './pong';

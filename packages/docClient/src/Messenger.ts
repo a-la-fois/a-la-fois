@@ -3,6 +3,8 @@ import { WsConnection } from './WsConnection';
 import {
     JoinPayload,
     joinEvent,
+    joinResponseEvent,
+    JoinResponsePayload,
     ChangesPayload,
     changesEvent,
     BroadcastChangesPayload,
@@ -26,15 +28,19 @@ export type MessengerConfig = {
 export interface Messenger {
     once(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     once(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
+    once(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
 
     on(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     on(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
+    on(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
 
     off(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     off(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
+    off(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
 
     emit(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): boolean;
     emit(event: typeof broadcastChangesEvent, payload: BroadcastChangesPayload): boolean;
+    emit(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): boolean;
 }
 
 export class Messenger extends EventEmitter {
@@ -99,6 +105,9 @@ export class Messenger extends EventEmitter {
                 break;
             case syncResponseEvent:
                 this.emit(syncResponseEvent, message.data);
+                break;
+            case joinResponseEvent:
+                this.emit(joinResponseEvent, message.data);
                 break;
         }
     };
