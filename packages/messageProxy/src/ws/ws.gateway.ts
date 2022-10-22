@@ -17,6 +17,8 @@ import {
     syncResponseEvent,
     SyncCompletePayload,
     syncCompleteEvent,
+    JoinResponseMessage,
+    joinResponseEvent,
 } from '../messages';
 import { DocService } from '../doc/doc.service';
 import { WebSocketClient } from './types';
@@ -32,7 +34,13 @@ export class WsGateway implements OnGatewayConnection {
 
     @SubscribeMessage(joinEvent)
     async onJoin(client: WebSocketClient, { docId }: JoinPayload) {
-        this.docService.joinToDoc(client, docId);
+        const data = this.docService.joinToDoc(client, docId);
+        const message: JoinResponseMessage = {
+            event: joinResponseEvent,
+            data,
+        };
+
+        return message;
     }
 
     @SubscribeMessage(changesEvent)

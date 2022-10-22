@@ -10,7 +10,7 @@ export class DocManager {
         this.id = docId;
     }
 
-    addUser(client: connection) {
+    addConnection(client: connection) {
         if (!this.contains(client)) {
             this.connections.set(client.id, client);
         }
