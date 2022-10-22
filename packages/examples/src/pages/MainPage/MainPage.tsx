@@ -7,6 +7,9 @@ export const MainPage = () => (
             <li>
                 <Link to="/monaco">Monaco</Link>
             </li>
+            <li>
+                <Link to="/pixelCanvas">PixelCanvas</Link>
+            </li>
         </ul>
     </div>
 );
