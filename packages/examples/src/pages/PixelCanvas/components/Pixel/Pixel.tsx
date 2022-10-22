@@ -11,8 +11,6 @@ interface PixelProps {
 export const Pixel = ({ rowNumber, pixelNumber, selectedColor }: PixelProps) => {
     const [pixelColor, setPixelColor] = useState('#fff');
     const [oldColor, setOldColor] = useState(pixelColor);
-    const [canChangeColor, setCanChangeColor] = useState(true);
-
     const contextValue = useContext(CanvasContext);
 
     useEffect(() => {
@@ -27,10 +25,7 @@ export const Pixel = ({ rowNumber, pixelNumber, selectedColor }: PixelProps) => 
         }
     }, [contextValue]);
 
-    function applyColor() {
-        setPixelColor(selectedColor);
-        setCanChangeColor(false);
-
+    const applyColor = () => {
         if (contextValue) {
             const [connected, canvasState, handle] = contextValue;
             handle({
@@ -41,20 +36,16 @@ export const Pixel = ({ rowNumber, pixelNumber, selectedColor }: PixelProps) => 
                 },
             });
         }
-    }
+    };
 
-    function changeColorOnHover() {
+    const changeColorOnHover = () => {
         setOldColor(pixelColor);
         setPixelColor(selectedColor);
-    }
+    };
 
-    function resetColor() {
-        if (canChangeColor) {
-            setPixelColor(oldColor);
-        }
-
-        setCanChangeColor(true);
-    }
+    const resetColor = () => {
+        setPixelColor(oldColor);
+    };
 
     return (
         <div
