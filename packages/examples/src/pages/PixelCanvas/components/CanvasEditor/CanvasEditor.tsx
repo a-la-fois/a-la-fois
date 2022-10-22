@@ -10,11 +10,19 @@ interface CanvasEditorProps {
 
 export const CanvasEditor = ({ width, height, selectedColor }: CanvasEditorProps) => {
     const panelRef = useRef<HTMLDivElement>(null);
+    // const contextValue = useContext(CanvasContext);
+
+    // useEffect(() => {
+    //     if (contextValue) {
+    //         const [connected, canvasState, handle] = contextValue;
+    //
+    //     }
+    // }, [contextValue]);
 
     let rows = [];
 
     for (let i = 0; i < height; i++) {
-        rows.push(<Row key={i} width={width} selectedColor={selectedColor} />);
+        rows.push(<Row key={i} rowNumber={i} width={width} selectedColor={selectedColor} />);
     }
     return (
         <div id="canvasEditor">
