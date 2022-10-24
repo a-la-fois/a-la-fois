@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { CanvasContext, ChangeColorEventName } from '../../context';
-import './pixel.css';
+import styles from './Pixel.module.css';
 
 interface PixelProps {
     rowNumber: number;
@@ -49,11 +49,11 @@ export const Pixel = ({ rowNumber, pixelNumber, selectedColor }: PixelProps) => 
 
     return (
         <div
-            className="pixel"
+            className={styles['Pixel']}
             onClick={applyColor}
             onMouseEnter={changeColorOnHover}
             onMouseLeave={resetColor}
             style={{ backgroundColor: pixelColor }}
-        ></div>
+        />
     );
 };

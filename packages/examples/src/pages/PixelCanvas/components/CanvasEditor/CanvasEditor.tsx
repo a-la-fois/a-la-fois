@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { Row } from '../Row';
-import './CanvasEditor.css';
+import styles from './CanvasEditor.module.css';
 
 interface CanvasEditorProps {
     width: number;
@@ -17,8 +17,8 @@ export const CanvasEditor = ({ width, height, selectedColor }: CanvasEditorProps
         rows.push(<Row key={i} rowNumber={i} width={width} selectedColor={selectedColor} />);
     }
     return (
-        <div id="canvasEditor">
-            <div id="pixels" ref={panelRef}>
+        <div className={styles['CanvasEditor']}>
+            <div className={styles['CanvasEditor-Pixels']} ref={panelRef}>
                 {rows}
             </div>
         </div>

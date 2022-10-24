@@ -1,9 +1,9 @@
-#canvasEditor {
+.CanvasEditor {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-#pixels {
+.CanvasEditor-Pixels {
   margin-bottom: 2rem;
 }

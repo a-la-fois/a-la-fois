@@ -1,10 +1,10 @@
-.pixel {
+.Pixel {
     width: 1rem;
     height: 1rem;
 
 }
 
-.pixel:hover {
+.Pixel:hover {
     cursor: pointer;
 }
 

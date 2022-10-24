@@ -1,5 +1,5 @@
 import { Pixel } from '../Pixel';
-import './row.css';
+import styles from './Row.module.css';
 
 interface RowProps {
     rowNumber: number;
@@ -14,5 +14,5 @@ export const Row = ({ rowNumber, width, selectedColor }: RowProps) => {
         pixels.push(<Pixel key={i} rowNumber={rowNumber} pixelNumber={i} selectedColor={selectedColor} />);
     }
 
-    return <div className="row">{pixels}</div>;
+    return <div className={styles['Row']}>{pixels}</div>;
 };
