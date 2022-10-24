@@ -3,6 +3,7 @@ import { CirclePicker } from 'react-color';
 import { useState } from 'react';
 import { EDITOR_CONFIG } from './config';
 import { CanvasContextProvider } from './context';
+import styles from './PixelCanvasPage.module.css';
 
 export const PixelCanvasPage = () => {
     const [selectedColor, setColor] = useState('#f44336');
@@ -13,8 +14,10 @@ export const PixelCanvasPage = () => {
 
     return (
         <div>
-            <h1>PixelCanvasPage</h1>
-            <CirclePicker color={selectedColor} onChangeComplete={changeColor} />
+            <h1 className={styles['Header']}>Pixel canvas</h1>
+            <div className={styles['ColorPicker']}>
+                <CirclePicker color={selectedColor} onChangeComplete={changeColor} colors={EDITOR_CONFIG.colors} />
+            </div>
             <CanvasContextProvider>
                 <CanvasEditor selectedColor={selectedColor} width={EDITOR_CONFIG.size} height={EDITOR_CONFIG.size} />
             </CanvasContextProvider>
