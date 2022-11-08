@@ -16,7 +16,9 @@
     "types": "./dist/esm/index.d.ts"
   },
   "scripts": {
-    "build": "yarn clear && tsc --project tsconfig.build.cjs.json && tsc --project tsconfig.build.esm.json",
+    "build": "tsc --project tsconfig.build.cjs.json && tsc --project tsconfig.build.esm.json",
+    "prebuild": "rimraf dist",
+    "prepare": "npm run build",
     "clear": "rimraf dist",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

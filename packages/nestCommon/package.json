@@ -8,14 +8,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm run clear && tsc --build",
+    "build": "tsc --build",
     "build:watch": "tsc --build --watch",
+    "prebuild": "rimraf dist",
+    "prepare": "npm run build",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "clear": "rimraf dist",
     "lint": "eslint './src/**/*.ts'",
     "format": "prettier --write '**/*.{ts,tsx,css,json,yaml,yml,md}'",
-    "prepare": "npm run build",
     "proto:gen": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./ ./src/proto/hero.proto"
   },
   "peerDependencies": {

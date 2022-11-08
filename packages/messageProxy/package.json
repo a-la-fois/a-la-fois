@@ -16,10 +16,13 @@
     "types": "./lib/esm/library/index.d.ts"
   },
   "scripts": {
-    "prebuild": "rimraf dist lib",
     "build": "yarn build:server && yarn build:lib",
     "build:server": "nest build",
     "build:lib": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
+    "prebuild:server": "rimraf dist",
+    "prebuild:lib": "rimraf lib",
+    "prepare": "npm run build:lib",
+    "clear": "rimraf dist lib",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

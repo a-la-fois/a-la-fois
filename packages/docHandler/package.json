@@ -15,11 +15,14 @@
   },
   "scripts": {
     "build": "yarn build:server && yarn build:lib",
-    "build:server": "yarn clear && tsc --build",
+    "build:server": "tsc --build",
     "build:lib": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
+    "prebuild:server": "rimraf dist",
+    "prebuild:lib": "rimraf lib",
+    "prepare": "npm run build:lib",
     "start": "node dist/main.js",
     "start:dev": "nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/main.ts\"",
-    "clear": "rimraf dist && rimraf lib",
+    "clear": "rimraf dist lib",
     "start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents/dev yarn start",
     "start:dapr:dev": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents/dev yarn start:dev"
   },
