@@ -1,4 +1,4 @@
-import { Model, model, Schema, Document } from 'mongoose';
+import { Model, model, Schema } from 'mongoose';
 
 export interface IDoc {
     docId: string;
