@@ -4,7 +4,6 @@
   "description": "",
   "license": "MIT",
   "author": "",
-  "private": true,
   "main": "./lib/cjs/library/index.js",
   "module": "./lib/esm/library/index.js",
   "types": "./lib/esm/library/index.d.ts",
