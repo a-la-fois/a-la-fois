@@ -2,6 +2,8 @@
 
 ## Usage
 ```ts
+import { Client } from '@a-la-fois/doc-client';
+
 const client = new Client({
     url: 'wss://ws.service.com',
 });
