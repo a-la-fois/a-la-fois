@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/doc-handler",
-  "version": "0.0.1-alpha.95+e757a75",
+  "version": "0.0.1",
   "license": "MIT",
   "files": [
     "lib"
@@ -27,7 +27,7 @@
     "start:dapr:dev": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents/dev yarn start:dev"
   },
   "dependencies": {
-    "@a-la-fois/nest-common": "^0.0.1-alpha.95+e757a75",
+    "@a-la-fois/nest-common": "^0.0.1",
     "@dapr/dapr": "2.3.1",
     "js-base64": "3.7.2",
     "mongoose": "6.6.0",
