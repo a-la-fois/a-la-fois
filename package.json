@@ -10,6 +10,7 @@
     "clear": "lerna run clear",
     "build": "yarn build:nestCommon && yarn build:docHandler && yarn build:messageProxy && yarn build:docClient && yarn build:api",
     "dev": "./dev.sh",
+    "publishAll": "lerna publish",
     "publish:canary": "lerna publish --canary",
     "build:api": "yarn workspace @a-la-fois/api build",
     "build:messageProxy": "yarn workspace @a-la-fois/message-proxy build",

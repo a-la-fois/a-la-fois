@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/message-proxy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "license": "MIT",
   "author": "",
@@ -33,11 +33,13 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
+    "prepublish": "clean-package --clean",
+    "postpublish": "clean-package --restore",
     "test:cov": "jest --coverage"
   },
   "dependencies": {
-    "@a-la-fois/doc-handler": "*",
-    "@a-la-fois/nest-common": "*",
+    "@a-la-fois/doc-handler": "^0.0.2",
+    "@a-la-fois/nest-common": "^0.0.2",
     "@nestjs/common": "8.4.4",
     "@nestjs/core": "8.4.4",
     "@nestjs/platform-express": "8.4.4",
@@ -48,6 +50,7 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
+    "@a-la-fois/clean-package": "^0.0.2",
     "@nestjs/cli": "8.2.8",
     "@nestjs/schematics": "8.0.8",
     "@nestjs/testing": "8.4.4",
@@ -64,5 +67,6 @@
     "ts-node": "10.7.0",
     "tsconfig-paths": "3.14.0",
     "typescript": "4.6.3"
-  }
+  },
+  "gitHead": "e757a752497e9c4ee4ad85603998907ef3d54c22"
 }

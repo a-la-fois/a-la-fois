@@ -1,5 +1,5 @@
 {
-  "name": "@a-la-fois/doc-client",
+  "name": "@a-la-fois/clean-package",
   "version": "0.0.2",
   "description": "",
   "license": "MIT",
@@ -7,6 +7,9 @@
   "files": [
     "dist"
   ],
+  "bin": {
+    "clean-package": "./bin.js"
+  },
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
@@ -27,20 +30,10 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
-    "@a-la-fois/message-proxy": "^0.0.2",
-    "eventemitter3": "4.0.7",
-    "js-base64": "3.7.2",
-    "promise-retry": "2.0.1",
-    "y-protocols": "1.0.5",
-    "yjs": "13.5.41"
+    "args": "5.0.3"
   },
   "devDependencies": {
-    "@types/jest": "27.4.1",
-    "@types/promise-retry": "1.1.3",
-    "jest": "27.5.1",
-    "jest-websocket-mock": "2.3.0",
-    "ts-jest": "27.1.4",
-    "ts-loader": "9.2.8",
+    "@types/args": "5.0.0",
     "typescript": "4.6.3"
   },
   "gitHead": "e757a752497e9c4ee4ad85603998907ef3d54c22"
