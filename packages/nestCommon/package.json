@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/nest-common",
-  "version": "0.0.1-alpha.93+7f9defe",
+  "version": "0.0.1-alpha.94+d22e66c",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -57,5 +57,5 @@
     "lodash": "4.17.21",
     "nanoid": "3.3.3"
   },
-  "gitHead": "7f9defe2edddcef8537cc3961bc67184ef9f91c4"
+  "gitHead": "d22e66cdeaef0df7c38cda98c6cacfa66b172bb2"
 }
