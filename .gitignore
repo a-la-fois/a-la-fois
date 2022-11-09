@@ -1,8 +1,16 @@
+# compiled output
 node_modules
-.vscode
 dist
 lib
-*.log
-.idea/
 *.pem
 *.env
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# IDEs
+.idea/
+.vscode

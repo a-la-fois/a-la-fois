@@ -1,4 +1,4 @@
-import { Model, model, Schema, Document } from 'mongoose';
+import { Model, model, Schema } from 'mongoose';
 
 export interface IDoc {
     docId: string;
@@ -10,4 +10,4 @@ const DocSchema = new Schema<IDoc>({
     state: { type: Buffer, required: true },
 });
 
-export const Doc: Model<IDoc> = model<IDoc>('Doc', DocSchema);
+export const DocModel: Model<IDoc> = model<IDoc>('Doc', DocSchema);
