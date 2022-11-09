@@ -21,6 +21,7 @@ const fieldsWhitelist = [
     'module',
     'types',
     'exports',
+    'scripts',
 ];
 
 const backupSuffix = '__backup';
@@ -75,18 +76,11 @@ export const restorePackage = () => {
 
 export const getConfig = (path?: string): Config => {
     const configPath = path ?? resolve(findRootPath(), configFileName);
-    console.log('configPath', configPath);
     let config: Partial<Config> = {};
 
     if (existsSync(configPath)) {
         config = require(configPath).default;
     }
-
-    console.log('config', config);
-    console.log('final', {
-        ...defaultConfig,
-        ...config,
-    });
 
     return {
         ...defaultConfig,
