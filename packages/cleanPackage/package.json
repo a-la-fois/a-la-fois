@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/clean-package",
-  "version": "0.0.1-alpha.94+d22e66c",
+  "version": "0.0.1-alpha.95+e757a75",
   "description": "",
   "license": "MIT",
   "author": "",
@@ -36,5 +36,5 @@
     "@types/args": "5.0.0",
     "typescript": "4.6.3"
   },
-  "gitHead": "d22e66cdeaef0df7c38cda98c6cacfa66b172bb2"
+  "gitHead": "e757a752497e9c4ee4ad85603998907ef3d54c22"
 }

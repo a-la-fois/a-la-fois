@@ -11,7 +11,7 @@ const defaultConfig: Config = {
 
 const fieldsWhitelist = [
     'name',
-    'versions',
+    'version',
     'description',
     'license',
     'author',
