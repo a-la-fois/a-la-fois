@@ -1,0 +1,39 @@
+{
+  "name": "@a-la-fois/clean-package",
+  "version": "0.0.1",
+  "description": "",
+  "license": "MIT",
+  "author": "",
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "clean-package": "./bin.js"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    "require": "./dist/cjs/index.js",
+    "import": "./dist/esm/index.js",
+    "types": "./dist/esm/index.d.ts"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.cjs.json && tsc --project tsconfig.build.esm.json",
+    "prebuild": "rimraf dist",
+    "prepare": "npm run build",
+    "clear": "rimraf dist",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
+  },
+  "dependencies": {
+    "args": "5.0.3"
+  },
+  "devDependencies": {
+    "@types/args": "5.0.0",
+    "typescript": "4.6.3"
+  }
+}
