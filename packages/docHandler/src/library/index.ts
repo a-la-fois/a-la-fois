@@ -1,2 +1,2 @@
 export * from '../messages';
-export * from '../actor';
+export * from '../actor/docHandler.interface';
