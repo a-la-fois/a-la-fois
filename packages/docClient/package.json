@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/doc-client",
-  "version": "0.0.1-alpha.92+1a9cb39",
+  "version": "0.0.1-alpha.93+7f9defe",
   "description": "",
   "license": "MIT",
   "author": "",
@@ -27,7 +27,7 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
-    "@a-la-fois/message-proxy": "^0.0.1-alpha.92+1a9cb39",
+    "@a-la-fois/message-proxy": "^0.0.1-alpha.93+7f9defe",
     "eventemitter3": "4.0.7",
     "js-base64": "3.7.2",
     "promise-retry": "2.0.1",
@@ -43,5 +43,5 @@
     "ts-loader": "9.2.8",
     "typescript": "4.6.3"
   },
-  "gitHead": "1a9cb392d8cd9fe956ef98fad72754801c921a43"
+  "gitHead": "7f9defe2edddcef8537cc3961bc67184ef9f91c4"
 }
