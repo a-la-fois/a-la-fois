@@ -39,6 +39,11 @@ FROM base-runner as docHandler
 CMD ["node", "./packages/docHandler/dist/main.js"]
 
 
+# run api
+FROM base-runner as api
+CMD ["node", "./packages/api/dist/main.js"]
+
+
 # run examples
 FROM nginx:alpine as examples
 
