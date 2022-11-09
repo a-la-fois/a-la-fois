@@ -7,10 +7,13 @@ import { Injectable } from '@nestjs/common';
 export class DocsService {
     async createDoc(): Promise<IDoc['docId']> {
         const docId = uuidv4();
+        const docStateBuffer = Buffer.from(
+            encodeStateAsUpdate(new YDoc()).buffer
+        );
 
         await DocModel.create({
             docId,
-            state: encodeStateAsUpdate(new YDoc()),
+            state: docStateBuffer,
         });
 
         return docId;
