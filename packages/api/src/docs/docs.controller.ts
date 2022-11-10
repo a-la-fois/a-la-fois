@@ -1,6 +1,6 @@
-import { Controller, Get, ParseArrayPipe, Post, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, ValidationPipe } from '@nestjs/common';
 import { DocsService } from './docs.service';
-import { CreateDocDto, DocsByIdsDto } from './dto';
+import { CreateDocDto, DocsByIdsDto, DocsByIdsQueryDto } from './dto';
 
 @Controller('docs')
 export class DocsController {
@@ -8,8 +8,8 @@ export class DocsController {
 
     @Get()
     async getDocsByIds(
-        @Query('ids', new ParseArrayPipe({ items: String }))
-        ids: string[]
+        @Query(new ValidationPipe({ transform: true }))
+        { ids }: DocsByIdsQueryDto
     ): Promise<DocsByIdsDto> {
         const docs = await this.docsService.getDocsByIds(ids);
 

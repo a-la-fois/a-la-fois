@@ -2,11 +2,11 @@ import { Doc as YDoc, encodeStateAsUpdate } from 'yjs';
 import { v4 as uuidv4 } from 'uuid';
 import { DocModel, IDoc } from '@a-la-fois/doc-handler';
 import { Injectable } from '@nestjs/common';
-import { IDocPublicDto } from './dto';
+import { DocPublicDto } from './dto';
 
 @Injectable()
 export class DocsService {
-    async getDocsByIds(ids: string[]): Promise<IDocPublicDto[]> {
+    async getDocsByIds(ids: string[]): Promise<DocPublicDto[]> {
         const docs = await DocModel.find({
             docId: {
                 $in: ids,
