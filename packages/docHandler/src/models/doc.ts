@@ -5,7 +5,7 @@ export interface IDoc {
     state: Buffer;
 }
 
-const DocSchema = new Schema<IDoc>({
+export const DocSchema = new Schema<IDoc>({
     docId: { type: String, required: true },
     state: { type: Buffer, required: true },
 });
