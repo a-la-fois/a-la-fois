@@ -5,23 +5,20 @@
 name: Publish
 
 on:
-  # Runs on pushes targeting the default branch
-  # push:
-    # branches: ["main"]
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Allow one concurrent deployment
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+env:
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 jobs:
-  # Build job
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup git user
+        run: |
+          git config --global user.name "githubBot"
+          git config --global user.email "githubbot@mail.com"
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Node
@@ -35,3 +32,5 @@ jobs:
         run: yarn bootstrap
       - name: Publish packages
         run: yarn publish:all
+      - name: Push new versions
+        run: git push
