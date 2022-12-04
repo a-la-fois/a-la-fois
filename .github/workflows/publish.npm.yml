@@ -1,0 +1,37 @@
+# Sample workflow for building and deploying a Next.js site to GitHub Pages
+#
+# To get started with Next.js see: https://nextjs.org/docs/getting-started
+#
+name: Deploy examples site to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  # push:
+    # branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install
+      - name: Bootstrap
+        run: yarn bootstrap
+      - name: Publish packages
+        run: yarn publish:all
