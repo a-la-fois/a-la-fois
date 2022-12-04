@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/api",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "author": "",
   "private": true,
@@ -35,7 +35,7 @@
     "yjs": "13.5.41"
   },
   "devDependencies": {
-    "@a-la-fois/doc-handler": "*",
+    "@a-la-fois/doc-handler": "0.0.3",
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
