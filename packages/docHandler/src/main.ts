@@ -1,12 +1,21 @@
 import { DaprServer } from '@dapr/dapr';
 import mongoose from 'mongoose';
 import { DocHandler } from './actor';
-import Config from './config';
+import CONFIG from './config';
+
+const mongoConnect = () => {
+    const mongoConfig = CONFIG.mongo;
+    let params: mongoose.ConnectOptions = { ssl: mongoConfig.ssl as boolean };
+
+    if (mongoConfig.sslCA) {
+        params['sslCA'] = mongoConfig.sslCA;
+    }
+    mongoose.connect(mongoConfig.mongoUri, params);
+};
 
 async function start() {
-    mongoose.connect(Config.mongoUri);
-
-    const server = new DaprServer(Config.serverHost, Config.serverPort, Config.daprHost, Config.daprPort);
+    mongoConnect();
+    const server = new DaprServer(CONFIG.serverHost, CONFIG.serverPort, CONFIG.daprHost, CONFIG.daprPort);
 
     await server.actor.init();
     await server.actor.registerActor(DocHandler);
