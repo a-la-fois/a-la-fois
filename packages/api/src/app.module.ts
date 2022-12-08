@@ -1,5 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ConsumerExtractorMiddleware } from './auth/consumerExtractor.middleware';
+import { Module } from '@nestjs/common';
 import { ConsumerModule } from './consumer/consumer.module';
 import { DbModule } from './db/db.module';
 import { DocsModule } from './docs/docs.module';
@@ -9,8 +8,4 @@ import { DocsModule } from './docs/docs.module';
     controllers: [],
     providers: [],
 })
-export class AppModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(ConsumerExtractorMiddleware).forRoutes('docs');
-    }
-}
+export class AppModule {}
