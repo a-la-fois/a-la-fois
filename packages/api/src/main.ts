@@ -8,7 +8,6 @@ const config = configuration();
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.useGlobalPipes(new ValidationPipe());
-    app.setGlobalPrefix('api');
 
     await app.listen(config.server.port);
 }
