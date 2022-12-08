@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/react": "18.0.18",
+    "@types/react-color": "3.0.6",
     "@types/react-dom": "18.0.6",
     "@vitejs/plugin-react": "2.0.1",
     "typescript": "4.6.3",

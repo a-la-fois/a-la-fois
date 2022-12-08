@@ -12,6 +12,7 @@
     "dev": "./dev.sh",
     "publish:all": "lerna publish --exact --yes --cd-version patch",
     "publish:canary": "lerna publish --canary",
+    "publish:containers": "lerna run publish:container",
     "build:api": "yarn workspace @a-la-fois/api build",
     "build:messageProxy": "yarn workspace @a-la-fois/message-proxy build",
     "build:nestCommon": "yarn workspace @a-la-fois/nest-common build",

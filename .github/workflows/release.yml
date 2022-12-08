@@ -2,14 +2,11 @@
 #
 # To get started with Next.js see: https://nextjs.org/docs/getting-started
 #
-name: Publish
+name: Release
 
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-env:
-  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 jobs:
   publish:
@@ -39,3 +36,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Push new versions
         run: git push
+      - name: Registry login
+        run: echo $YC_AUTH > ycauth.json && cat ycauth.json | docker login --username json_key --password-stdin cr.yandex
+        env:
+          YC_AUTH: ${{ secrets.YC_AUTH }}
+      - name: Build and push images
+        run: yarn publish:containers

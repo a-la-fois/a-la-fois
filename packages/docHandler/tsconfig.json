@@ -1,6 +1,12 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "strictPropertyInitialization": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "removeComments": true,
     "target": "es2019",
     "module": "commonjs",
     "rootDir": "src",

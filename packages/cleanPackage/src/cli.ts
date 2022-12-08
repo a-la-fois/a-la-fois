@@ -1,6 +1,6 @@
 import args from 'args';
 import { cleanPackage, restorePackage, getConfig } from './cleanPackage';
-console.log('A');
+
 args.option('clean', 'Clean package.json').option('restore', 'Restore package.json');
 
 const run = () => {
