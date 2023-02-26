@@ -1,12 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { Consumer } from './model';
+import { Injectable } from '@nestjs/common';
+import { Consumer, ConsumerModel } from '@a-la-fois/models';
 
 @Injectable()
 export class ConsumerService {
-    constructor(@Inject('CONSUMER_MODEL') private readonly consumerModel: Model<Consumer>) {}
+    constructor() {}
 
-    async getConsumer(id: string): Promise<Consumer | undefined> {
-        return this.consumerModel.findOne({ id });
+    async getConsumer(id: string): Promise<Consumer | null> {
+        return ConsumerModel.findOne({ id }) ?? null;
     }
 }

@@ -1,16 +1,15 @@
 import { Doc as YDoc, encodeStateAsUpdate } from 'yjs';
 import { v4 as uuidv4 } from 'uuid';
-import { IDoc } from '@a-la-fois/doc-handler';
-import { Inject, Injectable } from '@nestjs/common';
+import { DocModel } from '@a-la-fois/doc-handler';
+import { Injectable } from '@nestjs/common';
 import { DocPublicDto } from './dto';
-import { Model } from 'mongoose';
 
 @Injectable()
 export class DocsService {
-    constructor(@Inject('DOC_MODEL') private readonly docModel: Model<IDoc>) {}
+    constructor() {}
 
     async getDocsByIds(ids: string[]): Promise<DocPublicDto[]> {
-        const docs = await this.docModel.find({
+        const docs = await DocModel.find({
             docId: {
                 $in: ids,
             },
@@ -26,11 +25,11 @@ export class DocsService {
         return docsPublic;
     }
 
-    async createDoc(): Promise<IDoc['docId']> {
+    async createDoc() {
         const docId = uuidv4();
         const docStateBuffer = Buffer.from(encodeStateAsUpdate(new YDoc()).buffer);
 
-        await this.docModel.create({
+        await DocModel.create({
             docId,
             state: docStateBuffer,
         });

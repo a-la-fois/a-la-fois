@@ -13,9 +13,7 @@ export class ActorService {
     constructor(private readonly configService: ConfigService) {
         const daprHost = this.configService.get<string>('dapr.host');
         const daprPort = this.configService.get<string>('dapr.port');
-
         this.actorClient = new DaprClient(daprHost, daprPort);
-
         this.builder = new ActorProxyBuilder<IDocHandler>(DocHandler, this.actorClient);
     }
 

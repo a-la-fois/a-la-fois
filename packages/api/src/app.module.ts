@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConsumerModule } from './consumer/consumer.module';
-import { DbModule } from './db/db.module';
+import { AsyncStorageModule } from '@a-la-fois/nest-common';
 import { DocsModule } from './docs/docs.module';
+import { DbModule } from './db';
 
 @Module({
-    imports: [DocsModule, ConsumerModule, DbModule],
+    imports: [DocsModule, DbModule.forRoot(), AsyncStorageModule.forRoot()],
     controllers: [],
     providers: [],
 })

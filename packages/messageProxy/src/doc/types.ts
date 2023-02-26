@@ -1,3 +1,3 @@
-import { IDoc } from '@a-la-fois/doc-handler';
+import { Doc } from '@a-la-fois/doc-handler';
 
-export type DocKey = IDoc['docId'];
+export type DocKey = Doc['docId'];

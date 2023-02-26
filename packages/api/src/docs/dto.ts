@@ -1,10 +1,10 @@
 import { Transform } from 'class-transformer';
 import { IsArray, IsString, ArrayMaxSize, IsDefined } from 'class-validator';
-import { IDoc } from '@a-la-fois/doc-handler';
+import { Doc } from '@a-la-fois/doc-handler';
 
 export class DocPublicDto {
-    id: IDoc['docId'];
-    state: IDoc['state'];
+    id: Doc['docId'];
+    state: Doc['state'];
 }
 
 export class DocsByIdsQueryDto {
@@ -29,5 +29,5 @@ export class DocsByIdsDto {
 }
 
 export class CreateDocDto {
-    id: IDoc['docId'];
+    id: Doc['docId'];
 }

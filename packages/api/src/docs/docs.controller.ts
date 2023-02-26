@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Query, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ConsumerGuard } from '../auth';
 import { DocsService } from './docs.service';
 import { CreateDocDto, DocsByIdsDto, DocsByIdsQueryDto } from './dto';
 
@@ -19,6 +20,7 @@ export class DocsController {
     }
 
     @Post()
+    @UseGuards(ConsumerGuard)
     async createDoc(): Promise<CreateDocDto> {
         const docId = await this.docsService.createDoc();
 
