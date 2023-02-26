@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ConsumerService } from 'src/consumer/consumer.service';
-import { ConsumerModel } from 'src/consumer/model';
+import { ConsumerModule } from '../consumer';
 import { AuthService } from './auth.service';
+import { ConsumerGuard } from './consumer.guard';
 
 @Module({
-    controllers: [ConsumerService],
-    providers: [AuthService, ConsumerModel],
+    imports: [ConsumerModule],
+    exports: [AuthService, ConsumerGuard],
+    providers: [AuthService, ConsumerGuard],
 })
 export class AuthModule {}

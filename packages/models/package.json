@@ -1,0 +1,35 @@
+{
+  "name": "@a-la-fois/models",
+  "version": "0.0.4",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    "require": "./dist/cjs/index.js",
+    "import": "./dist/esm/index.js",
+    "types": "./dist/esm/index.d.ts"
+  },
+  "scripts": {
+    "build": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
+    "prebuild": "rimraf dist",
+    "prepare": "npm run build",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "clear": "rimraf dist",
+    "lint": "eslint './src/**/*.ts'",
+    "format": "prettier --write '**/*.{ts,tsx,css,json,yaml,yml,md}'"
+  },
+  "dependencies": {
+    "@typegoose/typegoose": "10.1.1",
+    "mongoose": "6.9.2"
+  },
+  "devDependencies": {
+    "rimraf": "3.0.2",
+    "typescript": "4.6.3"
+  },
+  "gitHead": "e757a752497e9c4ee4ad85603998907ef3d54c22"
+}

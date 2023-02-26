@@ -3,7 +3,7 @@ import { IDocHandler } from './docHandler.interface';
 import { Changes, StateVector, SyncCompleteActorType, SyncResponseActorType } from '../messages';
 import { applyUpdate, Doc as YDoc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { fromUint8Array, toUint8Array } from 'js-base64';
-import { DocModel, IDoc } from '../models';
+import { DocModel, Doc } from '../models';
 
 export class DocHandler extends AbstractActor implements IDocHandler {
     private ydoc!: YDoc;
@@ -20,7 +20,7 @@ export class DocHandler extends AbstractActor implements IDocHandler {
 
     async onActivate(): Promise<void> {
         this.ydoc = new YDoc();
-        const doc: IDoc | null = await DocModel.findOne({ docId: this.getId() });
+        const doc: Doc | null = await DocModel.findOne({ docId: this.getId() });
 
         if (doc) {
             applyUpdate(this.ydoc, doc.state);

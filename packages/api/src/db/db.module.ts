@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
-import mongoose from 'mongoose';
+import { DynamicModule } from '@nestjs/common';
+import mongoose, { ConnectOptions } from 'mongoose';
 import configuration from '../config';
 
 const config = configuration();
 
-const mongoConnect = (): Promise<typeof mongoose> => {
+const mongoConnect = () => {
     const mongoConfig = config.mongo;
-    let params: mongoose.ConnectOptions = { ssl: mongoConfig.ssl as boolean };
+    const params: ConnectOptions = { ssl: mongoConfig.ssl };
 
     if (mongoConfig.sslCA) {
         params['sslCA'] = mongoConfig.sslCA;
@@ -14,15 +14,13 @@ const mongoConnect = (): Promise<typeof mongoose> => {
     return mongoose.connect(mongoConfig.uri, params);
 };
 
-export const databaseProviders = [
-    {
-        provide: 'DATABASE_CONNECTION',
-        useFactory: mongoConnect,
-    },
-];
+export class DbModule {
+    static forRoot(): DynamicModule {
+        mongoConnect();
 
-@Module({
-    providers: [...databaseProviders],
-    exports: [...databaseProviders],
-})
-export class DbModule {}
+        return {
+            module: DbModule,
+            global: true,
+        };
+    }
+}
