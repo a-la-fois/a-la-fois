@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Consumer, ConsumerModel } from '@a-la-fois/models';
+import { Consumer } from '@a-la-fois/models';
+import { ConsumerModel } from '../models';
 
 @Injectable()
 export class ConsumerService {

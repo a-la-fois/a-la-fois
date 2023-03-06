@@ -1,9 +1,10 @@
 import { AbstractActor } from '@dapr/dapr';
-import { IDocHandler } from './docHandler.interface';
-import { Changes, StateVector, SyncCompleteActorType, SyncResponseActorType } from '../messages';
+import { Doc } from '@a-la-fois/models';
 import { applyUpdate, Doc as YDoc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { fromUint8Array, toUint8Array } from 'js-base64';
-import { DocModel, Doc } from '../models';
+import { DocModel } from '../models';
+import { IDocHandler } from './docHandler.interface';
+import { Changes, StateVector, SyncCompleteActorType, SyncResponseActorType } from '../messages';
 
 export class DocHandler extends AbstractActor implements IDocHandler {
     private ydoc!: YDoc;

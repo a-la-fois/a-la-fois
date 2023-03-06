@@ -1,3 +1,3 @@
-import { Doc } from '@a-la-fois/doc-handler';
+import { Doc } from '@a-la-fois/models';
 
 export type DocKey = Doc['docId'];

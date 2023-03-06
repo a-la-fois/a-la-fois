@@ -1,4 +1,4 @@
-import { getModelForClass, prop, Ref } from '@typegoose/typegoose';
+import { prop, Ref } from '@typegoose/typegoose';
 import { Consumer } from './consumer';
 
 export class Doc {
@@ -11,5 +11,3 @@ export class Doc {
     @prop({ required: true, ref: () => Consumer })
     owner: Ref<Consumer>;
 }
-
-export const DocModel = getModelForClass(Doc);

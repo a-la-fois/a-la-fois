@@ -1,6 +1,6 @@
 import { Doc as YDoc, encodeStateAsUpdate } from 'yjs';
 import { v4 as uuidv4 } from 'uuid';
-import { DocModel } from '@a-la-fois/doc-handler';
+import { DocModel } from '../models';
 import { Injectable } from '@nestjs/common';
 import { DocPublicDto } from './dto';
 

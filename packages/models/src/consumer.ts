@@ -1,4 +1,4 @@
-import { prop, getModelForClass } from '@typegoose/typegoose';
+import { prop } from '@typegoose/typegoose';
 
 export class Consumer {
     @prop({ required: true })
@@ -7,5 +7,3 @@ export class Consumer {
     @prop({ required: true })
     name: number;
 }
-
-export const ConsumerModel = getModelForClass(Consumer);

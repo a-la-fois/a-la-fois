@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsArray, IsString, ArrayMaxSize, IsDefined } from 'class-validator';
-import { Doc } from '@a-la-fois/doc-handler';
+import { Doc } from '@a-la-fois/models';
 
 export class DocPublicDto {
     id: Doc['docId'];
