@@ -27,7 +27,8 @@
     "start:docHandler": "yarn workspace @a-la-fois/doc-handler start",
     "start:docHandler:dapr": "yarn workspace @a-la-fois/doc-handler start:dapr",
     "start:docHandler:dapr:dev": "yarn workspace @a-la-fois/doc-handler start:dapr:dev",
-    "start:examples:dev": "yarn workspace @a-la-fois/examples dev"
+    "start:examples:dev": "yarn workspace @a-la-fois/examples dev",
+    "start:models:dev": "yarn workspace @a-la-fois/models dev"
   },
   "workspaces": [
     "packages/*"
