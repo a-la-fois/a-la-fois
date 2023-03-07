@@ -1,7 +1,9 @@
-import { prop } from '@typegoose/typegoose';
+import { index, modelOptions, prop } from '@typegoose/typegoose';
 
+@modelOptions({ schemaOptions: { timestamps: { createdAt: true, updatedAt: false } } })
+@index({ createdAt: 1 })
 export class Update {
-    @prop({ required: true })
+    @prop({ required: true, index: true })
     docId: string;
 
     @prop({ required: true })
@@ -9,4 +11,6 @@ export class Update {
 
     @prop({ required: true })
     userId: string;
+
+    createdAt: Date;
 }

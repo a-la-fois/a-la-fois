@@ -40,7 +40,7 @@ export class DocService implements OnModuleDestroy {
             } as BroadcastMessage)
         );
 
-        this.actorService.sendChanges(payload);
+        this.actorService.sendChanges(client.id, payload);
     }
 
     async syncStart(client: WebSocketClient, payload: SyncStartPayload): Promise<SyncResponsePayload> {
@@ -48,7 +48,7 @@ export class DocService implements OnModuleDestroy {
     }
 
     syncComplete(client: WebSocketClient, payload: SyncCompletePayload) {
-        this.actorService.syncComplete(payload);
+        this.actorService.syncComplete(client.id, payload);
     }
 
     joinToDoc(client: WebSocketClient, docId: DocKey): JoinResponsePayload {
