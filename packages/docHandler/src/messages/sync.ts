@@ -1,12 +1,15 @@
-import { Changes } from './changes';
+import { Changes, StateVector } from './common';
 
-export type StateVector = string;
+export type SyncStartRequest = {
+    vector: StateVector;
+};
 
-export type SyncResponseActorType = {
+export type SyncStartResponse = {
     vector: StateVector;
     changes: Changes;
 };
 
-export type SyncCompleteActorType = {
+export type SyncCompleteRequest = {
     changes: Changes;
+    userId: string;
 };

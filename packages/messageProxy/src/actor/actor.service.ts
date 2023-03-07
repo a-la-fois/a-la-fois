@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DaprClient, ActorProxyBuilder, ActorId } from '@dapr/dapr';
-import { IDocHandler, DocHandler, SyncResponseActorType } from '@a-la-fois/doc-handler';
+import { IDocHandler, DocHandler } from '@a-la-fois/doc-handler';
 import { ChangesPayload, SyncCompletePayload, SyncResponsePayload, SyncStartPayload } from '../messages';
 
 @Injectable()
@@ -17,16 +17,19 @@ export class ActorService {
         this.builder = new ActorProxyBuilder<IDocHandler>(DocHandler, this.actorClient);
     }
 
-    async sendChanges(payload: ChangesPayload): Promise<void> {
+    async sendChanges(userId: string, payload: ChangesPayload) {
         const actor: IDocHandler = this.getOrCreateActor(payload.docId);
 
-        actor.applyDiff(payload.changes);
+        actor.applyDiff({
+            changes: payload.changes,
+            userId,
+        });
     }
 
     async syncStart(payload: SyncStartPayload): Promise<SyncResponsePayload> {
         const actor: IDocHandler = this.getOrCreateActor(payload.docId);
+        const response = await actor.syncStart({ vector: payload.vector });
 
-        const response: SyncResponseActorType = await actor.syncStart(payload.vector);
         return {
             docId: payload.docId,
             vector: response.vector,
@@ -34,9 +37,12 @@ export class ActorService {
         };
     }
 
-    async syncComplete(payload: SyncCompletePayload): Promise<void> {
+    async syncComplete(userId: string, payload: SyncCompletePayload) {
         const actor: IDocHandler = this.getOrCreateActor(payload.docId);
-        actor.syncComplete({ changes: payload.changes });
+        actor.syncComplete({
+            changes: payload.changes,
+            userId,
+        });
     }
 
     private getOrCreateActor(key: string): IDocHandler {

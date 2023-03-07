@@ -1,9 +1,9 @@
-import { Changes, StateVector, SyncCompleteActorType, SyncResponseActorType } from '../messages';
+import { ApplyDiffRequest, SyncCompleteRequest, SyncStartRequest, SyncStartResponse } from '../messages';
 
 export interface IDocHandler {
-    applyDiff(changes: Changes): Promise<void>;
+    applyDiff(changes: ApplyDiffRequest): Promise<void>;
 
-    syncStart(vector: StateVector): Promise<SyncResponseActorType>;
+    syncStart(vector: SyncStartRequest): Promise<SyncStartResponse>;
 
-    syncComplete({ changes }: SyncCompleteActorType): Promise<void>;
+    syncComplete(message: SyncCompleteRequest): Promise<void>;
 }
