@@ -21,9 +21,10 @@ export interface WsConnection {
 
 export type WsConnectionConfig = {
     url: string;
+    token: string;
 };
 
-const defaultConfig: Required<Omit<WsConnectionConfig, 'url'>> = {};
+const defaultConfig: Required<Omit<WsConnectionConfig, 'url' | 'token'>> = {};
 
 export class WsConnection extends EventEmitter {
     private ws: WebSocket | null = null;
@@ -74,7 +75,7 @@ export class WsConnection extends EventEmitter {
 
     private connectFn() {
         return new Promise<void>((resolve, reject) => {
-            this.ws = new WebSocket(this.config.url);
+            this.ws = new WebSocket(`${this.config.url}?token=${this.config.token}`);
 
             this.ws.addEventListener(
                 'open',

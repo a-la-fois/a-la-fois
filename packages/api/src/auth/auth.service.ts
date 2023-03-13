@@ -1,59 +1,37 @@
-import { AsyncStorageService, REQ_KEY, StorageMemoize } from '@a-la-fois/nest-common';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Request } from 'express';
 import { verify } from 'jsonwebtoken';
-import { ConsumerService } from '../consumer';
-
-const CONSUMER_KEY = Symbol('CONSUMER_KEY');
+import { Injectable } from '@nestjs/common';
+import { ConsumerModel } from '../models';
+import { JWTPayload } from '../messages';
+import { parseJWT } from './utils';
 
 @Injectable()
 export class AuthService {
-    constructor(private consumerService: ConsumerService, private storageService: AsyncStorageService) {}
+    async checkJWT<TJWTPayload extends JWTPayload = JWTPayload>(jwt: string): Promise<TJWTPayload | null> {
+        const jwtPayload = parseJWT<TJWTPayload>(jwt);
 
-    @StorageMemoize(CONSUMER_KEY)
-    async getConsumer() {
-        const token = this.storageService.getData<Request>(REQ_KEY).headers['authorization'];
-
-        if (!token) {
+        if (!jwtPayload?.consumerId) {
             return null;
         }
 
-        const [_headers, payload, _sign] = token.split('.');
+        const consumer = await ConsumerModel.findById(jwtPayload.consumerId);
 
-        if (!payload) {
-            throw new UnauthorizedException('JWT token has wrong format.');
+        if (!consumer) {
+            return null;
         }
-
-        let payloadData: AuthPayload;
 
         try {
-            payloadData = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
-        } catch (_err) {
-            throw new UnauthorizedException('JWT token payload has wrong format.');
+            const payload = await this.verifyToken<TJWTPayload>(jwt, consumer.publicKey);
+
+            return payload;
+        } catch (err) {
+            return null;
         }
-
-        if (!payloadData.id) {
-            throw new UnauthorizedException('JWT token consumer id is not provided.');
-        }
-
-        const consumer = await this.consumerService.getConsumer(payloadData.id);
-
-        try {
-            await this.verifyToken(token, consumer.publicKey);
-        } catch (_err) {
-            throw new UnauthorizedException('JWT token is not valid.');
-        }
-
-        return consumer;
     }
 
-    async hasAccessToDoc(docId: string) {
-        return false;
-    }
-
-    private verifyToken(token: string, publicKey: string) {
-        return new Promise((resolve, reject) => {
-            verify(token, publicKey, (err, payload: AuthPayload) => {
+    private verifyToken<TPayload = any>(token: string, publicKey: string) {
+        return new Promise<TPayload>((resolve, reject) => {
+            // @ts-ignore
+            verify(token, publicKey, (err, payload: TPayload) => {
                 if (err) {
                     return reject(err);
                 }
@@ -63,7 +41,3 @@ export class AuthService {
         });
     }
 }
-
-export type AuthPayload = {
-    id: string;
-};

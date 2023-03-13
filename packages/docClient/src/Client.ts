@@ -5,6 +5,7 @@ import { WsConnection } from './WsConnection';
 
 export type ClientConfig = {
     url: string;
+    token: string;
 };
 
 export class Client {
@@ -16,7 +17,7 @@ export class Client {
     constructor(private readonly config: ClientConfig) {}
 
     async connect() {
-        this.connection = new WsConnection({ url: this.config.url });
+        this.connection = new WsConnection({ url: this.config.url, token: this.config.token });
         this.ping = new Ping({ connection: this.connection });
         await this.connection.connect();
         this.messenger = new Messenger({ connection: this.connection });

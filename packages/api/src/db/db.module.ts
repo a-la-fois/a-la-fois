@@ -1,8 +1,6 @@
 import { DynamicModule } from '@nestjs/common';
 import mongoose, { ConnectOptions } from 'mongoose';
-import configuration from '../config';
-
-const config = configuration();
+import { config } from '../config';
 
 const mongoConnect = () => {
     const mongoConfig = config.mongo;
