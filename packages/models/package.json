@@ -15,7 +15,7 @@
   },
   "scripts": {
     "build": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
-    "dev": "tsc --project ./tsconfig.build.lib.cjs.json --watch & tsc --project ./tsconfig.build.lib.esm.json --watch",
+    "dev": "tsc --project ./tsconfig.build.lib.cjs.json --watch --preserveWatchOutput & tsc --project ./tsconfig.build.lib.esm.json --watch --preserveWatchOutput",
     "prebuild": "rimraf dist",
     "prepare": "npm run build",
     "test": "jest",

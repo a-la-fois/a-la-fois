@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { onPublishCallback, PubSub } from './types';
 import { DocKey } from '../doc/types';
 import { Changes } from '../messages';
-import { ConfigService } from '@nestjs/config';
 import { Kafka, Producer, Consumer } from 'kafkajs';
 import { v4 as uuidv4 } from 'uuid';
+import { config } from '../config';
 
 export const KafkaPubSubToken = 'KAFKA_PUBSUB';
 
@@ -18,20 +18,16 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
     private changesTopic: string;
     private kafka: Kafka;
 
-    constructor(private readonly configService: ConfigService) {
-        this.changesTopic = this.configService.get<string>('kafka.changesTopic');
-
-        const caCertPath: string = this.configService.get<string>('kafka.caPath');
-        const username: string = this.configService.get<string>('kafka.username');
-        const password: string = this.configService.get<string>('kafka.password');
-        const mechanism = this.configService.get<string>('kafka.mechanism');
+    constructor() {
+        const { caPath, username, password, mechanism, hosts, changesTopic } = config.kafka;
+        this.changesTopic = changesTopic;
 
         // TODO: kafka config constructor
         const params = {};
 
-        if (caCertPath) {
+        if (caPath) {
             params['ssl'] = {
-                ca: [readFileSync(caCertPath)],
+                ca: [readFileSync(caPath)],
             };
         }
 
@@ -45,7 +41,7 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
 
         this.kafka = new Kafka({
             clientId: 'messageProxy',
-            brokers: this.configService.get<string>('kafka.hosts').split(','),
+            brokers: hosts.split(','),
             ...params,
         });
     }

@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
-import { ConsumerGuard } from '../auth';
+import { ConsumerGuard, ConsumerService } from '../consumer';
 import { DocsService } from './docs.service';
 import { CreateDocDto, DocsByIdsDto, DocsByIdsQueryDto } from './dto';
 
 @Controller('docs')
 export class DocsController {
-    constructor(private readonly docsService: DocsService) {}
+    constructor(private docsService: DocsService, private consumerService: ConsumerService) {}
 
     @Get()
     async getDocsByIds(
@@ -22,7 +22,12 @@ export class DocsController {
     @Post()
     @UseGuards(ConsumerGuard)
     async createDoc(): Promise<CreateDocDto> {
-        const docId = await this.docsService.createDoc();
+        const consumer = await this.consumerService.getCurrentConsumer();
+
+        const docId = await this.docsService.createDoc({
+            // @ts-ignore
+            owner: consumer._id,
+        });
 
         return {
             id: docId,

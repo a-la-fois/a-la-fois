@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc --build",
-    "build:watch": "tsc --build --watch",
+    "build:watch": "tsc --build --watch  --preserveWatchOutput",
     "prebuild": "rimraf dist",
     "prepare": "npm run build",
     "test": "jest",
@@ -51,6 +51,7 @@
     "ws": "8.5.0"
   },
   "dependencies": {
+    "@dapr/dapr": "2.5.0",
     "aws-sdk": "2.1120.0",
     "cookie": "0.5.0",
     "ioredis": "5.0.4",

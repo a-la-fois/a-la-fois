@@ -1,4 +1,4 @@
-export default () => ({
+export const config = {
     kafka: {
         changesTopic: process.env.KAFKA_CHANGES_TOPIC || 'changes',
         hosts: process.env.KAFKA_HOSTS || '127.0.0.1:9092',
@@ -11,4 +11,4 @@ export default () => ({
         host: process.env.DAPR_SIDECAR_HOST || '127.0.0.1',
         port: process.env.DAPR_SIDECAR_PORT || '3500',
     },
-});
+} as const;

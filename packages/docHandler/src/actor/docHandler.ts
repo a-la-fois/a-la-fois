@@ -3,8 +3,12 @@ import { Doc } from '@a-la-fois/models';
 import { applyUpdate, Doc as YDoc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { fromUint8Array, toUint8Array } from 'js-base64';
 import { DocModel, UpdateModel } from '../models';
-import { IDocHandler } from './docHandler.interface';
 import { ApplyDiffRequest, Changes, SyncCompleteRequest, SyncStartRequest, SyncStartResponse } from '../messages';
+import { IDocHandler } from './docHandler.interface';
+
+const tmpDocsMap = {
+    '1': '64297cf990cbb1bd5b88e0a3',
+};
 
 export class DocHandler extends AbstractActor implements IDocHandler {
     private ydoc!: YDoc;
@@ -29,6 +33,8 @@ export class DocHandler extends AbstractActor implements IDocHandler {
             await DocModel.create({
                 docId: this.getId(),
                 state: this.encodeStateAsUpdate(),
+                // TODO:
+                owner: tmpDocsMap[this.getId()],
             });
         }
     }

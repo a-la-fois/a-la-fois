@@ -14,10 +14,10 @@
     "types": "./lib/esm/library/index.d.ts"
   },
   "scripts": {
-    "build": "yarn build:server && yarn build:lib",
+    "build": "yarn build:lib && yarn build:server",
     "build:server": "tsc --build",
     "build:lib": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
-    "build:lib:dev": "tsc --project ./tsconfig.build.lib.cjs.json --watch & tsc --project ./tsconfig.build.lib.esm.json --watch",
+    "build:lib:dev": "tsc --project ./tsconfig.build.lib.cjs.json --watch --preserveWatchOutput & tsc --project ./tsconfig.build.lib.esm.json --watch --preserveWatchOutput",
     "prebuild:server": "rimraf dist",
     "prebuild:lib": "rimraf lib",
     "publish:container": "./scripts/dockerPublish.sh",
@@ -25,9 +25,9 @@
     "start": "node dist/main.js",
     "start:dev": "nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/main.ts\" & yarn build:lib:dev",
     "clear": "rimraf dist lib",
-    "start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents/dev yarn start",
-    "start:dapr:test": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents/dev node test",
-    "start:dapr:dev": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --components-path ../../daprComponents/dev yarn start:dev"
+    "start:dapr": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --resources-path ../../daprComponents/dev yarn start",
+    "start:dapr:test": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --resources-path ../../daprComponents/dev node test",
+    "start:dapr:dev": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --resources-path ../../daprComponents/dev yarn start:dev"
   },
   "dependencies": {
     "@a-la-fois/models": "0.0.4",
