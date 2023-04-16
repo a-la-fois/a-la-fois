@@ -1,2 +1,3 @@
-export * from './checkJWT';
+export * from './checkClientToken';
 export * from './common';
+export * from './docIsPublic';

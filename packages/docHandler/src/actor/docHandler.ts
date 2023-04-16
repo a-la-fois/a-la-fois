@@ -5,13 +5,11 @@ import { fromUint8Array, toUint8Array } from 'js-base64';
 import { DocModel, UpdateModel } from '../models';
 import { ApplyDiffRequest, Changes, SyncCompleteRequest, SyncStartRequest, SyncStartResponse } from '../messages';
 import { IDocHandler } from './docHandler.interface';
-
-const tmpDocsMap = {
-    '1': '64297cf990cbb1bd5b88e0a3',
-};
+import mongoose from 'mongoose';
 
 export class DocHandler extends AbstractActor implements IDocHandler {
     private ydoc!: YDoc;
+    private docId!: mongoose.Types.ObjectId;
 
     private getId(): string {
         return this.getActorId().getId();
@@ -24,18 +22,12 @@ export class DocHandler extends AbstractActor implements IDocHandler {
     }
 
     async onActivate() {
+        this.docId = new mongoose.Types.ObjectId(this.getId());
         this.ydoc = new YDoc();
-        const doc: Doc | null = await DocModel.findOne({ docId: this.getId() });
+        const doc: Doc | null = await DocModel.findOne({ _id: this.docId });
 
         if (doc) {
             applyUpdate(this.ydoc, doc.state);
-        } else {
-            await DocModel.create({
-                docId: this.getId(),
-                state: this.encodeStateAsUpdate(),
-                // TODO:
-                owner: tmpDocsMap[this.getId()],
-            });
         }
     }
 
@@ -78,7 +70,7 @@ export class DocHandler extends AbstractActor implements IDocHandler {
         }
 
         await Promise.all([
-            DocModel.updateOne({ docId: this.getId() }, { state: this.encodeStateAsUpdate() }),
+            DocModel.updateOne({ _id: this.docId }, { state: this.encodeStateAsUpdate() }),
             UpdateModel.create({
                 docId: this.getId(),
                 state: changes,

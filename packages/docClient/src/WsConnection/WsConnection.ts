@@ -1,3 +1,4 @@
+import { connectResponseEvent } from '@a-la-fois/message-proxy';
 import EventEmitter from 'eventemitter3';
 import promiseRetry from 'promise-retry';
 import { WS_CLOSE_STATUS_NORMAL } from './constants';
@@ -21,14 +22,14 @@ export interface WsConnection {
 
 export type WsConnectionConfig = {
     url: string;
-    token: string;
+    token?: string;
 };
 
 const defaultConfig: Required<Omit<WsConnectionConfig, 'url' | 'token'>> = {};
 
 export class WsConnection extends EventEmitter {
     private ws: WebSocket | null = null;
-    private readonly config: Required<WsConnectionConfig>;
+    private readonly config: WsConnectionConfig;
 
     constructor(config: WsConnectionConfig) {
         super();
@@ -75,19 +76,25 @@ export class WsConnection extends EventEmitter {
 
     private connectFn() {
         return new Promise<void>((resolve, reject) => {
-            this.ws = new WebSocket(`${this.config.url}?token=${this.config.token}`);
+            const connectUrl = this.config.token ? `${this.config.url}?token=${this.config.token}` : this.config.url;
+            this.ws = new WebSocket(connectUrl);
 
-            this.ws.addEventListener(
-                'open',
-                () => {
-                    resolve();
-                },
-                { once: true }
-            );
+            // TODO: This is crutch. Remove it when we will rewrite nestjs @WebSocketGateway
+            const messageHandler = (event: MessageEvent) => {
+                const message = JSON.parse(event.data);
+                const messageEvent = message.event;
+
+                if (messageEvent === connectResponseEvent) {
+                    this.ws?.removeEventListener('message', messageHandler);
+                    message.data.status === 'ok' ? resolve() : reject(new Error(message.data.error));
+                }
+            };
+            this.ws.addEventListener('message', messageHandler);
 
             this.ws.addEventListener(
                 'error',
                 (event) => {
+                    this.ws?.removeEventListener('message', messageHandler);
                     reject(event);
                 },
                 { once: true }

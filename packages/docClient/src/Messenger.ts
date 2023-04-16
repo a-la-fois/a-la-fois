@@ -26,21 +26,21 @@ export type MessengerConfig = {
 };
 
 export interface Messenger {
+    once(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
     once(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     once(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
-    once(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
 
+    on(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
     on(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     on(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
-    on(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
 
+    off(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
     off(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     off(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
-    off(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
 
-    emit(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): boolean;
+    emit(event: typeof joinResponseEvent, payload: JoinResponsePayload): boolean;
+    emit(event: typeof syncResponseEvent, payload: SyncResponsePayload): boolean;
     emit(event: typeof broadcastChangesEvent, payload: BroadcastChangesPayload): boolean;
-    emit(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): boolean;
 }
 
 export class Messenger extends EventEmitter {
@@ -100,14 +100,14 @@ export class Messenger extends EventEmitter {
         const messageEvent = message.event;
 
         switch (messageEvent) {
+            case joinResponseEvent:
+                this.emit(joinResponseEvent, message.data);
+                break;
             case broadcastChangesEvent:
                 this.emit(broadcastChangesEvent, message.data);
                 break;
             case syncResponseEvent:
                 this.emit(syncResponseEvent, message.data);
-                break;
-            case joinResponseEvent:
-                this.emit(joinResponseEvent, message.data);
                 break;
         }
     };

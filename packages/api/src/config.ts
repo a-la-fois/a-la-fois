@@ -17,4 +17,7 @@ export const config = {
         host: process.env.DAPR_SIDECAR_HOST || '127.0.0.1',
         port: process.env.DAPR_SIDECAR_PORT || '3503',
     },
+    admin: {
+        secret: process.env.ADMIN_SECRET ?? null,
+    },
 } as const;

@@ -8,7 +8,6 @@ import {
     SyncResponsePayload,
     joinResponseEvent,
     JoinResponsePayload,
-    JoinResponseStatus,
 } from '@a-la-fois/message-proxy';
 
 const ORIGIN_APPLY_CHANGES = '__apply__';
@@ -33,7 +32,7 @@ export class DocContainer {
 
         this.messenger.on(broadcastChangesEvent, this.handleReceiveChanges);
         this.messenger.on(joinResponseEvent, (data: JoinResponsePayload) => {
-            if (data.status == JoinResponseStatus.ok) {
+            if (data.status === 'ok') {
                 this.sync();
             }
         });

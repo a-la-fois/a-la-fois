@@ -2,12 +2,14 @@ import { prop, Ref } from '@typegoose/typegoose';
 import { Consumer } from './consumer';
 
 export class Doc {
-    @prop({ required: true, unique: true })
-    docId: string;
+    id: string;
 
-    @prop({ required: true })
+    @prop({ default: Buffer.from('AAA=', 'base64') })
     state: Buffer;
 
-    @prop({ required: true, ref: () => Consumer, index: true })
-    owner: Ref<Consumer>;
+    @prop({ ref: () => Consumer, index: true, default: null })
+    owner: Ref<Consumer> | null;
+
+    @prop({ default: false })
+    public: boolean = false;
 }

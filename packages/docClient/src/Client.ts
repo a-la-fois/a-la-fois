@@ -5,7 +5,7 @@ import { WsConnection } from './WsConnection';
 
 export type ClientConfig = {
     url: string;
-    token: string;
+    token?: string;
 };
 
 export class Client {

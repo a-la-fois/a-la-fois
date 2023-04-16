@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AsyncStorageModule, DaprClientModule, DaprServerModule } from '@a-la-fois/nest-common';
-import { DocsModule } from './docs/docs.module';
+import { DocsModule } from './docs';
+import { AdminModule } from './admin';
 import { DbModule } from './db';
 import { config } from './config';
 
 @Module({
     imports: [
         DocsModule,
+        AdminModule,
         DbModule.forRoot(),
         AsyncStorageModule.forRoot(),
         DaprClientModule.forRoot({

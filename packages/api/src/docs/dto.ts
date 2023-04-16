@@ -3,7 +3,7 @@ import { IsArray, IsString, ArrayMaxSize, IsDefined } from 'class-validator';
 import { Doc } from '@a-la-fois/models';
 
 export class DocPublicDto {
-    id: Doc['docId'];
+    id: string;
     state: Doc['state'];
 }
 
@@ -28,6 +28,4 @@ export class DocsByIdsDto {
     data: DocPublicDto[];
 }
 
-export class CreateDocDto {
-    id: Doc['docId'];
-}
+export class CreateDocDto {}
