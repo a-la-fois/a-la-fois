@@ -1,4 +1,6 @@
 export const basePath = import.meta.env.BASE_URL ?? '/';
 export const serverUrl = import.meta.env.VITE_SERVER_URL ?? 'ws://130.193.53.53:3000';
-export const token =
-    'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb25zdW1lcklkIjoiNjNmYmM4OWMxMDE0ZTI0MTcwOTQ1MzA4IiwiY2xpZW50SWQiOiIxIiwiaWF0IjoxNjgwNDYwMjU3fQ.flIzwMO9nQCLjNCPZLmwCKTu3cBV8zELHpwBWpdvRU4K8x_EtR6XcJ8oU6LSDGsdmP4GAFnSkXz1TImbaxu4pmwIeTz_J7y8j_3tOgWxUcSCMEjkXj7HoikSD5HbuXA1ZDy8PL0fI2KxxuA3ZXK6Sic5rh3C8cycKTLmJLbmqFBtanmJ_1adi_LKmn-MWTiFj2HKU0EV6E3UmlUYW-UvFrdifaqv2d4BIPzzY_ehz70xlwg-JbTrkd4-vo7QPL1fFoT_Sti0e_fscYwHpAe_VV2najBIty3ZfniKyZgssIqWbdUsp1eE3wZtrJSr59j8vFpP0RLTmuRYrRR8Rrwm6Q';
+
+export const codeEditorDocId = '6433e9b2f5871b89df94079f';
+export const codeEditorPrivateId = '643bfc9fb95f9d3555f9aac2';
+export const canvasDocId = '6433ed0d9af8214f63ef6025';

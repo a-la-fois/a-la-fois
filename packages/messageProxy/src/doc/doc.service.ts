@@ -13,7 +13,6 @@ import { WebSocketClient } from '../ws/types';
 import { KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
 import { ActorService } from '../actor/actor.service';
 import { DocKey } from './types';
-import { JoinResponseStatus } from '../messages/joinResponse';
 
 @Injectable()
 export class DocService implements OnModuleDestroy {
@@ -65,7 +64,7 @@ export class DocService implements OnModuleDestroy {
 
         return {
             docId,
-            status: JoinResponseStatus.ok,
+            status: 'ok',
         };
     }
 

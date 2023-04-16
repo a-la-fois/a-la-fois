@@ -1,6 +1,7 @@
 export * from './broadcastChanges';
 export * from './changes';
 export * from './close';
+export * from './connectResponse';
 export * from './join';
 export * from './joinResponse';
 export * from './message';

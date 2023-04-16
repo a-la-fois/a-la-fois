@@ -21,5 +21,6 @@ docker-compose required
 
 ```bash
 yarn build
+yarn setup:dev
 yarn dev
 ```

@@ -1,13 +1,8 @@
 import { Message } from './message';
 
-export const JoinResponseStatus = {
-    ok: 'ok',
-    err: 'err',
-};
-
 export interface JoinResponsePayload {
     docId: string;
-    status: string;
+    status: 'ok' | 'err';
     message?: string;
 }
 

@@ -1,6 +1,7 @@
 import { verify } from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { ConsumerModel } from '../models';
+import { ConsumerModel, DocModel } from '../models';
 import { JWTPayload } from '../messages';
 import { parseJWT } from './utils';
 
@@ -26,6 +27,24 @@ export class AuthService {
         } catch (err) {
             return null;
         }
+    }
+
+    async consumerOwnsDocs(consumerId: string, docs: string[]): Promise<boolean> {
+        const docModels = await DocModel.find(
+            {
+                consumer: new mongoose.Types.ObjectId(consumerId),
+                _id: { $in: docs.map((docId) => new mongoose.Types.ObjectId(docId)) },
+            },
+            { _id: 1 }
+        );
+
+        return docModels.length === docs.length;
+    }
+
+    async docIsPublic(docId: string): Promise<boolean> {
+        const doc = await DocModel.findById(docId);
+
+        return Boolean(doc && doc.public);
     }
 
     private verifyToken<TPayload = any>(token: string, publicKey: string) {

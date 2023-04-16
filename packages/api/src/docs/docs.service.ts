@@ -16,9 +16,9 @@ export class DocsService {
             },
         });
 
-        const docsPublic = docs.map(({ docId, state }) => {
+        const docsPublic = docs.map(({ id, state }) => {
             return {
-                id: docId,
+                id,
                 state,
             };
         });

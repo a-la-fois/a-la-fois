@@ -1,5 +1,8 @@
 import { URL } from 'node:url';
 import { AuthClient } from '@a-la-fois/api';
+import { IncomingMessage } from 'http';
+import { DaprClient } from '@dapr/dapr';
+import { v4 as uuid } from 'uuid';
 import { OnGatewayConnection, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { DaprClient as DaprClientDecorator } from '@a-la-fois/nest-common';
 import {
@@ -20,17 +23,10 @@ import {
     syncCompleteEvent,
     JoinResponseMessage,
     joinResponseEvent,
+    ConnectResponseMessage,
 } from '../messages';
 import { DocService } from '../doc/doc.service';
-
-import { WebSocketClient } from './types';
-import { IncomingMessage } from 'http';
-import { DaprClient } from '@dapr/dapr';
-
-type ClientJWT = {
-    clientId: string;
-    consumerId: string;
-};
+import { ClientJWTPayload, WebSocketClient } from './types';
 
 @WebSocketGateway()
 export class WsGateway implements OnGatewayConnection {
@@ -40,26 +36,88 @@ export class WsGateway implements OnGatewayConnection {
         this.authClient = new AuthClient(daprClient);
     }
 
-    handleConnection(client: any, context: IncomingMessage) {
+    handleConnection(client: WebSocketClient, context: IncomingMessage) {
         const url = new URL(context.url, 'http://localhost');
         const token = url.searchParams.get('token');
 
         if (!token) {
-            return client.close();
+            const message: ConnectResponseMessage = {
+                event: 'connectResponse',
+                data: {
+                    status: 'ok',
+                },
+            };
+
+            client.send(JSON.stringify(message));
+            client.id = uuid();
+            client.access = {};
+
+            return;
         }
 
-        // Finish JWT checking
-        this.authClient.checkJWT<ClientJWT>(token).then((res) => {
+        this.authClient.checkClientToken<ClientJWTPayload>(token).then((res) => {
             if (res.status !== 200) {
+                const errorMessage: ConnectResponseMessage = {
+                    event: 'connectResponse',
+                    data: {
+                        status: 'err',
+                        message: 'invalid token',
+                    },
+                };
+
+                client.send(JSON.stringify(errorMessage));
                 return client.close();
             }
 
+            const successMessage: ConnectResponseMessage = {
+                event: 'connectResponse',
+                data: {
+                    status: 'ok',
+                },
+            };
+
+            client.send(JSON.stringify(successMessage));
             client.id = res.payload.clientId;
+            client.access =
+                res.payload.docs?.reduce((acc, doc) => {
+                    acc[doc.id] = {
+                        id: doc.id,
+                        rights: doc.rights,
+                    };
+
+                    return acc;
+                }, {} as WebSocketClient['access']) ?? {};
         });
     }
 
     @SubscribeMessage(joinEvent)
-    async onJoin(client: WebSocketClient, { docId }: JoinPayload) {
+    async onJoin(client: WebSocketClient, { docId }: JoinPayload): Promise<JoinResponseMessage> {
+        if (!client.access[docId]) {
+            const response = await this.authClient.docIsPublic(docId);
+
+            if (response.status !== 200) {
+                return {
+                    event: joinResponseEvent,
+                    data: {
+                        docId,
+                        status: 'err',
+                        message: 'Internal error',
+                    },
+                };
+            }
+
+            if (!response.payload.isPublic) {
+                return {
+                    event: joinResponseEvent,
+                    data: {
+                        docId,
+                        status: 'err',
+                        message: 'Unauthorized',
+                    },
+                };
+            }
+        }
+
         const data = this.docService.joinToDoc(client, docId);
         const message: JoinResponseMessage = {
             event: joinResponseEvent,

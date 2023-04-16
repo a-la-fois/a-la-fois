@@ -1,7 +1,7 @@
 import * as Y from 'yjs';
 import { Client } from '@a-la-fois/doc-client';
 import { createContext, useEffect, useState } from 'react';
-import { serverUrl } from '~/config';
+import { canvasDocId, serverUrl } from '~/config';
 import { CanvasEvent, ChangeColorEvent, ChangeColorEventName } from '.';
 
 interface CanvasContextProviderProps {
@@ -44,7 +44,7 @@ export const CanvasContextProvider = ({ children }: CanvasContextProviderProps) 
     useEffect(() => {
         if (client) {
             const init = async () => {
-                const docContainer = await client.getDoc('pixelCanvas');
+                const docContainer = await client.getDoc(canvasDocId);
                 const ymap = docContainer.doc.getMap<string>('canvas');
                 setConnected(true);
                 setYMap(ymap);
