@@ -20,7 +20,7 @@
     "build:lib:dev": "tsc --project ./tsconfig.build.lib.cjs.json --watch --preserveWatchOutput & tsc --project ./tsconfig.build.lib.esm.json --watch --preserveWatchOutput",
     "prebuild:server": "rimraf dist",
     "prebuild:lib": "rimraf lib",
-    "publish:container": "./scripts/dockerPublish.sh",
+    "publish:image": "./scripts/dockerPublish.sh",
     "prepare": "npm run build:lib",
     "start": "node dist/main.js",
     "start:dev": "nodemon --ext \".ts,.js\" --watch \"./src\" --exec \"ts-node ./src/main.ts\" & yarn build:lib:dev",

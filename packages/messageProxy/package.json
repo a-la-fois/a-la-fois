@@ -22,7 +22,7 @@
     "prebuild:server": "rimraf dist",
     "prebuild:lib": "rimraf lib",
     "prepare": "npm run build:lib",
-    "publish:container": "./scripts/dockerPublish.sh",
+    "publish:image": "./scripts/dockerPublish.sh",
     "clear": "rimraf dist lib",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

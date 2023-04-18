@@ -41,4 +41,4 @@ jobs:
         env:
           YC_AUTH: ${{ secrets.YC_AUTH }}
       - name: Build and push images
-        run: yarn publish:containers
+        run: yarn publish:images
