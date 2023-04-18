@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/message-proxy",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "license": "MIT",
   "author": "",
@@ -40,13 +40,13 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
-    "@a-la-fois/doc-handler": "0.0.4",
-    "@a-la-fois/nest-common": "0.0.4",
-    "@a-la-fois/api": "0.0.4",
+    "@a-la-fois/api": "0.0.5",
+    "@a-la-fois/doc-handler": "0.0.5",
+    "@a-la-fois/nest-common": "0.0.5",
     "@dapr/dapr": "2.5.0",
     "@nestjs/common": "8.4.4",
-    "@nestjs/core": "8.4.4",
     "@nestjs/config": "2.2.0",
+    "@nestjs/core": "8.4.4",
     "@nestjs/platform-express": "8.4.4",
     "@nestjs/platform-ws": "8.4.7",
     "@nestjs/websockets": "8.4.7",
@@ -55,8 +55,7 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@a-la-fois/clean-package": "0.0.4",
-    "rimraf": "3.0.2",
+    "@a-la-fois/clean-package": "0.0.5",
     "@nestjs/cli": "8.2.8",
     "@nestjs/schematics": "8.0.8",
     "@nestjs/testing": "8.4.4",
@@ -66,6 +65,7 @@
     "@types/supertest": "2.0.12",
     "@types/uuid": "8.3.4",
     "jest": "27.5.1",
+    "rimraf": "3.0.2",
     "source-map-support": "0.5.21",
     "supertest": "6.2.2",
     "ts-jest": "27.1.4",
