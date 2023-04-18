@@ -1,3 +1,3 @@
 exports.default = {
-    keepDependencies: [],
+    keepDependencies: ['@dapr/dapr'],
 };

@@ -18,8 +18,6 @@
     "dev": "tsc --project ./tsconfig.build.lib.cjs.json --watch --preserveWatchOutput & tsc --project ./tsconfig.build.lib.esm.json --watch --preserveWatchOutput",
     "prebuild": "rimraf dist",
     "prepare": "npm run build",
-    "test": "jest",
-    "test:watch": "jest --watchAll",
     "clear": "rimraf dist",
     "lint": "eslint './src/**/*.ts'",
     "format": "prettier --write '**/*.{ts,tsx,css,json,yaml,yml,md}'"
