@@ -9,6 +9,7 @@ export const config = {
     },
     dapr: {
         host: process.env.DAPR_SIDECAR_HOST || '127.0.0.1',
-        port: process.env.DAPR_SIDECAR_PORT || '3500',
+        port: process.env.DAPR_HTTP_PORT || '3500',
+        gport: process.env.DAPR_GRPC_PORT || '4500',
     },
 } as const;
