@@ -15,7 +15,8 @@ export const config = {
         serverHost: process.env.DAPR_SERVER_HOST || '127.0.0.1',
         serverPort: process.env.DAPR_SERVER_PORT || '3003',
         host: process.env.DAPR_SIDECAR_HOST || '127.0.0.1',
-        port: process.env.DAPR_SIDECAR_PORT || '3503',
+        port: process.env.DAPR_HTTP_PORT || '3503',
+        gport: process.env.DAPR_GRPC_PORT || '4503',
     },
     admin: {
         secret: process.env.ADMIN_SECRET ?? null,
