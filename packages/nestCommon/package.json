@@ -31,7 +31,6 @@
     "@nestjs/core": "8.4.4",
     "@nestjs/platform-express": "8.4.4",
     "@nestjs/testing": "8.4.4",
-    "@nestjs/websockets": "8.4.4",
     "@types/cookie": "0.5.1",
     "@types/express": "4.17.13",
     "@types/jest": "27.4.1",
@@ -52,6 +51,7 @@
   },
   "dependencies": {
     "@dapr/dapr": "2.5.0",
+    "@nestjs/websockets": "8.4.4",
     "aws-sdk": "2.1120.0",
     "cookie": "0.5.0",
     "ioredis": "5.0.4",
