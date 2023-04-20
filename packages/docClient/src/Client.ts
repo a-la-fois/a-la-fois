@@ -1,3 +1,4 @@
+import { Awareness } from 'y-protocols/awareness';
 import { DocContainer } from './DocContainer';
 import { Messenger } from './Messenger';
 import { Ping } from './Ping';
@@ -12,6 +13,7 @@ export class Client {
     private connection!: WsConnection;
     private ping!: Ping;
     private docs: Record<string, DocContainer> = {};
+    private awareness: Awareness;
     private messenger!: Messenger;
 
     constructor(private readonly config: ClientConfig) {}
@@ -46,7 +48,13 @@ export class Client {
     }
 
     async getAwareness() {
-        // TODO
+        this.assertConnection();
+
+        if (this.awareness) {
+            return this.awareness;
+        }
+
+        // this.awareness = new Awareness();
     }
 
     private assertConnection() {

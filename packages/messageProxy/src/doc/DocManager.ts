@@ -1,4 +1,11 @@
-import { broadcastChangesEvent, BroadcastChangesMessage, Changes } from '../messages';
+import {
+    Awareness,
+    broadcastAwarenessEvent,
+    BroadcastAwarenessMessage,
+    broadcastChangesEvent,
+    BroadcastChangesMessage,
+    Changes,
+} from '../messages';
 
 type connection = { send: Function; id: string } & Object;
 
@@ -24,6 +31,21 @@ export class DocManager {
                     data: {
                         docId: this.id,
                         changes,
+                    },
+                };
+                connection.send(JSON.stringify(message));
+            }
+        }
+    }
+
+    broadcastAwareness(authorClient: connection, awareness: Awareness) {
+        for (const [, connection] of this.connections) {
+            if (connection.id !== authorClient.id) {
+                const message: BroadcastAwarenessMessage = {
+                    event: broadcastAwarenessEvent,
+                    data: {
+                        docId: this.id,
+                        awareness,
                     },
                 };
                 connection.send(JSON.stringify(message));

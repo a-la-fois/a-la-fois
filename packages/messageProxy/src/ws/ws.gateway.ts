@@ -24,9 +24,12 @@ import {
     JoinResponseMessage,
     joinResponseEvent,
     ConnectResponseMessage,
+    baseErrorMessage,
 } from '../messages';
 import { DocService } from '../doc/doc.service';
 import { ClientJWTPayload, WebSocketClient } from './types';
+import { AwarenessPayload } from 'src/messages/awareness';
+import { MessageError } from 'src/errors';
 
 @WebSocketGateway()
 export class WsGateway implements OnGatewayConnection {
@@ -129,7 +132,15 @@ export class WsGateway implements OnGatewayConnection {
 
     @SubscribeMessage(changesEvent)
     async onChanges(client: WebSocketClient, payload: ChangesPayload) {
-        this.docService.applyDiff(client, payload);
+        try {
+            this.docService.applyChanges(client, payload);
+        } catch (err) {
+            if (err instanceof MessageError) {
+                return err.toMessage();
+            } else {
+                return baseErrorMessage;
+            }
+        }
     }
 
     @SubscribeMessage(syncStartEvent)
@@ -148,9 +159,16 @@ export class WsGateway implements OnGatewayConnection {
         this.docService.syncComplete(client, payload);
     }
 
-    @SubscribeMessage(closeEvent)
-    async onClose(client: WebSocketClient, payload: ClosePayload) {
-        // TODO
+    async onAwareness(client: WebSocketClient, payload: AwarenessPayload) {
+        try {
+            this.docService.applyAwareness(client, payload);
+        } catch (err) {
+            if (err instanceof MessageError) {
+                return err.toMessage();
+            } else {
+                return baseErrorMessage;
+            }
+        }
     }
 
     @SubscribeMessage(pingEvent)
@@ -158,5 +176,10 @@ export class WsGateway implements OnGatewayConnection {
         return {
             event: pongEvent,
         };
+    }
+
+    @SubscribeMessage(closeEvent)
+    async onClose(client: WebSocketClient, payload: ClosePayload) {
+        // TODO
     }
 }
