@@ -35,7 +35,7 @@
     "@typegoose/typegoose": "10.1.1",
     "js-base64": "3.7.2",
     "mongoose": "6.9.2",
-    "yjs": "13.5.41"
+    "yjs": "13.5.9"
   },
   "devDependencies": {
     "nodemon": "2.0.19",

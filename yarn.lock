@@ -7085,7 +7085,14 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lib0@^0.2.42, lib0@^0.2.43, lib0@^0.2.49:
+lib0@^0.2.41:
+  version "0.2.73"
+  resolved "https://registry.yarnpkg.com/lib0/-/lib0-0.2.73.tgz#af7d7ce9ad523fa3e241d437cc3ab1862f9a1f29"
+  integrity sha512-aJJIElCLWnHMcYZPtsM07QoSfHwpxCy4VUzBYGXFYEmh/h2QS5uZNbCCfL0CqnkOE30b7Tp9DVfjXag+3qzZjQ==
+  dependencies:
+    isomorphic.js "^0.2.4"
+
+lib0@^0.2.42, lib0@^0.2.43:
   version "0.2.60"
   resolved "https://registry.yarnpkg.com/lib0/-/lib0-0.2.60.tgz#11792e6ee808b1660bfe10b2887e41a81fb1617f"
   integrity sha512-vzhtdUXBV8HyJnJWIZxUSH/aUVo1U4jUFRFDPVY245zFtzCl9Gld/EgvA8Jhnrio7Jn0HmGswErbPjsabYd7ow==
@@ -10703,12 +10710,12 @@ yargs@^16.2.0:
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
-yjs@13.5.41:
-  version "13.5.41"
-  resolved "https://registry.yarnpkg.com/yjs/-/yjs-13.5.41.tgz#105041cd56bdef154704441c381d80723e072bbe"
-  integrity sha512-4eSTrrs8OeI0heXKKioRY4ag7V5Bk85Z4MeniUyown3o3y0G7G4JpAZWrZWfTp7pzw2b53GkAQWKqHsHi9j9JA==
+yjs@13.5.9:
+  version "13.5.9"
+  resolved "https://registry.yarnpkg.com/yjs/-/yjs-13.5.9.tgz#c903ae15f07bf72db397b04cafb3edccf21b5696"
+  integrity sha512-uK0W0gUG2ORgzpwkVReKqBkleYDUwoKhyxyMWSbtid2VOghyBPlU4MEDpbO25i9DmqDoqdwoamCR4FvRrIYqrA==
   dependencies:
-    lib0 "^0.2.49"
+    lib0 "^0.2.41"
 
 yn@3.1.1:
   version "3.1.1"

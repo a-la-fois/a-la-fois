@@ -33,7 +33,7 @@
     "js-base64": "3.7.2",
     "promise-retry": "2.0.1",
     "y-protocols": "1.0.5",
-    "yjs": "13.5.41"
+    "yjs": "13.5.9"
   },
   "devDependencies": {
     "@types/jest": "27.4.1",
