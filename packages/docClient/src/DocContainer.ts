@@ -8,9 +8,13 @@ import {
     SyncResponsePayload,
     joinResponseEvent,
     JoinResponsePayload,
+    broadcastAwarenessEvent,
+    BroadcastAwarenessPayload,
 } from '@a-la-fois/message-proxy';
+import { applyAwarenessUpdate, Awareness } from 'y-protocols/awareness';
 
 const ORIGIN_APPLY_CHANGES = '__apply__';
+const ORIGIN_APPLY_AWARENESS = '__apply__';
 
 export type DocContainerConfig = {
     id: string;
@@ -21,14 +25,17 @@ export class DocContainer {
     readonly id: string;
     readonly doc: Doc;
     private messenger: Messenger;
+    readonly awareness: Awareness;
     private syncPromise: Promise<void> | null = null;
 
     constructor({ id, messenger }: DocContainerConfig) {
         this.id = id;
         this.messenger = messenger;
         this.doc = new Doc();
+        this.awareness = new Awareness(new Doc());
 
         this.doc.on('update', this.handleChange);
+        this.awareness.on('update', this.handleAwareness);
 
         this.messenger.on(broadcastChangesEvent, this.handleReceiveChanges);
         this.messenger.on(joinResponseEvent, (data: JoinResponsePayload) => {
@@ -36,6 +43,7 @@ export class DocContainer {
                 this.sync();
             }
         });
+        this.messenger.on(broadcastAwarenessEvent, this.handleReceiveAwareness);
     }
 
     async init() {
@@ -46,6 +54,7 @@ export class DocContainer {
         this.messenger.off(broadcastChangesEvent, this.handleReceiveChanges);
         this.doc.off('update', this.handleChange);
         this.doc.destroy();
+        this.awareness.destroy();
     }
 
     private handleChange = (update: Uint8Array, origin: any) => {
@@ -59,6 +68,17 @@ export class DocContainer {
         }
     };
 
+    private handleAwareness = (update: Uint8Array, origin: any) => {
+        if (origin !== ORIGIN_APPLY_AWARENESS) {
+            const encodedState = fromUint8Array(update);
+
+            this.messenger.sendAwareness({
+                docId: this.id,
+                awareness: encodedState,
+            });
+        }
+    };
+
     private handleReceiveChanges = (payload: BroadcastChangesPayload) => {
         if (payload.docId === this.id) {
             const update = toUint8Array(payload.changes);
@@ -68,6 +88,14 @@ export class DocContainer {
             if (this.needSync()) {
                 this.sync();
             }
+        }
+    };
+
+    private handleReceiveAwareness = (payload: BroadcastAwarenessPayload) => {
+        if (payload.docId === this.id) {
+            const update = toUint8Array(payload.awareness);
+
+            applyAwarenessUpdate(this.awareness, update, ORIGIN_APPLY_AWARENESS);
         }
     };
 
