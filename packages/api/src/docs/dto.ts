@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsString, ArrayMaxSize, IsDefined } from 'class-validator';
+import { IsArray, IsString, ArrayMaxSize, IsDefined, IsBoolean, IsOptional } from 'class-validator';
 import { Doc } from '@a-la-fois/models';
 
 export class DocPublicDto {
@@ -26,6 +26,11 @@ export class DocsByIdsQueryDto {
 
 export class DocsByIdsDto {
     data: DocPublicDto[];
+}
+
+export class CreateDocBodyDto {
+    @IsBoolean()
+    public: boolean = false;
 }
 
 export class CreateDocDto {}
