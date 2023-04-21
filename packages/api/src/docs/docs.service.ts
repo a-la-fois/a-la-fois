@@ -1,6 +1,4 @@
-import { Doc as YDoc, encodeStateAsUpdate } from 'yjs';
 import { Doc } from '@a-la-fois/models';
-import { v4 as uuidv4 } from 'uuid';
 import { DocModel } from '../models';
 import { Injectable } from '@nestjs/common';
 import { DocPublicDto } from './dto';
@@ -26,16 +24,12 @@ export class DocsService {
         return docsPublic;
     }
 
-    async createDoc({ owner }: Pick<Doc, 'owner'>) {
-        const docId = uuidv4();
-        const docStateBuffer = Buffer.from(encodeStateAsUpdate(new YDoc()).buffer);
-
-        await DocModel.create({
-            docId,
-            state: docStateBuffer,
-            owner,
+    async createDoc(docParams: Pick<Doc, 'owner' | 'public'>) {
+        const doc = await DocModel.create({
+            owner: docParams.owner,
+            public: docParams.public,
         });
 
-        return docId;
+        return doc.id;
     }
 }

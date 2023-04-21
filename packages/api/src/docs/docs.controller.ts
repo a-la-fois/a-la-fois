@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ConsumerGuard, ConsumerService } from '../consumer';
 import { DocsService } from './docs.service';
-import { CreateDocDto, DocsByIdsDto, DocsByIdsQueryDto } from './dto';
+import { CreateDocBodyDto, CreateDocDto, DocsByIdsDto, DocsByIdsQueryDto } from './dto';
 
 @Controller('docs')
 export class DocsController {
@@ -18,12 +18,13 @@ export class DocsController {
 
     @Post()
     @UseGuards(ConsumerGuard)
-    async createDoc(): Promise<CreateDocDto> {
+    async createDoc(@Body() docParams: CreateDocBodyDto): Promise<CreateDocDto> {
         const consumer = await this.consumerService.getCurrentConsumer();
 
         const docId = await this.docsService.createDoc({
             // @ts-ignore
             owner: consumer._id,
+            public: docParams.public,
         });
 
         return {
