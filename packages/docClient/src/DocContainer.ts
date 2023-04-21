@@ -11,7 +11,7 @@ import {
     broadcastAwarenessEvent,
     BroadcastAwarenessPayload,
 } from '@a-la-fois/message-proxy';
-import { applyAwarenessUpdate, Awareness } from 'y-protocols/awareness';
+import { applyAwarenessUpdate, Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 
 const ORIGIN_APPLY_CHANGES = '__apply__';
 const ORIGIN_APPLY_AWARENESS = '__apply__';
@@ -33,21 +33,35 @@ export class DocContainer {
         this.messenger = messenger;
         this.doc = new Doc();
         this.awareness = new Awareness(new Doc());
+        clearInterval(this.awareness._checkInterval);
 
-        this.doc.on('update', this.handleChange);
         this.awareness.on('update', this.handleAwareness);
+        this.doc.on('update', this.handleChange);
 
+        this.messenger.on(broadcastAwarenessEvent, this.handleReceiveAwareness);
         this.messenger.on(broadcastChangesEvent, this.handleReceiveChanges);
         this.messenger.on(joinResponseEvent, (data: JoinResponsePayload) => {
             if (data.status === 'ok') {
                 this.sync();
             }
         });
-        this.messenger.on(broadcastAwarenessEvent, this.handleReceiveAwareness);
     }
 
     async init() {
         this.messenger.sendJoin({ docId: this.id });
+
+        if (this.awareness.getLocalState() !== null) {
+            const arr = Array.from(this.awareness.getStates().keys());
+
+            console.log('awareness init array = ', arr);
+            console.log('awareness client', this.awareness.clientID);
+
+            const state = encodeAwarenessUpdate(this.awareness, arr);
+            this.messenger.sendAwareness({
+                docId: this.id,
+                awareness: fromUint8Array(state),
+            });
+        }
     }
 
     dispose() {
@@ -68,13 +82,15 @@ export class DocContainer {
         }
     };
 
-    private handleAwareness = (update: Uint8Array, origin: any) => {
-        if (origin !== ORIGIN_APPLY_AWARENESS) {
-            const encodedState = fromUint8Array(update);
+    private handleAwareness = ({ added, updated, removed }, origin) => {
+        if (origin === 'local') {
+            const changedClients = added.concat(updated).concat(removed);
+            const changes = encodeAwarenessUpdate(this.awareness, changedClients);
 
+            console.log('awareness clients', Array.from(this.awareness.getStates().keys()));
             this.messenger.sendAwareness({
                 docId: this.id,
-                awareness: encodedState,
+                awareness: fromUint8Array(changes),
             });
         }
     };
@@ -82,7 +98,7 @@ export class DocContainer {
     private handleReceiveChanges = (payload: BroadcastChangesPayload) => {
         if (payload.docId === this.id) {
             const update = toUint8Array(payload.changes);
-
+            console.log('handleReceiveChanges');
             applyUpdate(this.doc, update, ORIGIN_APPLY_CHANGES);
 
             if (this.needSync()) {
@@ -93,9 +109,10 @@ export class DocContainer {
 
     private handleReceiveAwareness = (payload: BroadcastAwarenessPayload) => {
         if (payload.docId === this.id) {
+            console.log('handleReceiveAwareness payload = ', payload);
             const update = toUint8Array(payload.awareness);
 
-            applyAwarenessUpdate(this.awareness, update, ORIGIN_APPLY_AWARENESS);
+            applyAwarenessUpdate(this.awareness, update, this.awareness.clientID);
         }
     };
 

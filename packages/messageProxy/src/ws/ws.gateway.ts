@@ -28,7 +28,7 @@ import {
 } from '../messages';
 import { DocService } from '../doc/doc.service';
 import { ClientJWTPayload, WebSocketClient } from './types';
-import { AwarenessPayload } from 'src/messages/awareness';
+import { awarenessEvent, AwarenessPayload } from 'src/messages/awareness';
 import { MessageError } from 'src/errors';
 
 @WebSocketGateway()
@@ -159,6 +159,7 @@ export class WsGateway implements OnGatewayConnection {
         this.docService.syncComplete(client, payload);
     }
 
+    @SubscribeMessage(awarenessEvent)
     async onAwareness(client: WebSocketClient, payload: AwarenessPayload) {
         try {
             this.docService.applyAwareness(client, payload);

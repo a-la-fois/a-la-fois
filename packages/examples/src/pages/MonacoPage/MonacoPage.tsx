@@ -41,7 +41,7 @@ export const MonacoPage = () => {
                 setConnected(true);
                 const code = docContainer.doc.getText('code');
 
-                new MonacoBinding(code, editor.getModel()!, new Set([editor]));
+                new MonacoBinding(code, editor.getModel()!, new Set([editor]), docContainer.awareness);
             };
 
             init();
