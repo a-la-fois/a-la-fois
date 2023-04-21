@@ -37,6 +37,6 @@ jobs:
       - name: Push new versions
         run: git push
       - name: Registry login
-        run: echo ${{ secrets.GITHUB_TOKEN }} > | docker login --username ${{ github.actor }} --password-stdin ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login --username ${{ github.actor }} --password-stdin ghcr.io
       - name: Build and push images
         run: yarn publish:images
