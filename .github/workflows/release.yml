@@ -37,8 +37,6 @@ jobs:
       - name: Push new versions
         run: git push
       - name: Registry login
-        run: echo $YC_AUTH > ycauth.json && cat ycauth.json | docker login --username json_key --password-stdin cr.yandex
-        env:
-          YC_AUTH: ${{ secrets.YC_AUTH }}
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login --username ${{ github.actor }} --password-stdin ghcr.io
       - name: Build and push images
         run: yarn publish:images
