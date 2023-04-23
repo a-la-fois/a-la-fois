@@ -14,6 +14,7 @@ import {
 import { applyAwarenessUpdate, Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 
 const ORIGIN_APPLY_CHANGES = '__apply__';
+const LOCAL_ORIGIN_APPLY_AWARENESS = 'local';
 
 export type DocContainerConfig = {
     id: string;
@@ -79,7 +80,7 @@ export class DocContainer {
     };
 
     private handleAwareness = ({ added, updated, removed }, origin) => {
-        if (origin === 'local') {
+        if (origin === LOCAL_ORIGIN_APPLY_AWARENESS) {
             const changedClients = added.concat(updated).concat(removed);
             const changes = encodeAwarenessUpdate(this.awareness, changedClients);
 
