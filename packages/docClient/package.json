@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/doc-client",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "",
   "license": "MIT",
   "author": "",
@@ -28,7 +28,7 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
-    "@a-la-fois/message-proxy": "0.0.14",
+    "@a-la-fois/message-proxy": "0.0.15",
     "eventemitter3": "4.0.7",
     "js-base64": "3.7.2",
     "promise-retry": "2.0.1",
