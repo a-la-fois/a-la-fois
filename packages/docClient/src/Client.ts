@@ -45,10 +45,6 @@ export class Client {
         return doc;
     }
 
-    async getAwareness() {
-        // TODO
-    }
-
     private assertConnection() {
         if (!this.connection) {
             throw new Error('Connection not established');

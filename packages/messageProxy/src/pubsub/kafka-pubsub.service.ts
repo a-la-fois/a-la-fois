@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { Injectable } from '@nestjs/common';
-import { onPublishCallback, PubSub } from './types';
+import { BroadcastMessage, onPublishCallback, PubSub } from './types';
 import { DocKey } from '../doc/types';
 import { Changes } from '../messages';
 import { Kafka, Producer, Consumer } from 'kafkajs';
@@ -10,7 +10,7 @@ import { config } from '../config';
 export const KafkaPubSubToken = 'KAFKA_PUBSUB';
 
 @Injectable()
-export class KafkaPubsubService implements PubSub<DocKey, Changes> {
+export class KafkaPubsubService implements PubSub<DocKey> {
     private publisher: Producer;
     private subscriber: Consumer;
     protected callbacks: onPublishCallback[] = [];
@@ -46,14 +46,14 @@ export class KafkaPubsubService implements PubSub<DocKey, Changes> {
         });
     }
 
-    publish(key: DocKey, message: Changes): void {
+    publish(key: DocKey, message: BroadcastMessage): void {
         this.publisher
             .send({
                 topic: this.changesTopic,
                 messages: [
                     {
                         key: key,
-                        value: Buffer.from(message),
+                        value: Buffer.from(JSON.stringify(message)),
                     },
                 ],
             })

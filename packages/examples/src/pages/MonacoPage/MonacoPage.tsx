@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { MonacoBinding } from 'y-monaco';
 import { ConnectionOverlay } from '~/shared/components/ConnectionOverlay';
 import { codeEditorDocId, serverUrl } from '~/config';
+import monacoStyles from './Monaco.module.css';
 
 export const MonacoPage = () => {
     const [client, setClient] = useState<Client | null>(null);
@@ -40,8 +41,8 @@ export const MonacoPage = () => {
                 const docContainer = await client.getDoc(codeEditorDocId);
                 setConnected(true);
                 const code = docContainer.doc.getText('code');
-
-                new MonacoBinding(code, editor.getModel()!, new Set([editor]));
+                docContainer.awareness.clientId = docContainer.doc.clientId;
+                new MonacoBinding(code, editor.getModel()!, new Set([editor]), docContainer.awareness);
             };
 
             init();
@@ -51,7 +52,7 @@ export const MonacoPage = () => {
     return (
         <div>
             {!connected && <ConnectionOverlay />}
-            <Editor height="90vh" defaultLanguage="javascript" onMount={handleMount} />
+            <Editor className={monacoStyles.Monaco} height="90vh" defaultLanguage="javascript" onMount={handleMount} />
         </div>
     );
 };

@@ -19,6 +19,10 @@ import {
     SyncCompletePayload,
     syncCompleteEvent,
     SyncCompleteMessage,
+    BroadcastAwarenessPayload,
+    broadcastAwarenessEvent,
+    awarenessEvent,
+    AwarenessPayload,
 } from '@a-la-fois/message-proxy';
 
 export type MessengerConfig = {
@@ -29,18 +33,22 @@ export interface Messenger {
     once(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
     once(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     once(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
+    once(event: typeof broadcastAwarenessEvent, listener: (payload: BroadcastAwarenessPayload) => void): this;
 
     on(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
     on(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     on(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
+    on(event: typeof broadcastAwarenessEvent, listener: (payload: BroadcastAwarenessPayload) => void): this;
 
     off(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
     off(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     off(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
+    off(event: typeof broadcastAwarenessEvent, listener: (payload: BroadcastAwarenessPayload) => void): this;
 
     emit(event: typeof joinResponseEvent, payload: JoinResponsePayload): boolean;
     emit(event: typeof syncResponseEvent, payload: SyncResponsePayload): boolean;
     emit(event: typeof broadcastChangesEvent, payload: BroadcastChangesPayload): boolean;
+    emit(event: typeof broadcastAwarenessEvent, listener: (payload: BroadcastAwarenessPayload) => void): this;
 }
 
 export class Messenger extends EventEmitter {
@@ -66,6 +74,13 @@ export class Messenger extends EventEmitter {
     sendChanges(payload: ChangesPayload) {
         this.connection.sendJson({
             event: changesEvent,
+            data: payload,
+        });
+    }
+
+    sendAwareness(payload: AwarenessPayload) {
+        this.connection.sendJson({
+            event: awarenessEvent,
             data: payload,
         });
     }
@@ -108,6 +123,9 @@ export class Messenger extends EventEmitter {
                 break;
             case syncResponseEvent:
                 this.emit(syncResponseEvent, message.data);
+                break;
+            case broadcastAwarenessEvent:
+                this.emit(broadcastAwarenessEvent, message.data);
                 break;
         }
     };
