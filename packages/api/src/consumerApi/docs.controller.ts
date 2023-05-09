@@ -1,9 +1,10 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { ConsumerGuard, ConsumerService } from '../consumer';
-import { DocsService } from './docs.service';
+import { ConsumerGuard, ConsumerService } from './consumer';
+import { DocsService } from './docs';
 import { CreateDocBodyDto, CreateDocDto, DocsByIdsDto, DocsByIdsQueryDto } from './dto';
 
 @Controller('docs')
+@UseGuards(ConsumerGuard)
 export class DocsController {
     constructor(private docsService: DocsService, private consumerService: ConsumerService) {}
 
@@ -17,7 +18,6 @@ export class DocsController {
     }
 
     @Post()
-    @UseGuards(ConsumerGuard)
     async createDoc(@Body() docParams: CreateDocBodyDto): Promise<CreateDocDto> {
         const consumer = await this.consumerService.getCurrentConsumer();
 

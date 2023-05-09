@@ -1,8 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AdminService } from './admin.service';
 import { CreateConsumerDto, RegenerateKeysDto } from './dto';
-import { Admin } from './admin.decorator';
-import { SetupService } from './setup.service';
+import { SetupService, Admin, AdminService } from './admin';
 
 @Admin()
 @Controller('admin')

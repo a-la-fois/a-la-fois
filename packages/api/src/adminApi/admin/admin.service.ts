@@ -3,8 +3,8 @@ import { AsyncStorageService, REQ_KEY } from '@a-la-fois/nest-common';
 import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { generateKeyPair } from 'node:crypto';
-import { config } from '../config';
-import { ConsumerModel, DocModel } from '../models';
+import { config } from '../../config';
+import { ConsumerModel, DocModel } from '../../models';
 
 @Injectable()
 export class AdminService {

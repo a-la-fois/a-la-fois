@@ -41,12 +41,6 @@ export class AuthService {
         return docModels.length === docs.length;
     }
 
-    async docIsPublic(docId: string): Promise<boolean> {
-        const doc = await DocModel.findById(docId);
-
-        return Boolean(doc && doc.public);
-    }
-
     private verifyToken<TPayload = any>(token: string, publicKey: string) {
         return new Promise<TPayload>((resolve, reject) => {
             // @ts-ignore
