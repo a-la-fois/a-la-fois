@@ -1,7 +1,7 @@
 import * as Y from 'yjs';
 import { Client } from '@a-la-fois/doc-client';
 import { createContext, useEffect, useState } from 'react';
-import { canvasDocId, serverUrl } from '~/config';
+import { canvasDocId, serverUrl, apiUrl } from '~/config';
 import { CanvasEvent, ChangeColorEvent, ChangeColorEventName } from '.';
 
 interface CanvasContextProviderProps {
@@ -25,7 +25,7 @@ export const CanvasContextProvider = ({ children }: CanvasContextProviderProps) 
     useEffect(() => {
         const init = async () => {
             console.log('init', serverUrl);
-            const client = new Client({ url: serverUrl });
+            const client = new Client({ url: serverUrl, apiUrl });
             console.log('client created');
             try {
                 await client.connect();
