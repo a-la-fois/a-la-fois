@@ -114,8 +114,27 @@ export class DocService implements OnModuleDestroy {
         }
     }
 
+    disconnect(client: WebSocketClient, docIds: DocKey[]) {
+        docIds.forEach((id) => {
+            if (!this.docs.has(id)) {
+                return;
+            }
+
+            const doc = this.docs.get(id);
+            doc.removeConnection(client);
+
+            if (doc.isEmpty()) {
+                this.docs.delete(id);
+            }
+        });
+
+        client.close();
+    }
+
     onModuleDestroy() {
         this.pubsub.disconnect();
-        //TODO: Close websocket connections
+        for (const [_, doc] of this.docs) {
+            doc.removeAndDisconnectAll();
+        }
     }
 }

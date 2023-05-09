@@ -7,7 +7,7 @@ import {
     Changes,
 } from '../messages';
 
-type connection = { send: Function; id: string } & Object;
+type connection = { id: string; send: Function; close: Function } & Object;
 
 export class DocManager {
     readonly id: string;
@@ -21,6 +21,23 @@ export class DocManager {
         if (!this.contains(client)) {
             this.connections.set(client.id, client);
         }
+    }
+
+    removeConnection(client: connection) {
+        if (this.contains(client)) {
+            this.connections.delete(client.id);
+        }
+    }
+
+    removeAndDisconnectAll() {
+        for (const [_, connection] of this.connections) {
+            connection.close();
+        }
+        this.connections.clear();
+    }
+
+    isEmpty() {
+        return this.connections.size === 0;
     }
 
     broadcastDiff(authorClient: connection, changes: Changes) {

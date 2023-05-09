@@ -23,6 +23,7 @@ import {
     broadcastAwarenessEvent,
     awarenessEvent,
     AwarenessPayload,
+    disconnectEvent,
 } from '@a-la-fois/message-proxy';
 
 export type MessengerConfig = {

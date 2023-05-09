@@ -25,6 +25,8 @@ import {
     joinResponseEvent,
     ConnectResponseMessage,
     baseErrorMessage,
+    disconnectEvent,
+    DisconnectPayload,
 } from '../messages';
 import { DocService } from '../doc/doc.service';
 import { ClientJWTPayload, WebSocketClient } from './types';
@@ -182,5 +184,10 @@ export class WsGateway implements OnGatewayConnection {
     @SubscribeMessage(closeEvent)
     async onClose(client: WebSocketClient, payload: ClosePayload) {
         // TODO
+    }
+
+    @SubscribeMessage(disconnectEvent)
+    async onDisconnect(client: WebSocketClient, payload: DisconnectPayload) {
+        this.docService.disconnect(client, payload.docs);
     }
 }

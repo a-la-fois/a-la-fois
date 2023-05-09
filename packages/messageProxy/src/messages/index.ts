@@ -4,6 +4,7 @@ export * from './broadcastChanges';
 export * from './changes';
 export * from './close';
 export * from './connectResponse';
+export * from './disconnect';
 export * from './error';
 export * from './join';
 export * from './joinResponse';

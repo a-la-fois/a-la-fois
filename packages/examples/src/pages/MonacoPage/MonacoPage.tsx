@@ -49,6 +49,9 @@ export const MonacoPage = () => {
             };
 
             init();
+            return () => {
+                client.dispose();
+            };
         }
     }, [client, editor]);
 
