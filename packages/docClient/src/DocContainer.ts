@@ -1,17 +1,18 @@
-import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
-import { toUint8Array, fromUint8Array } from 'js-base64';
-import { Messenger } from './Messenger';
 import {
-    broadcastChangesEvent,
-    BroadcastChangesPayload,
-    syncResponseEvent,
-    SyncResponsePayload,
-    joinResponseEvent,
-    JoinResponsePayload,
     broadcastAwarenessEvent,
     BroadcastAwarenessPayload,
+    broadcastChangesEvent,
+    BroadcastChangesPayload,
+    joinResponseEvent,
+    JoinResponsePayload,
+    syncResponseEvent,
+    SyncResponsePayload,
 } from '@a-la-fois/message-proxy';
+import { fromUint8Array, toUint8Array } from 'js-base64';
 import { applyAwarenessUpdate, Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
+import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
+import { Api } from './Api';
+import { Messenger } from './Messenger';
 
 const ORIGIN_APPLY_CHANGES = '__apply__';
 const LOCAL_ORIGIN_APPLY_AWARENESS = 'local';
@@ -19,18 +20,22 @@ const LOCAL_ORIGIN_APPLY_AWARENESS = 'local';
 export type DocContainerConfig = {
     id: string;
     messenger: Messenger;
+    api: Api;
 };
 
 export class DocContainer {
     readonly id: string;
     readonly doc: Doc;
-    private messenger: Messenger;
     readonly awareness: Awareness;
-    private syncPromise: Promise<void> | null = null;
 
-    constructor({ id, messenger }: DocContainerConfig) {
+    private syncPromise: Promise<void> | null = null;
+    private messenger: Messenger;
+    private api: Api;
+
+    constructor({ id, messenger, api }: DocContainerConfig) {
         this.id = id;
         this.messenger = messenger;
+        this.api = api;
         this.doc = new Doc();
         this.awareness = new Awareness(new Doc());
 
@@ -58,6 +63,13 @@ export class DocContainer {
                 awareness: fromUint8Array(state),
             });
         }
+    }
+
+    /**
+     * @deprecated
+     */
+    async getHistory() {
+        return this.api.getHistory(this.id);
     }
 
     dispose() {
