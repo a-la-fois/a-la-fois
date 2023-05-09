@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AsyncStorageModule, DaprClientModule, DaprServerModule } from '@a-la-fois/nest-common';
 import { ConsumerApiModule } from './consumerApi';
+import { ClientApiModule } from './clientApi';
 import { AdminApiModule } from './adminApi';
 import { DbModule } from './db';
 import { config } from './config';
@@ -9,6 +10,7 @@ import { MicroserviceModule } from './microservice';
 @Module({
     imports: [
         ConsumerApiModule,
+        ClientApiModule,
         MicroserviceModule,
         AdminApiModule,
 
