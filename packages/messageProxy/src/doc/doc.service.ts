@@ -115,7 +115,7 @@ export class DocService implements OnModuleDestroy {
     }
 
     disconnect(client: WebSocketClient, docIds: DocKey[]) {
-        docIds.forEach((id) => {
+        for (const id in docIds) {
             if (!this.docs.has(id)) {
                 return;
             }
@@ -126,7 +126,7 @@ export class DocService implements OnModuleDestroy {
             if (doc.isEmpty()) {
                 this.docs.delete(id);
             }
-        });
+        }
 
         client.close();
     }
