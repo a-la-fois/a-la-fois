@@ -1,14 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AsyncStorageModule, DaprClientModule, DaprServerModule } from '@a-la-fois/nest-common';
-import { DocsModule } from './docs';
-import { AdminModule } from './admin';
+import { ConsumerApiModule } from './consumerApi';
+import { ClientApiModule } from './clientApi';
+import { AdminApiModule } from './adminApi';
 import { DbModule } from './db';
 import { config } from './config';
+import { MicroserviceModule } from './microservice';
 
 @Module({
     imports: [
-        DocsModule,
-        AdminModule,
+        ConsumerApiModule,
+        ClientApiModule,
+        MicroserviceModule,
+        AdminApiModule,
+
         DbModule.forRoot(),
         AsyncStorageModule.forRoot(),
         DaprClientModule.forRoot({

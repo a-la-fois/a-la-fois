@@ -1,15 +1,16 @@
 import { Invoke } from '@a-la-fois/nest-common';
 import { Controller } from '@nestjs/common';
+import { AuthService } from '../auth';
 import {
     CheckClientTokenRequest,
     CheckClientTokenResponse,
     DocIsPublicRequest,
     DocIsPublicResponse,
 } from '../messages';
-import { AuthService } from './auth.service';
+import { DocModel } from 'src/models';
 
 @Controller()
-export class AuthController {
+export class MicroserviceController {
     constructor(private authService: AuthService) {}
 
     @Invoke('checkClientToken', 'post')
@@ -45,12 +46,12 @@ export class AuthController {
 
     @Invoke('docIsPublic', 'post')
     async docIsPublic(body: DocIsPublicRequest): Promise<DocIsPublicResponse> {
-        const result = await this.authService.docIsPublic(body.docId);
+        const doc = await DocModel.findById(body.docId);
 
         return {
             status: 200,
             payload: {
-                isPublic: result,
+                isPublic: Boolean(doc && doc.public),
             },
         };
     }

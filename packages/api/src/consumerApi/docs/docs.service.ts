@@ -1,13 +1,10 @@
 import { Doc } from '@a-la-fois/models';
-import { DocModel } from '../models';
 import { Injectable } from '@nestjs/common';
-import { DocPublicDto } from './dto';
+import { DocModel } from '../../models';
 
 @Injectable()
 export class DocsService {
-    constructor() {}
-
-    async getDocsByIds(ids: string[]): Promise<DocPublicDto[]> {
+    async getDocsByIds(ids: string[]) {
         const docs = await DocModel.find({
             docId: {
                 $in: ids,

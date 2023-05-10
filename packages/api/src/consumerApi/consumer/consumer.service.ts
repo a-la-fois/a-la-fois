@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Consumer } from '@a-la-fois/models';
 import { AsyncStorageService, REQ_KEY, StorageMemoize } from '@a-la-fois/nest-common';
-import { ConsumerModel } from '../models';
-import { AuthService } from '../auth';
+import { ConsumerModel } from '../../models';
+import { AuthService } from '../../auth';
 
 const CONSUMER_KEY = Symbol('CONSUMER_KEY');
 
