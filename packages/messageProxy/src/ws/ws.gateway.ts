@@ -25,8 +25,6 @@ import {
     joinResponseEvent,
     ConnectResponseMessage,
     baseErrorMessage,
-    disconnectEvent,
-    DisconnectPayload,
 } from '../messages';
 import { DocService } from '../doc/doc.service';
 import { ClientJWTPayload, WebSocketClient } from './types';

@@ -69,22 +69,25 @@ export class DocService implements OnModuleDestroy {
 
     joinToDoc(client: WebSocketClient, docId: DocKey): JoinResponsePayload {
         let doc: DocManager;
+
         if (this.docs.has(docId)) {
             doc = this.docs.get(docId);
         } else {
             doc = new DocManager(docId);
             this.docs.set(docId, doc);
-
-            let joinedDocs = this.connectionsToDocs.get(client.id);
-            if (joinedDocs) {
-                joinedDocs.push(doc);
-            } else {
-                joinedDocs = [doc];
-            }
-            this.connectionsToDocs.set(client.id, joinedDocs);
         }
+
+        let joinedDocs = this.connectionsToDocs.get(client.id);
+
+        if (joinedDocs) {
+            joinedDocs.push(doc);
+        } else {
+            joinedDocs = [doc];
+        }
+
+        this.connectionsToDocs.set(client.id, joinedDocs);
+
         doc.addConnection(client);
-        console.log(this.connectionsToDocs);
         this.pubsub.subscribe(docId);
 
         return {

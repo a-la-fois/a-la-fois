@@ -1,5 +1,4 @@
 import { Api } from './Api';
-import { disconnectEvent } from '@a-la-fois/message-proxy';
 import { DocContainer } from './DocContainer';
 import { Messenger } from './Messenger';
 import { Ping } from './Ping';
@@ -35,20 +34,6 @@ export class Client {
 
     dispose() {
         this.ping?.dispose();
-        const docIds: string[] = [];
-
-        Object.entries(this.docs).forEach(([docId, docContainer]) => {
-            docIds.push(docId);
-            docContainer.dispose();
-        });
-
-        this.connection.sendJson({
-            event: disconnectEvent,
-            data: {
-                docs: docIds,
-            },
-        });
-
         this.messenger?.dispose();
         this.connection?.dispose();
     }
