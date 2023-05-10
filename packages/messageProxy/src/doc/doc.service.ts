@@ -19,6 +19,12 @@ import { NotJoinedError } from '../errors';
 export class DocService implements OnModuleDestroy {
     private docs: Map<string, DocManager> = new Map();
 
+    // Optimization for disconnections
+    // When client disconnects we only have connectionId
+    // so we store a map: connectionId -> docs
+    // to find all connected documents of a client fast (not iterating over docs map)
+    private connectionsToDocs: Map<string, DocManager[]> = new Map();
+
     constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey>, private actorService: ActorService) {
         this.pubsub.connect();
         this.pubsub.addCallback(this.onPublishCallback);
@@ -68,9 +74,17 @@ export class DocService implements OnModuleDestroy {
         } else {
             doc = new DocManager(docId);
             this.docs.set(docId, doc);
+
+            let joinedDocs = this.connectionsToDocs.get(client.id);
+            if (joinedDocs) {
+                joinedDocs.push(doc);
+            } else {
+                joinedDocs = [doc];
+            }
+            this.connectionsToDocs.set(client.id, joinedDocs);
         }
         doc.addConnection(client);
-
+        console.log(this.connectionsToDocs);
         this.pubsub.subscribe(docId);
 
         return {
@@ -114,21 +128,22 @@ export class DocService implements OnModuleDestroy {
         }
     }
 
-    disconnect(client: WebSocketClient, docIds: DocKey[]) {
-        for (const id in docIds) {
-            if (!this.docs.has(id)) {
-                return;
-            }
+    disconnect(client: WebSocketClient) {
+        const joinedDocs = this.connectionsToDocs.get(client.id);
 
-            const doc = this.docs.get(id);
-            doc.removeConnection(client);
+        if (!joinedDocs) {
+            return;
+        }
 
-            if (doc.isEmpty()) {
-                this.docs.delete(id);
+        for (const i in joinedDocs) {
+            joinedDocs[i].removeConnection(client);
+
+            if (joinedDocs[i].isEmpty()) {
+                this.docs.delete(joinedDocs[i].id);
             }
         }
 
-        client.close();
+        this.connectionsToDocs.delete(client.id);
     }
 
     onModuleDestroy() {
