@@ -76,6 +76,7 @@ export class DocService implements OnModuleDestroy {
             doc = new DocManager(docId);
             this.docs.set(docId, doc);
         }
+        doc.addConnection(client);
 
         let joinedDocs = this.connectionsToDocs.get(client.id);
 
@@ -84,10 +85,8 @@ export class DocService implements OnModuleDestroy {
         } else {
             joinedDocs = [doc];
         }
-
         this.connectionsToDocs.set(client.id, joinedDocs);
 
-        doc.addConnection(client);
         this.pubsub.subscribe(docId);
 
         return {
