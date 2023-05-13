@@ -2,7 +2,6 @@ import { readFileSync } from 'fs';
 import { Injectable } from '@nestjs/common';
 import { BroadcastMessage, OnPublishCallback, PubSub } from './types';
 import { DocKey } from '../doc/types';
-import { Changes } from '../messages';
 import { Kafka, Producer, Consumer } from 'kafkajs';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '../config';
@@ -14,11 +13,13 @@ export const TOPICS = {
     service: config.kafka.serviceTopic,
 };
 
+type TopicKeys = keyof typeof TOPICS;
+
 @Injectable()
-export class KafkaPubsubService implements PubSub {
+export class KafkaPubsubService implements PubSub<TopicKeys> {
     private publisher: Producer;
     private subscriber: Consumer;
-    protected callbacks: Map<string, OnPublishCallback[]> = new Map();
+    private callbacks: Map<string, OnPublishCallback[]> = new Map();
     private changesTopic: string;
     private serviceTopic: string;
     private kafka: Kafka;
@@ -52,10 +53,10 @@ export class KafkaPubsubService implements PubSub {
         });
     }
 
-    publish(key: DocKey, message: BroadcastMessage): void {
+    publish(topic: TopicKeys, key: DocKey, message: BroadcastMessage): void {
         this.publisher
             .send({
-                topic: this.changesTopic,
+                topic: topic,
                 messages: [
                     {
                         key: key,
@@ -67,7 +68,7 @@ export class KafkaPubsubService implements PubSub {
             .catch(console.log);
     }
 
-    addCallback(topic: string, callback: OnPublishCallback) {
+    addCallback(topic: TopicKeys, callback: OnPublishCallback) {
         let callbacksByTopic = this.callbacks.get(topic);
 
         if (callbacksByTopic) {

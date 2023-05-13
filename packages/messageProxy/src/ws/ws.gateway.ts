@@ -39,21 +39,25 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const clientInitResult: AuthCheckResult = await this.authServise.initClient(client, token);
 
         if (clientInitResult.status == 'ok') {
-            return {
-                event: 'connectResponse',
-                data: {
-                    status: 'ok',
-                },
-            };
+            client.send(
+                JSON.stringify({
+                    event: 'connectResponse',
+                    data: {
+                        status: 'ok',
+                    },
+                })
+            );
         }
 
-        return {
-            event: 'connectResponse',
-            data: {
-                status: 'err',
-                message: clientInitResult.message,
-            },
-        };
+        client.send(
+            JSON.stringify({
+                event: 'connectResponse',
+                data: {
+                    status: 'err',
+                    message: clientInitResult.message,
+                },
+            })
+        );
     }
 
     handleDisconnect(client: WebSocketClient) {

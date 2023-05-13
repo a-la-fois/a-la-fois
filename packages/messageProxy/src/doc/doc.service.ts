@@ -10,7 +10,7 @@ import {
 } from '../messages';
 import { BroadcastMessage, PubSub } from '../pubsub/types';
 import { WebSocketClient } from '../ws/types';
-import { KafkaPubSubToken } from '../pubsub/kafka-pubsub.service';
+import { KafkaPubSubToken, TOPICS } from '../pubsub/kafka-pubsub.service';
 import { ActorService } from '../actor/actor.service';
 import { DocKey } from './types';
 import { NotJoinedError } from '../errors';
@@ -18,6 +18,7 @@ import { NotJoinedError } from '../errors';
 @Injectable()
 export class DocService implements OnModuleDestroy {
     private docs: Map<string, DocManager> = new Map();
+    private pubsubTopic: string = TOPICS.changes;
 
     // Optimization for disconnections
     // When client disconnects we only have connectionId
@@ -25,19 +26,19 @@ export class DocService implements OnModuleDestroy {
     // to find all connected documents of a client fast (not iterating over docs map)
     private connectionsToDocs: Map<string, DocManager[]> = new Map();
 
-    constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey>, private actorService: ActorService) {
+    constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub<string>, private actorService: ActorService) {
         this.pubsub.connect();
-        this.pubsub.addCallback(this.onPublishCallback);
+        this.pubsub.addCallback(this.pubsubTopic, this.onPublishCallback);
     }
 
     applyChanges(client: WebSocketClient, payload: ChangesPayload) {
-        this.assertClientJoined(payload.docId);
+        this.assertClientJoined(client, payload.docId);
 
         const doc = this.docs.get(payload.docId);
         doc.broadcastDiff(client, payload.changes);
 
         // Sending changes to other instances
-        this.pubsub.publish(doc.id, {
+        this.pubsub.publish(this.pubsubTopic, doc.id, {
             author: client,
             type: 'changes',
             data: payload.changes,
@@ -47,12 +48,12 @@ export class DocService implements OnModuleDestroy {
     }
 
     applyAwareness(client: WebSocketClient, payload: AwarenessPayload) {
-        this.assertClientJoined(payload.docId);
+        this.assertClientJoined(client, payload.docId);
 
         const doc = this.docs.get(payload.docId);
         doc.broadcastAwareness(client, payload.awareness);
 
-        this.pubsub.publish(doc.id, {
+        this.pubsub.publish(this.pubsubTopic, doc.id, {
             author: client,
             type: 'awareness',
             data: payload.awareness,
@@ -87,16 +88,14 @@ export class DocService implements OnModuleDestroy {
         }
         this.connectionsToDocs.set(client.id, joinedDocs);
 
-        this.pubsub.subscribe(docId);
-
         return {
             docId,
             status: 'ok',
         };
     }
 
-    private onPublishCallback = (channel: DocKey, message: string) => {
-        const docId = channel;
+    private onPublishCallback = (key: DocKey, message: string) => {
+        const docId = key;
         const broadcastMessage: BroadcastMessage = JSON.parse(message);
 
         // Do nothing if there are no connections in this instance

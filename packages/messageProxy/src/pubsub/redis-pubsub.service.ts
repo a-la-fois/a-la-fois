@@ -1,20 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
-import { BroadcastMessage, onPublishCallback, PubSub } from './types';
+import { BroadcastMessage, OnPublishCallback } from './types';
 
 export const RedisPubSubToken = 'REDIS_PUBSUB';
 
 @Injectable()
-export class RedisPubsubService implements PubSub<string> {
+/**
+ * @deprecated Doesn't supported now
+ */
+export class RedisPubsubService {
     private publisher: Redis;
     private subscriber: Redis;
-    private callbacks: onPublishCallback[] = [];
+    private callbacks: OnPublishCallback[] = [];
 
     publish(channel: string, message: BroadcastMessage) {
         this.publisher.publish(channel, JSON.stringify(message));
     }
 
-    addCallback(callback: onPublishCallback) {
+    addCallback(callback: OnPublishCallback) {
         this.callbacks.push(callback);
     }
 

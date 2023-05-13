@@ -31,6 +31,8 @@ export class AuthService {
     async initClient(client: WebSocketClient, token?: string): Promise<AuthCheckResult> {
         client.id = uuid();
 
+        console.debug(token);
+
         if (!token) {
             client.access = {};
             return OK_RESULT;
@@ -38,6 +40,7 @@ export class AuthService {
 
         const response = await this.authClient.checkClientToken<ClientJWTPayload>(token);
 
+        console.debug(response);
         if (response.status !== 200) {
             return {
                 status: 'err',

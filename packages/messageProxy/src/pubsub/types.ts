@@ -17,8 +17,8 @@ export interface Connectable {
     disconnect(): void;
 }
 
-export interface PubSub extends Connectable {
-    publish(key: string, message: BroadcastMessage, topic: string): void;
+export interface PubSub<Topic> extends Connectable {
+    publish(topic: Topic, key: string, message: BroadcastMessage): void;
 
-    addCallback(topic: string, callback: OnPublishCallback): void;
+    addCallback(topic: Topic, callback: OnPublishCallback): void;
 }
