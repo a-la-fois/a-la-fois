@@ -1,6 +1,7 @@
 export const config = {
     kafka: {
         changesTopic: process.env.KAFKA_CHANGES_TOPIC || 'changes',
+        serviceTopic: process.env.KAFKA_SERVICE_TOPIC || 'service',
         hosts: process.env.KAFKA_HOSTS || '127.0.0.1:9092',
         caPath: process.env.KAFKA_CA_PATH || '',
         username: process.env.KAFKA_USERNAME || '',

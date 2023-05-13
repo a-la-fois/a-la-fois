@@ -124,8 +124,10 @@ export class DocService implements OnModuleDestroy {
         }
     };
 
-    private assertClientJoined(docId: string) {
-        if (!this.docs.has(docId)) {
+    private assertClientJoined(client: WebSocketClient, docId: string) {
+        const doc = this.docs.get(docId);
+
+        if (!doc || !doc.has(client)) {
             throw new NotJoinedError(docId);
         }
     }

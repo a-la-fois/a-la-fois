@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { Injectable } from '@nestjs/common';
-import { BroadcastMessage, onPublishCallback, PubSub } from './types';
+import { BroadcastMessage, OnPublishCallback, PubSub } from './types';
 import { DocKey } from '../doc/types';
 import { Changes } from '../messages';
 import { Kafka, Producer, Consumer } from 'kafkajs';
@@ -9,18 +9,24 @@ import { config } from '../config';
 
 export const KafkaPubSubToken = 'KAFKA_PUBSUB';
 
+export const TOPICS = {
+    changes: config.kafka.changesTopic,
+    service: config.kafka.serviceTopic,
+};
+
 @Injectable()
-export class KafkaPubsubService implements PubSub<DocKey> {
+export class KafkaPubsubService implements PubSub {
     private publisher: Producer;
     private subscriber: Consumer;
-    protected callbacks: onPublishCallback[] = [];
-    private subscribedKeys: Set<DocKey> = new Set<DocKey>();
+    protected callbacks: Map<string, OnPublishCallback[]> = new Map();
     private changesTopic: string;
+    private serviceTopic: string;
     private kafka: Kafka;
 
     constructor() {
-        const { caPath, username, password, mechanism, hosts, changesTopic } = config.kafka;
-        this.changesTopic = changesTopic;
+        const { caPath, username, password, mechanism, hosts } = config.kafka;
+        this.changesTopic = TOPICS.changes;
+        this.serviceTopic = TOPICS.service;
 
         // TODO: kafka config constructor
         const params = {};
@@ -61,16 +67,16 @@ export class KafkaPubsubService implements PubSub<DocKey> {
             .catch(console.log);
     }
 
-    subscribe(key: DocKey): void {
-        this.subscribedKeys.add(key);
-    }
+    addCallback(topic: string, callback: OnPublishCallback) {
+        let callbacksByTopic = this.callbacks.get(topic);
 
-    unsubscribe(key: DocKey): void {
-        this.subscribedKeys.delete(key);
-    }
+        if (callbacksByTopic) {
+            callbacksByTopic.push(callback);
+        } else {
+            callbacksByTopic = [callback];
+        }
 
-    addCallback(callback: onPublishCallback) {
-        this.callbacks.push(callback);
+        this.callbacks.set(topic, callbacksByTopic);
     }
 
     connect(): void {
@@ -83,17 +89,17 @@ export class KafkaPubsubService implements PubSub<DocKey> {
         this.subscriber.connect().then(() => console.log('Subscriber connected to a kafka broker'));
 
         this.subscriber.subscribe({
-            topic: this.changesTopic,
+            topics: [this.changesTopic, this.serviceTopic],
             fromBeginning: false,
         });
 
         this.subscriber.run({
             eachMessage: async ({ topic, partition, message, heartbeat, pause }) => {
                 const key = message.key.toString();
+                const callbacksByTopic = this.callbacks.get(topic);
 
-                // Check if we are actually subscribed to this key's messages
-                if (this.subscribedKeys.has(key)) {
-                    this.callbacks.forEach((callback) => callback(key, message.value.toString()));
+                for (const i in callbacksByTopic) {
+                    callbacksByTopic[i](key, message.value.toString());
                 }
             },
         });

@@ -1,3 +1,4 @@
+import { WebSocketClient } from 'src/ws/types';
 import {
     Awareness,
     broadcastAwarenessEvent,
@@ -7,23 +8,21 @@ import {
     Changes,
 } from '../messages';
 
-type connection = { id: string; send: Function; close: Function } & Object;
-
 export class DocManager {
     readonly id: string;
-    private connections: Map<string, connection> = new Map();
+    private connections: Map<string, WebSocketClient> = new Map();
 
     constructor(docId: string) {
         this.id = docId;
     }
 
-    addConnection(client: connection) {
+    addConnection(client: WebSocketClient) {
         if (!this.contains(client)) {
             this.connections.set(client.id, client);
         }
     }
 
-    removeConnection(client: connection) {
+    removeConnection(client: WebSocketClient) {
         if (this.contains(client)) {
             this.connections.delete(client.id);
         }
@@ -36,11 +35,15 @@ export class DocManager {
         this.connections.clear();
     }
 
+    has(client: WebSocketClient) {
+        return this.connections.has(client.id);
+    }
+
     isEmpty() {
         return this.connections.size === 0;
     }
 
-    broadcastDiff(authorClient: connection, changes: Changes) {
+    broadcastDiff(authorClient: WebSocketClient, changes: Changes) {
         for (const [, connection] of this.connections) {
             if (connection.id !== authorClient.id) {
                 const message: BroadcastChangesMessage = {
@@ -55,7 +58,7 @@ export class DocManager {
         }
     }
 
-    broadcastAwareness(authorClient: connection, awareness: Awareness) {
+    broadcastAwareness(authorClient: WebSocketClient, awareness: Awareness) {
         for (const [, connection] of this.connections) {
             if (connection.id !== authorClient.id) {
                 const message: BroadcastAwarenessMessage = {
@@ -70,7 +73,7 @@ export class DocManager {
         }
     }
 
-    contains(client: connection): boolean {
+    contains(client: WebSocketClient): boolean {
         return this.connections.has(client.id);
     }
 }
