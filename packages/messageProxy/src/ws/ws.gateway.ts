@@ -19,14 +19,13 @@ import {
     syncCompleteEvent,
     JoinResponseMessage,
     joinResponseEvent,
-    ConnectResponseMessage,
     baseErrorMessage,
 } from '../messages';
 import { DocService } from '../doc/doc.service';
 import { WebSocketClient } from './types';
 import { awarenessEvent, AwarenessPayload } from 'src/messages/awareness';
 import { MessageError } from 'src/errors';
-import { AuthService, AuthCheckResult } from './auth.service';
+import { AuthCheckResult, AuthService } from 'src/auth/auth.service';
 
 @WebSocketGateway()
 export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -66,7 +65,7 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage(joinEvent)
     async onJoin(client: WebSocketClient, { docId }: JoinPayload): Promise<JoinResponseMessage> {
-        const docRightCheckResult = await this.authServise.checkDocRights(client, docId);
+        const docRightCheckResult = await this.authServise.checkDocAccess(client, docId);
 
         if (docRightCheckResult.status == 'err') {
             return {

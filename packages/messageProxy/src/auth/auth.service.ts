@@ -1,9 +1,9 @@
-import { AuthClient } from '@a-la-fois/api';
 import { DaprClient } from '@dapr/dapr';
 import { Injectable } from '@nestjs/common';
-import { ClientJWTPayload, WebSocketClient } from './types';
+import { ClientJWTPayload, WebSocketClient } from 'src/ws/types';
 import { v4 as uuid } from 'uuid';
 import { DaprClient as DaprClientDecorator } from '@a-la-fois/nest-common';
+import { AuthClient } from '@a-la-fois/api';
 
 export type AuthCheckResult = {
     status: 'ok' | 'err';
@@ -26,7 +26,7 @@ export class AuthService {
     }
 
     /*
-     * Changes client object
+     * The function changes client object
      * */
     async initClient(client: WebSocketClient, token?: string): Promise<AuthCheckResult> {
         client.id = uuid();
@@ -54,7 +54,7 @@ export class AuthService {
                 acc[doc.id] = {
                     id: doc.id,
                     rights: doc.rights,
-                    isPublic: doc.isPublic,
+                    // isPublic: doc.isPublic,
                 };
 
                 return acc;
@@ -66,7 +66,7 @@ export class AuthService {
     /*
      * Changes client object
      * */
-    async checkDocRights(client: WebSocketClient, docId: string): Promise<AuthCheckResult> {
+    async checkDocAccess(client: WebSocketClient, docId: string): Promise<AuthCheckResult> {
         const docAccess = client.access[docId];
 
         if (!docAccess) {
@@ -80,7 +80,12 @@ export class AuthService {
             }
 
             if (response.payload.isPublic) {
-                client.access[docId]['isPublic'] == true;
+                client.access[docId] = {
+                    id: docId,
+                    rights: [],
+                    isPublic: true,
+                };
+                return OK_RESULT;
             } else {
                 return UNAUTHORIZED_RESULT;
             }

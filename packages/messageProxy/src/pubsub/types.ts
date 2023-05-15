@@ -11,13 +11,7 @@ export type BroadcastMessage = {
 
 export type OnPublishCallback = (key: string, message: Changes) => void;
 
-export interface Connectable {
-    connect(): void;
-
-    disconnect(): void;
-}
-
-export interface PubSub<Topic> extends Connectable {
+export interface PubSub<Topic> {
     publish(topic: Topic, key: string, message: BroadcastMessage): void;
 
     addCallback(topic: Topic, callback: OnPublishCallback): void;

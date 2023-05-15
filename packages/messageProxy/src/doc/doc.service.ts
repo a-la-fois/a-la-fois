@@ -18,7 +18,8 @@ import { NotJoinedError } from '../errors';
 @Injectable()
 export class DocService implements OnModuleDestroy {
     private docs: Map<string, DocManager> = new Map();
-    private pubsubTopic: string = TOPICS.changes;
+    private changesTopic: string = TOPICS.changes;
+    private serviceTopic: string = TOPICS.service;
 
     // Optimization for disconnections
     // When client disconnects we only have connectionId
@@ -27,8 +28,8 @@ export class DocService implements OnModuleDestroy {
     private connectionsToDocs: Map<string, DocManager[]> = new Map();
 
     constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub<string>, private actorService: ActorService) {
-        this.pubsub.connect();
-        this.pubsub.addCallback(this.pubsubTopic, this.onPublishCallback);
+        this.pubsub.addCallback(this.changesTopic, this.onChangeEvent);
+        this.pubsub.addCallback(this.serviceTopic, this.onServiceEvent);
     }
 
     applyChanges(client: WebSocketClient, payload: ChangesPayload) {
@@ -38,7 +39,7 @@ export class DocService implements OnModuleDestroy {
         doc.broadcastDiff(client, payload.changes);
 
         // Sending changes to other instances
-        this.pubsub.publish(this.pubsubTopic, doc.id, {
+        this.pubsub.publish(this.changesTopic, doc.id, {
             author: client,
             type: 'changes',
             data: payload.changes,
@@ -53,7 +54,7 @@ export class DocService implements OnModuleDestroy {
         const doc = this.docs.get(payload.docId);
         doc.broadcastAwareness(client, payload.awareness);
 
-        this.pubsub.publish(this.pubsubTopic, doc.id, {
+        this.pubsub.publish(this.changesTopic, doc.id, {
             author: client,
             type: 'awareness',
             data: payload.awareness,
@@ -94,7 +95,7 @@ export class DocService implements OnModuleDestroy {
         };
     }
 
-    private onPublishCallback = (key: DocKey, message: string) => {
+    private onChangeEvent = (key: DocKey, message: string) => {
         const docId = key;
         const broadcastMessage: BroadcastMessage = JSON.parse(message);
 
@@ -121,6 +122,11 @@ export class DocService implements OnModuleDestroy {
                 break;
             }
         }
+    };
+
+    private onServiceEvent = (key: string, message: string) => {
+        const broadcastMessage: BroadcastMessage = JSON.parse(message);
+        console.debug(broadcastMessage);
     };
 
     private assertClientJoined(client: WebSocketClient, docId: string) {
@@ -150,7 +156,6 @@ export class DocService implements OnModuleDestroy {
     }
 
     onModuleDestroy() {
-        this.pubsub.disconnect();
         for (const [_, doc] of this.docs) {
             doc.removeAndDisconnectAll();
         }

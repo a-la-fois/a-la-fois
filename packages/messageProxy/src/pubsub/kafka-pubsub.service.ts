@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { BroadcastMessage, OnPublishCallback, PubSub } from './types';
 import { DocKey } from '../doc/types';
 import { Kafka, Producer, Consumer } from 'kafkajs';
@@ -16,7 +16,7 @@ export const TOPICS = {
 type TopicKeys = keyof typeof TOPICS;
 
 @Injectable()
-export class KafkaPubsubService implements PubSub<TopicKeys> {
+export class KafkaPubsubService implements PubSub<TopicKeys>, OnModuleDestroy {
     private publisher: Producer;
     private subscriber: Consumer;
     private callbacks: Map<string, OnPublishCallback[]> = new Map();
@@ -51,6 +51,12 @@ export class KafkaPubsubService implements PubSub<TopicKeys> {
             brokers: hosts.split(','),
             ...params,
         });
+
+        this.connect();
+    }
+    onModuleDestroy() {
+        this.subscriber.disconnect();
+        this.publisher.disconnect();
     }
 
     publish(topic: TopicKeys, key: DocKey, message: BroadcastMessage): void {
@@ -80,7 +86,7 @@ export class KafkaPubsubService implements PubSub<TopicKeys> {
         this.callbacks.set(topic, callbacksByTopic);
     }
 
-    connect(): void {
+    private connect(): void {
         this.publisher = this.kafka.producer();
         this.publisher.connect().then(() => console.log('Publisher connected to a kafka broker'));
 
@@ -104,10 +110,5 @@ export class KafkaPubsubService implements PubSub<TopicKeys> {
                 }
             },
         });
-    }
-
-    disconnect(): void {
-        this.subscriber.disconnect();
-        this.publisher.disconnect();
     }
 }
