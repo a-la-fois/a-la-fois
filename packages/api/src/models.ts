@@ -1,6 +1,13 @@
 import { getModelForClass } from '@typegoose/typegoose';
-import { Consumer, Doc, Update } from '@a-la-fois/models';
+import { Consumer, Doc, Token, Update } from '@a-la-fois/models';
 
-export const DocModel = getModelForClass(Doc);
-export const UpdateModel = getModelForClass(Update);
-export const ConsumerModel = getModelForClass(Consumer);
+const options = {
+    schemaOptions: {
+        timestamps: true,
+    },
+};
+
+export const DocModel = getModelForClass(Doc, options);
+export const UpdateModel = getModelForClass(Update, options);
+export const ConsumerModel = getModelForClass(Consumer, options);
+export const TokenModel = getModelForClass(Token, options);

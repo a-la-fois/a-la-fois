@@ -6,6 +6,7 @@ import { AdminApiModule } from './adminApi';
 import { DbModule } from './db';
 import { config } from './config';
 import { MicroserviceModule } from './microservice';
+import { KafkaModule } from './kafka/kafka.module';
 
 @Module({
     imports: [
@@ -13,6 +14,7 @@ import { MicroserviceModule } from './microservice';
         ClientApiModule,
         MicroserviceModule,
         AdminApiModule,
+        KafkaModule,
 
         DbModule.forRoot(),
         AsyncStorageModule.forRoot(),

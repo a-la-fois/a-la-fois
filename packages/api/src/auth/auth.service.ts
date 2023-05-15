@@ -1,7 +1,7 @@
 import { verify } from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { ConsumerModel, DocModel } from '../models';
+import { ConsumerModel, DocModel, TokenModel } from '../models';
 import { JWTPayload } from '../messages';
 import { parseJWT } from './utils';
 
@@ -9,8 +9,9 @@ import { parseJWT } from './utils';
 export class AuthService {
     async checkJWT<TJWTPayload extends JWTPayload = JWTPayload>(jwt: string): Promise<TJWTPayload | null> {
         const jwtPayload = parseJWT<TJWTPayload>(jwt);
+        const [_headers, _payload, sign] = jwt.split('.');
 
-        if (!jwtPayload?.consumerId) {
+        if (!jwtPayload?.consumerId || !jwtPayload?.userId) {
             return null;
         }
 
@@ -20,8 +21,27 @@ export class AuthService {
             return null;
         }
 
+        if (jwtPayload.expiredAt && jwtPayload.expiredAt < new Date()) {
+            return null;
+        }
+
         try {
             const payload = await this.verifyToken<TJWTPayload>(jwt, consumer.publicKey);
+
+            const token = await TokenModel.findOne({ hash: sign });
+
+            // Token is updated, but a client is trying to connect with old one
+            if (token && token.taint) {
+                return null;
+            } else {
+                TokenModel.create({
+                    hash: sign,
+                    consumerId: consumer._id,
+                    userId: payload.userId,
+                    ...(payload.expiredAt && { expiredAt: payload.expiredAt }),
+                    ...(payload.docs && { docs: payload.docs.map((d) => d.id) }),
+                });
+            }
 
             return payload;
         } catch (err) {
