@@ -3,7 +3,7 @@ import { AuthClient } from '@a-la-fois/api';
 import { IncomingMessage } from 'http';
 import { DaprClient } from '@dapr/dapr';
 import { v4 as uuid } from 'uuid';
-import { OnGatewayConnection, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { DaprClient as DaprClientDecorator } from '@a-la-fois/nest-common';
 import {
     joinEvent,
@@ -32,7 +32,7 @@ import { awarenessEvent, AwarenessPayload } from 'src/messages/awareness';
 import { MessageError } from 'src/errors';
 
 @WebSocketGateway()
-export class WsGateway implements OnGatewayConnection {
+export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private authClient: AuthClient;
 
     constructor(private readonly docService: DocService, @DaprClientDecorator() private daprClient: DaprClient) {
@@ -91,6 +91,10 @@ export class WsGateway implements OnGatewayConnection {
                     return acc;
                 }, {} as WebSocketClient['access']) ?? {};
         });
+    }
+
+    handleDisconnect(client: WebSocketClient) {
+        this.docService.disconnect(client);
     }
 
     @SubscribeMessage(joinEvent)

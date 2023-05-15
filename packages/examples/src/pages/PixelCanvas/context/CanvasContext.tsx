@@ -56,6 +56,9 @@ export const CanvasContextProvider = ({ children }: CanvasContextProviderProps) 
             };
 
             init();
+            return () => {
+                client.dispose();
+            };
         }
     }, [client]);
 

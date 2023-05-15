@@ -19,6 +19,12 @@ import { NotJoinedError } from '../errors';
 export class DocService implements OnModuleDestroy {
     private docs: Map<string, DocManager> = new Map();
 
+    // Optimization for disconnections
+    // When client disconnects we only have connectionId
+    // so we store a map: connectionId -> docs
+    // to find all connected documents of a client fast (not iterating over docs map)
+    private connectionsToDocs: Map<string, DocManager[]> = new Map();
+
     constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub<DocKey>, private actorService: ActorService) {
         this.pubsub.connect();
         this.pubsub.addCallback(this.onPublishCallback);
@@ -63,6 +69,7 @@ export class DocService implements OnModuleDestroy {
 
     joinToDoc(client: WebSocketClient, docId: DocKey): JoinResponsePayload {
         let doc: DocManager;
+
         if (this.docs.has(docId)) {
             doc = this.docs.get(docId);
         } else {
@@ -70,6 +77,15 @@ export class DocService implements OnModuleDestroy {
             this.docs.set(docId, doc);
         }
         doc.addConnection(client);
+
+        let joinedDocs = this.connectionsToDocs.get(client.id);
+
+        if (joinedDocs) {
+            joinedDocs.push(doc);
+        } else {
+            joinedDocs = [doc];
+        }
+        this.connectionsToDocs.set(client.id, joinedDocs);
 
         this.pubsub.subscribe(docId);
 
@@ -114,8 +130,28 @@ export class DocService implements OnModuleDestroy {
         }
     }
 
+    disconnect(client: WebSocketClient) {
+        const joinedDocs = this.connectionsToDocs.get(client.id);
+
+        if (!joinedDocs) {
+            return;
+        }
+
+        for (const i in joinedDocs) {
+            joinedDocs[i].removeConnection(client);
+
+            if (joinedDocs[i].isEmpty()) {
+                this.docs.delete(joinedDocs[i].id);
+            }
+        }
+
+        this.connectionsToDocs.delete(client.id);
+    }
+
     onModuleDestroy() {
         this.pubsub.disconnect();
-        //TODO: Close websocket connections
+        for (const [_, doc] of this.docs) {
+            doc.removeAndDisconnectAll();
+        }
     }
 }

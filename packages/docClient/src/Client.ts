@@ -34,6 +34,7 @@ export class Client {
 
     dispose() {
         this.ping?.dispose();
+        this.messenger?.dispose();
         this.connection?.dispose();
     }
 
