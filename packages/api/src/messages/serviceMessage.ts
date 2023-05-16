@@ -1,1 +1,6 @@
-export type UpdateTokenMessage = {};
+import { JWTPayload } from './checkClientToken';
+
+export type UpdateTokenMessage = {
+    token: string;
+    payload: JWTPayload;
+};

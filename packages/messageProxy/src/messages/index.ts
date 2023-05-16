@@ -1,3 +1,4 @@
+export * from './service/';
 export * from './awareness';
 export * from './broadcastAwareness';
 export * from './broadcastChanges';

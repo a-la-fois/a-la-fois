@@ -54,7 +54,6 @@ export class AuthService {
                 acc[doc.id] = {
                     id: doc.id,
                     rights: doc.rights,
-                    // isPublic: doc.isPublic,
                 };
 
                 return acc;
@@ -101,7 +100,9 @@ export class AuthService {
     checkWriteAccess(client: WebSocketClient, docId: string): AuthCheckResult {
         const docAccess = client.access[docId];
 
+        console.log(docAccess);
         if (!docAccess.isPublic || !docAccess.rights.includes('write')) {
+            console.log('NO_ACCESS');
             return UNAUTHORIZED_RESULT;
         }
 

@@ -46,6 +46,7 @@ export class KafkaService {
                 topic: SERVICE_TOPIC,
                 messages: [
                     {
+                        key: message.payload.userId,
                         value: Buffer.from(JSON.stringify(message)),
                     },
                 ],

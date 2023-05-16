@@ -1,3 +1,4 @@
+import { JWTPayload } from '@a-la-fois/api';
 import { WebSocketClient } from 'src/ws/types';
 import {
     Awareness,
@@ -6,6 +7,9 @@ import {
     broadcastChangesEvent,
     BroadcastChangesMessage,
     Changes,
+    serviceEvent,
+    UpdateTokenServiceMessage,
+    updateTokenType,
 } from '../messages';
 
 export class DocManager {
@@ -25,6 +29,34 @@ export class DocManager {
     removeConnection(client: WebSocketClient) {
         if (this.contains(client)) {
             this.connections.delete(client.id);
+        }
+    }
+
+    updateTokenForConnection(docId: string, newToken: string, meta: JWTPayload) {
+        for (const [_, connection] of this.connections) {
+            if (!(connection.consumerId === meta.userId) || !(connection.userId === meta.userId)) {
+                continue;
+            }
+            const message: UpdateTokenServiceMessage = {
+                event: serviceEvent,
+                data: {
+                    event: updateTokenType,
+                    data: {
+                        token: newToken,
+                        message: 'Token is updated',
+                    },
+                },
+            };
+            connection.send(JSON.stringify(message));
+
+            // Closes a connection if a user has no access to one of documents
+            if (meta.docs.filter((doc) => doc.rights.includes('noAccess'))) {
+                connection.close();
+                this.removeConnection(connection);
+                break;
+            }
+
+            // connection.access[docId].rights = meta.docs[];
         }
     }
 

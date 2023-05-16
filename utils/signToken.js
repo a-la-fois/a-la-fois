@@ -16,13 +16,9 @@ const run = async () => {
     const consumerId = process.argv[3];
     const privateKey = fs.readFileSync(keyPath);
 
-    const token = jwt.sign(
-        { consumerId, clientId: uuid.v4(), docs: [{ id: docId, rights: ['read', 'write'] }] },
-        privateKey,
-        {
-            algorithm: 'RS256',
-        }
-    );
+    const token = jwt.sign({ consumerId, userId: 'someUser1', docs: [{ id: docId, rights: ['read'] }] }, privateKey, {
+        algorithm: 'RS256',
+    });
 
     console.log(token);
 };

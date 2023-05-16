@@ -8,6 +8,8 @@ import {
     JoinResponsePayload,
     AwarenessPayload,
 } from '../messages';
+
+import { UpdateTokenMessage } from '@a-la-fois/api';
 import { BroadcastMessage, PubSub } from '../pubsub/types';
 import { WebSocketClient } from '../ws/types';
 import { KafkaPubSubToken, TOPICS } from '../pubsub/kafka-pubsub.service';
@@ -125,8 +127,21 @@ export class DocService implements OnModuleDestroy {
     };
 
     private onServiceEvent = (key: string, message: string) => {
-        const broadcastMessage: BroadcastMessage = JSON.parse(message);
-        console.debug(broadcastMessage);
+        const userId = key;
+        const broadcastMessage: UpdateTokenMessage = JSON.parse(message);
+        console.log(broadcastMessage);
+
+        // const affectedDocs = broadcastMessage.payload.docs.filter((doc) => this.docs.has(doc.id));
+
+        for (const doc of broadcastMessage.payload.docs) {
+            const docManager = this.docs.get(doc.id);
+
+            if (!docManager) {
+                continue;
+            }
+
+            docManager.updateTokenForConnection(doc.id, broadcastMessage.token, broadcastMessage.payload);
+        }
     };
 
     private assertClientJoined(client: WebSocketClient, docId: string) {
