@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/models",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "license": "MIT",
   "files": [
     "dist"
