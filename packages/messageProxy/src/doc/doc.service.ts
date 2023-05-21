@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { DocManager } from './DocManager';
 import {
     ChangesPayload,
@@ -9,19 +9,23 @@ import {
     AwarenessPayload,
 } from '../messages';
 
-import { UpdateTokenMessage } from '@a-la-fois/api';
-import { BroadcastMessage, PubSub } from '../pubsub/types';
-import { WebSocketClient } from '../ws/types';
-import { KafkaPubSubToken, TOPICS } from '../pubsub/kafka-pubsub.service';
+import {
+    AwarenessBroadcastMessage,
+    awarenessBroadcastMessageType,
+    ChangesBroadcastMessage,
+    changesBroadcastMessageType,
+    UpdateTokenBroadcastMessage,
+    updateTokenBroadcastMessageType,
+} from '../pubsub/types';
+import { WebSocketConnection } from '../ws/types';
 import { ActorService } from '../actor/actor.service';
 import { DocKey } from './types';
 import { NotJoinedError } from '../errors';
+import { PubsubService } from 'src/pubsub/pubsub.service';
 
 @Injectable()
 export class DocService implements OnModuleDestroy {
     private docs: Map<string, DocManager> = new Map();
-    private changesTopic: string = TOPICS.changes;
-    private serviceTopic: string = TOPICS.service;
 
     // Optimization for disconnections
     // When client disconnects we only have connectionId
@@ -29,49 +33,59 @@ export class DocService implements OnModuleDestroy {
     // to find all connected documents of a client fast (not iterating over docs map)
     private connectionsToDocs: Map<string, DocManager[]> = new Map();
 
-    constructor(@Inject(KafkaPubSubToken) private readonly pubsub: PubSub<string>, private actorService: ActorService) {
-        this.pubsub.addCallback(this.changesTopic, this.onChangeEvent);
-        this.pubsub.addCallback(this.serviceTopic, this.onServiceEvent);
+    constructor(private readonly pubsub: PubsubService, private actorService: ActorService) {
+        this.pubsub.subscribe(changesBroadcastMessageType, this.onChangesOrAwarenessMessage);
+        this.pubsub.subscribe(awarenessBroadcastMessageType, this.onChangesOrAwarenessMessage);
+        this.pubsub.subscribe(updateTokenBroadcastMessageType, this.onUpdateTokenMessage);
     }
 
-    applyChanges(client: WebSocketClient, payload: ChangesPayload) {
+    applyChanges(client: WebSocketConnection, payload: ChangesPayload) {
         this.assertClientJoined(client, payload.docId);
 
         const doc = this.docs.get(payload.docId);
-        doc.broadcastDiff(client, payload.changes);
+        doc.broadcastDiff(client.id, payload.changes);
 
         // Sending changes to other instances
-        this.pubsub.publish(this.changesTopic, doc.id, {
-            author: client,
+        const message: ChangesBroadcastMessage = {
             type: 'changes',
-            data: payload.changes,
-        } as BroadcastMessage);
+            message: {
+                author: client.id,
+                docId: doc.id,
+                data: payload.changes,
+            },
+        };
+        this.pubsub.publish(message);
 
         this.actorService.sendChanges(client.id, payload);
     }
 
-    applyAwareness(client: WebSocketClient, payload: AwarenessPayload) {
+    applyAwareness(client: WebSocketConnection, payload: AwarenessPayload) {
         this.assertClientJoined(client, payload.docId);
 
         const doc = this.docs.get(payload.docId);
-        doc.broadcastAwareness(client, payload.awareness);
+        doc.broadcastAwareness(client.id, payload.awareness);
 
-        this.pubsub.publish(this.changesTopic, doc.id, {
-            author: client,
+        // Sending awareness to other instances
+        const message: AwarenessBroadcastMessage = {
             type: 'awareness',
-            data: payload.awareness,
-        } as BroadcastMessage);
+            message: {
+                author: client.id,
+                docId: doc.id,
+                data: payload.awareness,
+            },
+        };
+        this.pubsub.publish(message);
     }
 
-    async syncStart(client: WebSocketClient, payload: SyncStartPayload): Promise<SyncResponsePayload> {
+    async syncStart(client: WebSocketConnection, payload: SyncStartPayload): Promise<SyncResponsePayload> {
         return await this.actorService.syncStart(payload);
     }
 
-    syncComplete(client: WebSocketClient, payload: SyncCompletePayload) {
+    syncComplete(client: WebSocketConnection, payload: SyncCompletePayload) {
         this.actorService.syncComplete(client.id, payload);
     }
 
-    joinToDoc(client: WebSocketClient, docId: DocKey): JoinResponsePayload {
+    joinToDoc(client: WebSocketConnection, docId: DocKey): JoinResponsePayload {
         let doc: DocManager;
 
         if (this.docs.has(docId)) {
@@ -97,9 +111,8 @@ export class DocService implements OnModuleDestroy {
         };
     }
 
-    private onChangeEvent = (key: DocKey, message: string) => {
-        const docId = key;
-        const broadcastMessage: BroadcastMessage = JSON.parse(message);
+    private onChangesOrAwarenessMessage = (message: ChangesBroadcastMessage | AwarenessBroadcastMessage) => {
+        const docId = message.message.docId;
 
         // Do nothing if there are no connections in this instance
         if (!this.docs.has(docId)) {
@@ -110,41 +123,21 @@ export class DocService implements OnModuleDestroy {
 
         // If an author of changes is in this instance -> do nothing
         // Because we already sent diffs from this instance
-        if (doc.contains(broadcastMessage.author)) {
+        if (doc.contains(message.message.author)) {
             return;
         }
 
-        switch (broadcastMessage.type) {
-            case 'changes': {
-                doc.broadcastDiff(broadcastMessage.author, broadcastMessage.data);
+        switch (message.type) {
+            case 'changes':
+                doc.broadcastDiff(message.message.author, message.message.data);
                 break;
-            }
-            case 'awareness': {
-                doc.broadcastAwareness(broadcastMessage.author, broadcastMessage.data);
+            case 'awareness':
+                doc.broadcastAwareness(message.message.author, message.message.data);
                 break;
-            }
         }
     };
 
-    private onServiceEvent = (key: string, message: string) => {
-        const userId = key;
-        const broadcastMessage: UpdateTokenMessage = JSON.parse(message);
-        console.log(broadcastMessage);
-
-        // const affectedDocs = broadcastMessage.payload.docs.filter((doc) => this.docs.has(doc.id));
-
-        for (const doc of broadcastMessage.payload.docs) {
-            const docManager = this.docs.get(doc.id);
-
-            if (!docManager) {
-                continue;
-            }
-
-            docManager.updateTokenForConnection(doc.id, broadcastMessage.token, broadcastMessage.payload);
-        }
-    };
-
-    private assertClientJoined(client: WebSocketClient, docId: string) {
+    private assertClientJoined(client: WebSocketConnection, docId: string) {
         const doc = this.docs.get(docId);
 
         if (!doc || !doc.has(client)) {
@@ -152,7 +145,7 @@ export class DocService implements OnModuleDestroy {
         }
     }
 
-    disconnect(client: WebSocketClient) {
+    disconnect(client: WebSocketConnection) {
         const joinedDocs = this.connectionsToDocs.get(client.id);
 
         if (!joinedDocs) {

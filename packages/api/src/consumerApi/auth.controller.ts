@@ -1,6 +1,7 @@
 import { BadRequestException, Body, Controller, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from 'src/auth';
 import { KafkaService } from 'src/kafka/kafka.service';
+import { UpdateJWTPaload } from 'src/messages';
 import { TokenModel } from 'src/models';
 import { ConsumerGuard, ConsumerService } from './consumer';
 
@@ -23,7 +24,7 @@ export class AuthController {
         const parsedTokens = [];
 
         for (const t of tokens) {
-            const payload = await this.authService.checkJWT(t);
+            const payload: UpdateJWTPaload = await this.authService.checkJWT(t);
 
             if (!payload) {
                 throw new BadRequestException('Token is invalid');
@@ -35,7 +36,7 @@ export class AuthController {
 
             const consumerOwnsDocs = this.authService.consumerOwnsDocs(
                 consumer.id,
-                payload.docs.map((d) => d.id)
+                payload.docs.map((doc) => doc.id)
             );
 
             if (!consumerOwnsDocs) {
@@ -52,9 +53,8 @@ export class AuthController {
             // Revoke all other tokens
             await TokenModel.updateMany(
                 {
+                    id: t.payload.oldTokenId,
                     consumerId: t.payload.consumerId,
-                    userId: t.payload.userId,
-                    docs: { $in: t.payload.docs.map((d) => d.id) },
                     taint: false,
                 },
                 {
@@ -62,7 +62,15 @@ export class AuthController {
                 }
             );
 
-            this.kafkaService.publish(t);
+            await TokenModel.create({
+                id: t.payload.id,
+                consumerId: t.payload.consumerId,
+                userId: t.payload.userId,
+                docs: t.payload.docs.map((doc) => doc.id),
+                ...(t.payload.expiredAt && { expiredAt: t.payload.expiredAt }),
+            });
+
+            this.kafkaService.publish(t.payload.oldTokenId, t);
         }
     }
 }

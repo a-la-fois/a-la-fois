@@ -58,7 +58,7 @@ export class MicroserviceController {
         // Token is updated, but a client is trying to connect with old one
         if (!token) {
             TokenModel.create({
-                hash: sign,
+                id: payload.id,
                 consumerId: payload.consumerId,
                 userId: payload.userId,
                 docs: payload.docs.map((doc) => doc.id),

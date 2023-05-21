@@ -2,9 +2,9 @@ import { prop } from '@typegoose/typegoose';
 
 export class Token {
     @prop({ required: true, index: true })
-    hash: string;
+    id: string;
 
-    @prop({ required: true })
+    @prop({ required: true, index: true })
     consumerId: string;
 
     @prop({ required: true })

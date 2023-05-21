@@ -7,6 +7,7 @@ export type CheckClientTokenRequest = {
 export type CheckClientTokenResponse<TJWTPayload extends JWTPayload = JWTPayload> = Response<TJWTPayload>;
 
 export type JWTPayload = {
+    id: string;
     consumerId: string;
     userId: string;
     expiredAt?: Date;
@@ -14,6 +15,10 @@ export type JWTPayload = {
         id: string;
         rights: Right[];
     }[];
+};
+
+export type UpdateJWTPaload = JWTPayload & {
+    oldTokenId: string;
 };
 
 /*

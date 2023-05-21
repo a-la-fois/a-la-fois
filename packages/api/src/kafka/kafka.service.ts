@@ -40,13 +40,13 @@ export class KafkaService {
         this.connect();
     }
 
-    publish(message: UpdateTokenMessage) {
+    publish(key: string, message: UpdateTokenMessage) {
         this.publisher
             .send({
                 topic: SERVICE_TOPIC,
                 messages: [
                     {
-                        key: message.payload.userId,
+                        key: key,
                         value: Buffer.from(JSON.stringify(message)),
                     },
                 ],

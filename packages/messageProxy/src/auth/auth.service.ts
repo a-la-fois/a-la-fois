@@ -1,9 +1,11 @@
 import { DaprClient } from '@dapr/dapr';
 import { Injectable } from '@nestjs/common';
-import { ClientJWTPayload, WebSocketClient } from 'src/ws/types';
+import { WebSocketConnection } from 'src/ws/types';
 import { v4 as uuid } from 'uuid';
 import { DaprClient as DaprClientDecorator } from '@a-la-fois/nest-common';
 import { AuthClient } from '@a-la-fois/api';
+import { TokenService } from './token.service';
+import { createAccessObject } from './utils';
 
 export type AuthCheckResult = {
     status: 'ok' | 'err';
@@ -20,27 +22,25 @@ const OK_RESULT: AuthCheckResult = { status: 'ok' };
 @Injectable()
 export class AuthService {
     private authClient: AuthClient;
+    private publicDocs: Map<string, boolean> = new Map();
 
-    constructor(@DaprClientDecorator() daprClient: DaprClient) {
+    constructor(@DaprClientDecorator() daprClient: DaprClient, private readonly tokenService: TokenService) {
         this.authClient = new AuthClient(daprClient);
     }
 
     /*
      * The function changes client object
      * */
-    async initClient(client: WebSocketClient, token?: string): Promise<AuthCheckResult> {
-        client.id = uuid();
-
-        console.debug(token);
+    async initClient(conn: WebSocketConnection, token?: string): Promise<AuthCheckResult> {
+        conn.id = uuid();
 
         if (!token) {
-            client.access = {};
+            conn.access = {};
             return OK_RESULT;
         }
 
-        const response = await this.authClient.checkClientToken<ClientJWTPayload>(token);
+        const response = await this.authClient.checkClientToken(token);
 
-        console.debug(response);
         if (response.status !== 200) {
             return {
                 status: 'err',
@@ -48,16 +48,11 @@ export class AuthService {
             };
         }
 
-        client.userId = response.payload.userId;
-        client.access =
-            response.payload.docs?.reduce((acc, doc) => {
-                acc[doc.id] = {
-                    id: doc.id,
-                    rights: doc.rights,
-                };
+        conn.userId = response.payload.userId;
+        conn.tokenId = response.payload.id;
+        conn.access = createAccessObject(response.payload.docs);
 
-                return acc;
-            }, {} as WebSocketClient['access']) ?? {};
+        this.tokenService.addConnection(conn);
 
         return OK_RESULT;
     }
@@ -65,8 +60,8 @@ export class AuthService {
     /*
      * Changes client object
      * */
-    async checkDocAccess(client: WebSocketClient, docId: string): Promise<AuthCheckResult> {
-        const docAccess = client.access[docId];
+    async checkDocAccess(conn: WebSocketConnection, docId: string): Promise<AuthCheckResult> {
+        const docAccess = conn.access[docId];
 
         if (!docAccess) {
             const response = await this.authClient.docIsPublic(docId);
@@ -79,33 +74,49 @@ export class AuthService {
             }
 
             if (response.payload.isPublic) {
-                client.access[docId] = {
-                    id: docId,
-                    rights: [],
-                    isPublic: true,
-                };
+                this.publicDocs.set(docId, true);
                 return OK_RESULT;
             } else {
                 return UNAUTHORIZED_RESULT;
             }
         }
 
-        if (docAccess.rights.includes('noAccess')) {
-            return UNAUTHORIZED_RESULT;
+        if (docAccess.rights.includes('read')) {
+            return OK_RESULT;
         }
 
-        return OK_RESULT;
+        return UNAUTHORIZED_RESULT;
     }
 
-    checkWriteAccess(client: WebSocketClient, docId: string): AuthCheckResult {
-        const docAccess = client.access[docId];
+    checkReadAccess(conn: WebSocketConnection, docId: string): AuthCheckResult {
+        const docAccess = conn.access[docId];
 
-        console.log(docAccess);
-        if (!docAccess.isPublic || !docAccess.rights.includes('write')) {
-            console.log('NO_ACCESS');
+        if (!docAccess) {
             return UNAUTHORIZED_RESULT;
         }
 
-        return OK_RESULT;
+        if (docAccess.rights.includes('read') || this.publicDocs.has(docId)) {
+            return OK_RESULT;
+        }
+
+        return UNAUTHORIZED_RESULT;
+    }
+
+    checkWriteAccess(conn: WebSocketConnection, docId: string): AuthCheckResult {
+        const docAccess = conn.access[docId];
+
+        if (!docAccess) {
+            return UNAUTHORIZED_RESULT;
+        }
+
+        if (docAccess.rights.includes('write') || this.publicDocs.has(docId)) {
+            return OK_RESULT;
+        }
+
+        return UNAUTHORIZED_RESULT;
+    }
+
+    disconnect(conn: WebSocketConnection) {
+        this.tokenService.removeConnection(conn);
     }
 }

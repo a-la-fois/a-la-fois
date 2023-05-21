@@ -1,11 +1,11 @@
-import { Module } from "@nestjs/common";
-import { RedisPubsubService } from './redis-pubsub.service';
+import { Module } from '@nestjs/common';
 import { KafkaPubsubService } from './kafka-pubsub.service';
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule } from '@nestjs/config';
+import { PubsubService } from './pubsub.service';
 
 @Module({
-  imports: [ConfigModule],
-  providers: [KafkaPubsubService, RedisPubsubService],
-  exports: [KafkaPubsubService, RedisPubsubService],
+    imports: [ConfigModule],
+    providers: [KafkaPubsubService],
+    exports: [PubsubService],
 })
-export class PubsubModule { }
+export class PubsubModule {}

@@ -1,25 +1,25 @@
 import { readFileSync } from 'fs';
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { BroadcastMessage, OnPublishCallback, PubSub } from './types';
-import { DocKey } from '../doc/types';
 import { Kafka, Producer, Consumer } from 'kafkajs';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '../config';
 
 export const KafkaPubSubToken = 'KAFKA_PUBSUB';
 
-export const TOPICS = {
+const TOPICS = {
     changes: config.kafka.changesTopic,
     service: config.kafka.serviceTopic,
 };
 
-type TopicKeys = keyof typeof TOPICS;
+export type TopicKeys = keyof typeof TOPICS;
+
+export type CallbackType = (message: string) => void;
 
 @Injectable()
-export class KafkaPubsubService implements PubSub<TopicKeys>, OnModuleDestroy {
+export class KafkaPubsubService implements OnModuleDestroy {
     private publisher: Producer;
     private subscriber: Consumer;
-    private callbacks: Map<string, OnPublishCallback[]> = new Map();
+    private callbacks: CallbackType[] = [];
     private changesTopic: string;
     private serviceTopic: string;
     private kafka: Kafka;
@@ -59,14 +59,13 @@ export class KafkaPubsubService implements PubSub<TopicKeys>, OnModuleDestroy {
         this.publisher.disconnect();
     }
 
-    publish(topic: TopicKeys, key: DocKey, message: BroadcastMessage): void {
+    publish(topic: TopicKeys, message: string): void {
         this.publisher
             .send({
-                topic: topic,
+                topic: TOPICS[topic],
                 messages: [
                     {
-                        key: key,
-                        value: Buffer.from(JSON.stringify(message)),
+                        value: Buffer.from(message),
                     },
                 ],
             })
@@ -74,16 +73,8 @@ export class KafkaPubsubService implements PubSub<TopicKeys>, OnModuleDestroy {
             .catch(console.log);
     }
 
-    addCallback(topic: TopicKeys, callback: OnPublishCallback) {
-        let callbacksByTopic = this.callbacks.get(topic);
-
-        if (callbacksByTopic) {
-            callbacksByTopic.push(callback);
-        } else {
-            callbacksByTopic = [callback];
-        }
-
-        this.callbacks.set(topic, callbacksByTopic);
+    addCallback(callback: CallbackType) {
+        this.callbacks.push(callback);
     }
 
     private connect(): void {
@@ -103,10 +94,9 @@ export class KafkaPubsubService implements PubSub<TopicKeys>, OnModuleDestroy {
         this.subscriber.run({
             eachMessage: async ({ topic, partition, message, heartbeat, pause }) => {
                 const key = message.key.toString();
-                const callbacksByTopic = this.callbacks.get(topic);
 
-                for (const i in callbacksByTopic) {
-                    callbacksByTopic[i](key, message.value.toString());
+                for (const callback of this.callbacks) {
+                    callback(message.value.toString());
                 }
             },
         });
