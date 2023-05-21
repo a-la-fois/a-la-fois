@@ -4,6 +4,7 @@ import {
     awarenessBroadcastMessageType,
     BroadcastMessage,
     changesBroadcastMessageType,
+    detachDocBroadcastMessageType,
     updateTokenBroadcastMessageType,
 } from './types';
 
@@ -11,12 +12,14 @@ const MESSAGE_TYPE_TO_TOPIC: Record<BroadcastMessageTypes, TopicKeys> = {
     [changesBroadcastMessageType]: 'changes',
     [awarenessBroadcastMessageType]: 'changes',
     [updateTokenBroadcastMessageType]: 'service',
+    [detachDocBroadcastMessageType]: 'service',
 };
 
 export type BroadcastMessageTypes =
     | typeof changesBroadcastMessageType
     | typeof awarenessBroadcastMessageType
-    | typeof updateTokenBroadcastMessageType;
+    | typeof updateTokenBroadcastMessageType
+    | typeof detachDocBroadcastMessageType;
 
 export type MessageSubscriber<TPayload> = (message: BroadcastMessage<BroadcastMessageTypes, TPayload>) => void;
 
@@ -25,19 +28,23 @@ export class PubsubService {
     private subscribers: Map<BroadcastMessageTypes, MessageSubscriber<Object>[]> = new Map();
 
     constructor(private readonly kafka: KafkaPubsubService) {
-        this.kafka.addCallback(this.onMessage);
+        this.kafka.addCallback(this.onMessageRaw);
     }
 
-    private onMessage(message: string) {
+    private onMessageRaw(message: string) {
         const broadcastMessage: BroadcastMessage<BroadcastMessageTypes, Object> = JSON.parse(message);
-        const subscribersByType = this.subscribers.get(broadcastMessage.type);
+        this.onMessage(broadcastMessage);
+    }
+
+    private onMessage(message: BroadcastMessage<BroadcastMessageTypes, Object>) {
+        const subscribersByType = this.subscribers.get(message.type);
 
         if (!subscribersByType) {
             return;
         }
 
         for (const sub of subscribersByType) {
-            sub(broadcastMessage);
+            sub(message);
         }
     }
 
@@ -55,5 +62,9 @@ export class PubsubService {
 
     publish(message: BroadcastMessage<BroadcastMessageTypes, Object>) {
         this.kafka.publish(MESSAGE_TYPE_TO_TOPIC[message.type], JSON.stringify(message.message));
+    }
+
+    publishInternal(message: BroadcastMessage<BroadcastMessageTypes, Object>) {
+        this.onMessage(message);
     }
 }

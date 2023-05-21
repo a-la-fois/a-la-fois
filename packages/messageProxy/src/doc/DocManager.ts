@@ -1,4 +1,4 @@
-import { WebSocketConnection } from 'src/ws/types';
+import { ConnectionId, WebSocketConnection } from 'src/ws/types';
 import {
     Awareness,
     broadcastAwarenessEvent,
@@ -10,7 +10,7 @@ import {
 
 export class DocManager {
     readonly id: string;
-    private connections: Map<string, WebSocketConnection> = new Map();
+    private connections: Map<ConnectionId, WebSocketConnection> = new Map();
 
     constructor(docId: string) {
         this.id = docId;
@@ -22,9 +22,9 @@ export class DocManager {
         }
     }
 
-    removeConnection(client: WebSocketConnection) {
-        if (this.contains(client.id)) {
-            this.connections.delete(client.id);
+    removeConnection(connectionId: ConnectionId) {
+        if (this.contains(connectionId)) {
+            this.connections.delete(connectionId);
         }
     }
 
@@ -35,15 +35,11 @@ export class DocManager {
         this.connections.clear();
     }
 
-    has(client: WebSocketConnection) {
-        return this.connections.has(client.id);
-    }
-
     isEmpty() {
         return this.connections.size === 0;
     }
 
-    broadcastDiff(authorConnectionId: string, changes: Changes) {
+    broadcastDiff(authorConnectionId: ConnectionId, changes: Changes) {
         for (const [, connection] of this.connections) {
             if (connection.id !== authorConnectionId) {
                 const message: BroadcastChangesMessage = {
@@ -58,7 +54,7 @@ export class DocManager {
         }
     }
 
-    broadcastAwareness(authorConnectionId: string, awareness: Awareness) {
+    broadcastAwareness(authorConnectionId: ConnectionId, awareness: Awareness) {
         for (const [, connection] of this.connections) {
             if (connection.id !== authorConnectionId) {
                 const message: BroadcastAwarenessMessage = {
@@ -73,7 +69,7 @@ export class DocManager {
         }
     }
 
-    contains(clientId: string): boolean {
-        return this.connections.has(clientId);
+    contains(connectionId: ConnectionId): boolean {
+        return this.connections.has(connectionId);
     }
 }

@@ -1,8 +1,8 @@
+import { UpdateTokenBroadcastMessage } from '@a-la-fois/message-proxy';
 import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { Kafka, Producer } from 'kafkajs';
 import { config } from 'src/config';
-import { UpdateTokenMessage } from 'src/messages';
 
 export const SERVICE_TOPIC = config.kafka.serviceTopic;
 
@@ -40,14 +40,13 @@ export class KafkaService {
         this.connect();
     }
 
-    publish(key: string, message: UpdateTokenMessage) {
+    publish(message: string) {
         this.publisher
             .send({
                 topic: SERVICE_TOPIC,
                 messages: [
                     {
-                        key: key,
-                        value: Buffer.from(JSON.stringify(message)),
+                        value: Buffer.from(message),
                     },
                 ],
             })

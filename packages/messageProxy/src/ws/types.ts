@@ -12,3 +12,5 @@ export type WebSocketConnection = {
     consumerId: string;
     access: Record<string, AccessData>;
 } & WebSocket;
+
+export type ConnectionId = WebSocketConnection['id'];

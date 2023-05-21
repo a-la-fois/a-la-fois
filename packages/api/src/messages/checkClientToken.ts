@@ -17,10 +17,6 @@ export type JWTPayload = {
     }[];
 };
 
-export type UpdateJWTPaload = JWTPayload & {
-    oldTokenId: string;
-};
-
 /*
  *  If there are several rights
  *  they will be applyied in such oreder:

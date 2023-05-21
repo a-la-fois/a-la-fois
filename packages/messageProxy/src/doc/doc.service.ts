@@ -14,6 +14,8 @@ import {
     awarenessBroadcastMessageType,
     ChangesBroadcastMessage,
     changesBroadcastMessageType,
+    DetachDocBroadcastMessage,
+    detachDocBroadcastMessageType,
     UpdateTokenBroadcastMessage,
     updateTokenBroadcastMessageType,
 } from '../pubsub/types';
@@ -36,7 +38,7 @@ export class DocService implements OnModuleDestroy {
     constructor(private readonly pubsub: PubsubService, private actorService: ActorService) {
         this.pubsub.subscribe(changesBroadcastMessageType, this.onChangesOrAwarenessMessage);
         this.pubsub.subscribe(awarenessBroadcastMessageType, this.onChangesOrAwarenessMessage);
-        this.pubsub.subscribe(updateTokenBroadcastMessageType, this.onUpdateTokenMessage);
+        this.pubsub.subscribe(detachDocBroadcastMessageType, this.onDetachDocMessage);
     }
 
     applyChanges(client: WebSocketConnection, payload: ChangesPayload) {
@@ -111,6 +113,20 @@ export class DocService implements OnModuleDestroy {
         };
     }
 
+    detachDoc(connectionId: string, docId: DocKey) {
+        const doc = this.docs.get(docId);
+        if (doc && doc.contains(connectionId)) {
+            doc.removeConnection(connectionId);
+
+            // If this is the only one connection
+            // remove docManager and delete connection -> docManager relation
+            if (doc.isEmpty()) {
+                this.connectionsToDocs.delete(connectionId);
+                this.docs.delete(docId);
+            }
+        }
+    }
+
     private onChangesOrAwarenessMessage = (message: ChangesBroadcastMessage | AwarenessBroadcastMessage) => {
         const docId = message.message.docId;
 
@@ -137,10 +153,16 @@ export class DocService implements OnModuleDestroy {
         }
     };
 
+    private onDetachDocMessage = (message: DetachDocBroadcastMessage) => {
+        for (const docId of message.message.docs) {
+            this.detachDoc(message.message.connectionId, docId);
+        }
+    };
+
     private assertClientJoined(client: WebSocketConnection, docId: string) {
         const doc = this.docs.get(docId);
 
-        if (!doc || !doc.has(client)) {
+        if (!doc || !doc.contains(client.id)) {
             throw new NotJoinedError(docId);
         }
     }
@@ -153,7 +175,7 @@ export class DocService implements OnModuleDestroy {
         }
 
         for (const i in joinedDocs) {
-            joinedDocs[i].removeConnection(client);
+            joinedDocs[i].removeConnection(client.id);
 
             if (joinedDocs[i].isEmpty()) {
                 this.docs.delete(joinedDocs[i].id);

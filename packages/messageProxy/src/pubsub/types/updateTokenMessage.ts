@@ -1,11 +1,11 @@
-import { JWTPayload } from '@a-la-fois/api';
+import { UpdateJWTPayload } from '@a-la-fois/api';
 import { BroadcastMessage } from './broadcastMessage';
 
 export const updateTokenBroadcastMessageType = 'updateToken';
 
 export type UpdateTokenBroadcastPayload = {
     token: string;
-    data: JWTPayload;
+    data: UpdateJWTPayload;
 };
 
 export type UpdateTokenBroadcastMessage = BroadcastMessage<

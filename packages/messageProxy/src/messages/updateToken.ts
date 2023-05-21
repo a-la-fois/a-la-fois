@@ -1,5 +1,5 @@
 import { AccessData } from 'src/ws/types';
-import { Message } from '../message';
+import { Message } from './message';
 
 export type UpdateTokenPayload = {
     token: string;
@@ -8,9 +8,8 @@ export type UpdateTokenPayload = {
         changed: AccessData[];
         removed: string[];
     };
-    message: string;
 };
 
-export const updateTokenType = 'updateToken';
+export const updateTokenEvent = 'updateToken';
 
-export type UpdateTokenServiceMessage = Message<typeof updateTokenType, UpdateTokenPayload>;
+export type UpdateTokenEvent = Message<typeof updateTokenEvent, UpdateTokenPayload>;

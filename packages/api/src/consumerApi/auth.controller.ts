@@ -1,7 +1,8 @@
+import { UpdateTokenBroadcastPayload } from '@a-la-fois/message-proxy';
 import { BadRequestException, Body, Controller, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from 'src/auth';
 import { KafkaService } from 'src/kafka/kafka.service';
-import { UpdateJWTPaload } from 'src/messages';
+import { UpdateJWTPayload } from 'src/messages';
 import { TokenModel } from 'src/models';
 import { ConsumerGuard, ConsumerService } from './consumer';
 
@@ -21,10 +22,10 @@ export class AuthController {
     @Post()
     async updateToken(@Body() { tokens }: UpdateTokenDto) {
         const consumer = await this.consumerService.getCurrentConsumer();
-        const parsedTokens = [];
+        const parsedTokens: { token: string; payload: UpdateJWTPayload }[] = [];
 
         for (const t of tokens) {
-            const payload: UpdateJWTPaload = await this.authService.checkJWT(t);
+            const payload: UpdateJWTPayload = await this.authService.checkJWT(t);
 
             if (!payload) {
                 throw new BadRequestException('Token is invalid');
@@ -70,7 +71,12 @@ export class AuthController {
                 ...(t.payload.expiredAt && { expiredAt: t.payload.expiredAt }),
             });
 
-            this.kafkaService.publish(t.payload.oldTokenId, t);
+            const message: UpdateTokenBroadcastPayload = {
+                token: t.token,
+                data: t.payload,
+            };
+
+            this.kafkaService.publish(JSON.stringify(message));
         }
     }
 }

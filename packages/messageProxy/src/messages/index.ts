@@ -1,4 +1,3 @@
-export * from './service/';
 export * from './awareness';
 export * from './broadcastAwareness';
 export * from './broadcastChanges';
@@ -11,7 +10,9 @@ export * from './joinResponse';
 export * from './message';
 export * from './ping';
 export * from './pong';
+export * from './pubsub';
 export * from './syncComplete';
 export * from './syncResponse';
 export * from './syncStart';
 export * from './types';
+export * from './updateToken';

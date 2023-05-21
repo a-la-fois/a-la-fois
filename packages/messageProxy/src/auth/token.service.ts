@@ -1,9 +1,13 @@
-import { UpdateJWTPaload, UpdateTokenMessage } from '@a-la-fois/api';
+import { UpdateJWTPayload } from '@a-la-fois/api';
 import { Injectable } from '@nestjs/common';
 import { DocKey } from 'src/doc/types';
-import { UpdateTokenServiceMessage } from 'src/messages';
+import { UpdateTokenEvent } from 'src/messages';
 import { PubsubService } from 'src/pubsub/pubsub.service';
-import { UpdateTokenBroadcastMessage, updateTokenBroadcastMessageType } from 'src/pubsub/types';
+import {
+    DetachDocBroadcastMessage,
+    UpdateTokenBroadcastMessage,
+    updateTokenBroadcastMessageType,
+} from 'src/pubsub/types';
 import { AccessData, WebSocketConnection } from 'src/ws/types';
 import { createAccessObject } from './utils';
 
@@ -52,7 +56,19 @@ export class TokenService {
 
         for (const conn of connections) {
             conn.access = createAccessObject(tokenData.docs);
-            const updateTokenMessage: UpdateTokenServiceMessage = {
+            // Send message to detach connection from document
+            // so the connection doesn't get changes
+            const detachMessage: DetachDocBroadcastMessage = {
+                type: 'detachDoc',
+                message: {
+                    docs: tokenRightsDiff.removed,
+                    connectionId: conn.id,
+                },
+            };
+            this.pubsub.publishInternal(detachMessage);
+
+            // Send message to client with new token
+            const updateTokenMessage: UpdateTokenEvent = {
                 event: 'updateToken',
                 data: {
                     token: message.message.token,
@@ -61,17 +77,15 @@ export class TokenService {
                         changed: tokenRightsDiff.changed,
                         removed: tokenRightsDiff.removed,
                     },
-                    message: 'Token is updated',
                 },
             };
-
             conn.send(JSON.stringify(updateTokenMessage));
         }
     };
 
     private getTokenRightsDiff(
         rights: WebSocketConnection['access'],
-        newRights: UpdateJWTPaload['docs']
+        newRights: UpdateJWTPayload['docs']
     ): TokenRightsDiff {
         const added = [];
         const changed = [];
