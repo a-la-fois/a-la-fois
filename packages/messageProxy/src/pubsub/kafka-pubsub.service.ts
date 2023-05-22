@@ -93,8 +93,6 @@ export class KafkaPubsubService implements OnModuleDestroy {
 
         this.subscriber.run({
             eachMessage: async ({ topic, partition, message, heartbeat, pause }) => {
-                const key = message.key.toString();
-
                 for (const callback of this.callbacks) {
                     callback(message.value.toString());
                 }

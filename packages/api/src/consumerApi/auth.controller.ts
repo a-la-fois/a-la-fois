@@ -1,4 +1,4 @@
-import { UpdateTokenBroadcastPayload } from '@a-la-fois/message-proxy';
+import { UpdateTokenBroadcastMessage } from '@a-la-fois/message-proxy';
 import { BadRequestException, Body, Controller, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from 'src/auth';
 import { KafkaService } from 'src/kafka/kafka.service';
@@ -12,7 +12,7 @@ type UpdateTokenDto = {
 
 @Controller('auth')
 @UseGuards(ConsumerGuard)
-export class AuthController {
+export class TokenController {
     constructor(
         private authService: AuthService,
         private consumerService: ConsumerService,
@@ -51,10 +51,14 @@ export class AuthController {
         }
 
         for (const t of parsedTokens) {
+            if (await TokenModel.findOne({ tokenId: t.payload.id, consumerId: t.payload.consumerId })) {
+                console.log('Already updated');
+            }
+
             // Revoke all other tokens
             await TokenModel.updateMany(
                 {
-                    id: t.payload.oldTokenId,
+                    tokenId: t.payload.oldTokenId,
                     consumerId: t.payload.consumerId,
                     taint: false,
                 },
@@ -64,16 +68,19 @@ export class AuthController {
             );
 
             await TokenModel.create({
-                id: t.payload.id,
+                tokenId: t.payload.id,
                 consumerId: t.payload.consumerId,
                 userId: t.payload.userId,
                 docs: t.payload.docs.map((doc) => doc.id),
                 ...(t.payload.expiredAt && { expiredAt: t.payload.expiredAt }),
             });
 
-            const message: UpdateTokenBroadcastPayload = {
-                token: t.token,
-                data: t.payload,
+            const message: UpdateTokenBroadcastMessage = {
+                type: 'updateToken',
+                message: {
+                    token: t.token,
+                    data: t.payload,
+                },
             };
 
             this.kafkaService.publish(JSON.stringify(message));

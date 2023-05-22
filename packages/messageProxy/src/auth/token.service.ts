@@ -44,18 +44,19 @@ export class TokenService {
     }
 
     private onUpdateTokenMessage = (message: UpdateTokenBroadcastMessage) => {
-        const tokenId = message.message.data.id;
+        const tokenId = message.message.data.oldTokenId;
         const tokenData = message.message.data;
         const connections = this.tokenConnections.get(tokenId);
 
         if (!connections) {
             return;
         }
+        const newConnAccess = createAccessObject(tokenData.docs);
 
-        const tokenRightsDiff = this.getTokenRightsDiff(connections[0].access, tokenData.docs);
+        const tokenRightsDiff = this.getTokenRightsDiff(connections[0].access, newConnAccess);
 
         for (const conn of connections) {
-            conn.access = createAccessObject(tokenData.docs);
+            conn.access = newConnAccess;
             // Send message to detach connection from document
             // so the connection doesn't get changes
             const detachMessage: DetachDocBroadcastMessage = {
@@ -85,7 +86,7 @@ export class TokenService {
 
     private getTokenRightsDiff(
         rights: WebSocketConnection['access'],
-        newRights: UpdateJWTPayload['docs']
+        newRights: WebSocketConnection['access']
     ): TokenRightsDiff {
         const added = [];
         const changed = [];
@@ -94,7 +95,7 @@ export class TokenService {
 
         const docIds = new Set<string>(Object.keys(rights).concat(Object.keys(newRights)));
 
-        for (const id in docIds) {
+        for (const id of docIds) {
             const isInDocs = id in rights;
             const isInNewDocs = id in newRights;
 

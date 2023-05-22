@@ -6,6 +6,6 @@ import { PubsubService } from './pubsub.service';
 @Module({
     imports: [ConfigModule],
     providers: [KafkaPubsubService, PubsubService],
-    exports: [PubsubService],
+    exports: [PubsubService, KafkaPubsubService],
 })
 export class PubsubModule {}

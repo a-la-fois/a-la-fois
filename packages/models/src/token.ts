@@ -2,7 +2,7 @@ import { prop } from '@typegoose/typegoose';
 
 export class Token {
     @prop({ required: true, index: true })
-    id: string;
+    tokenId: string;
 
     @prop({ required: true, index: true })
     consumerId: string;

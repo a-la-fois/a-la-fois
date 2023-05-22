@@ -31,12 +31,12 @@ export class PubsubService {
         this.kafka.addCallback(this.onMessageRaw);
     }
 
-    private onMessageRaw(message: string) {
+    private onMessageRaw = (message: string) => {
         const broadcastMessage: BroadcastMessage<BroadcastMessageTypes, Object> = JSON.parse(message);
         this.onMessage(broadcastMessage);
-    }
+    };
 
-    private onMessage(message: BroadcastMessage<BroadcastMessageTypes, Object>) {
+    private onMessage = (message: BroadcastMessage<BroadcastMessageTypes, Object>) => {
         const subscribersByType = this.subscribers.get(message.type);
 
         if (!subscribersByType) {
@@ -46,7 +46,7 @@ export class PubsubService {
         for (const sub of subscribersByType) {
             sub(message);
         }
-    }
+    };
 
     subscribe<T extends Object>(messageType: BroadcastMessageTypes, subscriber: MessageSubscriber<T>) {
         let subscribersByType = this.subscribers.get(messageType);

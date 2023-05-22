@@ -16,8 +16,6 @@ import {
     changesBroadcastMessageType,
     DetachDocBroadcastMessage,
     detachDocBroadcastMessageType,
-    UpdateTokenBroadcastMessage,
-    updateTokenBroadcastMessageType,
 } from '../pubsub/types';
 import { WebSocketConnection } from '../ws/types';
 import { ActorService } from '../actor/actor.service';
