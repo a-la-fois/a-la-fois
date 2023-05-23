@@ -10,7 +10,7 @@ export type JWTPayload = {
     tokenId: string;
     consumerId: string;
     userId: string;
-    expiredAt?: Date;
+    expiredAt?: string; // UTC YYYY-MM-DDTHH:mm:ss.sssZ
     docs?: {
         id: string;
         rights: Right[];

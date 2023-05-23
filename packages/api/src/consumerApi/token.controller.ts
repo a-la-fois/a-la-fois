@@ -35,11 +35,24 @@ export class TokenController {
             const payload: UpdateJWTPayload = await this.authService.checkJWT(t);
 
             if (!payload) {
-                throw new BadRequestException('Token is invalid');
+                throw new BadRequestException({
+                    message: 'Token is invalid',
+                    data: { tokenId: payload.tokenId },
+                });
             }
 
             if (!payload.docs) {
-                throw new BadRequestException('No documents');
+                throw new BadRequestException({
+                    message: 'No documents',
+                    data: { tokenId: payload.tokenId },
+                });
+            }
+
+            if (payload.expiredAt && new Date(payload.expiredAt) < new Date()) {
+                throw new BadRequestException({
+                    message: 'Token expiration date must be in the future',
+                    data: { tokenId: payload.tokenId },
+                });
             }
 
             const consumerOwnsDocs = this.authService.consumerOwnsDocs(
@@ -48,7 +61,10 @@ export class TokenController {
             );
 
             if (!consumerOwnsDocs) {
-                throw new UnauthorizedException('You dont have permission to documents');
+                throw new UnauthorizedException({
+                    message: 'You dont have permission to documents',
+                    data: { tokenId: payload.tokenId },
+                });
             }
 
             parsedTokens.push({

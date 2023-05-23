@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DocKey } from 'src/doc/types';
-import { UpdateTokenServiceEvent } from 'src/messages';
+import { TokenExpiredServiceMessage, UpdateTokenServiceEvent } from 'src/messages';
 import { PubsubService } from 'src/pubsub/pubsub.service';
 import {
     DetachDocBroadcastMessage,
@@ -9,7 +9,7 @@ import {
 } from 'src/pubsub/types';
 import { AttachDocBroadcastMessage } from 'src/pubsub/types/attachDocMessage';
 import { AccessData, WebSocketConnection } from 'src/ws/types';
-import { createAccessObject } from './utils';
+import { createAccessObject, docIdsFromAccess } from './utils';
 
 type TokenRightsDiff = {
     added: AccessData[];
@@ -18,12 +18,16 @@ type TokenRightsDiff = {
     removed: DocKey[];
 };
 
+const EXPIRATION_CHECK_INTERVAL = 5_000; // 5 minutes
+
 @Injectable()
 export class TokenService {
     private tokenConnections: Map<string, WebSocketConnection[]> = new Map();
+    private expirationInterval: NodeJS.Timer;
 
     constructor(private readonly pubsub: PubsubService) {
         this.pubsub.subscribe(updateTokenBroadcastMessageType, this.onUpdateTokenMessage);
+        this.expirationInterval = setInterval(this.checkTokenExpiration, EXPIRATION_CHECK_INTERVAL);
     }
 
     addConnection(conn: WebSocketConnection) {
@@ -64,28 +68,25 @@ export class TokenService {
             // Send message to detach connection from documents
             // so the connection doesn't get new changes
             if (tokenRightsDiff.removed) {
-                const detachMessage: DetachDocBroadcastMessage = {
+                this.pubsub.publishInternal({
                     type: 'detachDoc',
                     message: {
                         docs: tokenRightsDiff.removed,
                         connectionId: conn.id,
                     },
-                };
-                this.pubsub.publishInternal(detachMessage);
+                } as DetachDocBroadcastMessage);
             }
 
             // Send message to attach connection to documents
             // so the connection gets new changes
             if (tokenRightsDiff.added) {
-                const attachMessage: AttachDocBroadcastMessage = {
+                this.pubsub.publishInternal({
                     type: 'attachDoc',
                     message: {
                         docs: tokenRightsDiff.added.map((doc) => doc.id),
                         connection: conn,
                     },
-                };
-
-                this.pubsub.publishInternal(attachMessage);
+                } as AttachDocBroadcastMessage);
             }
 
             // Send message to client with new token
@@ -159,4 +160,38 @@ export class TokenService {
             removed,
         };
     }
+
+    private checkTokenExpiration = () => {
+        for (const [_tokenId, connections] of this.tokenConnections) {
+            // Check only one because all connections with the same token
+            // have the same expiration time
+            const conn = connections[0];
+
+            if (conn.tokenExpiredAt && conn.tokenExpiredAt < new Date()) {
+                for (const conn of connections) {
+                    // Send message about token expiration to the client
+                    const message: TokenExpiredServiceMessage = {
+                        event: 'service',
+                        data: {
+                            event: 'expiredToken',
+                            data: {
+                                tokenId: conn.tokenId,
+                                expiredAt: conn.tokenExpiredAt.toJSON(),
+                            },
+                        },
+                    };
+                    conn.send(JSON.stringify(message));
+
+                    // Send message to detach from docs
+                    this.pubsub.publishInternal({
+                        type: 'detachDoc',
+                        message: {
+                            docs: docIdsFromAccess(conn.access),
+                            connectionId: conn.id,
+                        },
+                    } as DetachDocBroadcastMessage);
+                }
+            }
+        }
+    };
 }

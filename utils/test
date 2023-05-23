@@ -1,0 +1,10 @@
+
+const tomorrow = new Date()
+tomorrow.setDate((new Date()).getDate() + 1)
+
+
+tomorrow <= new Date()
+
+tomorrow.toJSON()
+const serTomorrow = new Date(tomorrow)
+serTomorrow

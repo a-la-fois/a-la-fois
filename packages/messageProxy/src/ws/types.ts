@@ -8,6 +8,7 @@ export type AccessData = {
 export type WebSocketConnection = {
     id: string;
     tokenId: string;
+    tokenExpiredAt: Date;
     userId: string;
     consumerId: string;
     access: Record<string, AccessData>;

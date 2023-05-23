@@ -50,6 +50,7 @@ export class AuthService {
 
         conn.userId = response.payload.userId;
         conn.tokenId = response.payload.tokenId;
+        conn.tokenExpiredAt = new Date(response.payload.expiredAt);
         conn.access = createAccessObject(response.payload.docs);
 
         this.tokenService.addConnection(conn);
@@ -66,6 +67,7 @@ export class AuthService {
         if (!docAccess) {
             const response = await this.authClient.docIsPublic(docId);
 
+            console.log(response);
             if (response.status !== 200) {
                 return {
                     status: 'err',
@@ -75,6 +77,7 @@ export class AuthService {
 
             if (response.payload.isPublic) {
                 this.publicDocs.set(docId, true);
+                console.log(this.publicDocs);
                 return OK_RESULT;
             } else {
                 return UNAUTHORIZED_RESULT;
@@ -91,11 +94,11 @@ export class AuthService {
     checkReadAccess(conn: WebSocketConnection, docId: string): AuthCheckResult {
         const docAccess = conn.access[docId];
 
-        if (!docAccess) {
-            return UNAUTHORIZED_RESULT;
+        if (docAccess && docAccess.rights.includes('read')) {
+            return OK_RESULT;
         }
 
-        if (docAccess.rights.includes('read') || this.publicDocs.has(docId)) {
+        if (this.publicDocs.has(docId)) {
             return OK_RESULT;
         }
 
@@ -105,15 +108,19 @@ export class AuthService {
     checkWriteAccess(conn: WebSocketConnection, docId: string): AuthCheckResult {
         const docAccess = conn.access[docId];
 
-        if (!docAccess) {
-            return UNAUTHORIZED_RESULT;
+        if (docAccess && docAccess.rights.includes('write')) {
+            return OK_RESULT;
         }
 
-        if (docAccess.rights.includes('write') || this.publicDocs.has(docId)) {
+        if (this.publicDocs.has(docId)) {
             return OK_RESULT;
         }
 
         return UNAUTHORIZED_RESULT;
+    }
+
+    private isTokenExpired(conn: WebSocketConnection): boolean {
+        return conn.tokenExpiredAt < new Date();
     }
 
     disconnect(conn: WebSocketConnection) {

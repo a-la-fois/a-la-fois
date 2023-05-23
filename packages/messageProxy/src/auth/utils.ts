@@ -13,3 +13,13 @@ export const createAccessObject = (docs: JWTPayload['docs']): Record<string, Acc
         }, {} as WebSocketConnection['access']) ?? {}
     );
 };
+
+export const docIdsFromAccess = (access: WebSocketConnection['access']): string[] => {
+    const docIds = [];
+
+    for (const docId in access) {
+        docIds.push(docId);
+    }
+
+    return docIds;
+};

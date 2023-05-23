@@ -15,12 +15,15 @@ const run = async () => {
     const docId = process.argv[2];
     const consumerId = process.argv[3];
     const privateKey = fs.readFileSync(keyPath);
+    const expiredAt = new Date();
+    expiredAt.setTime(expiredAt.getTime() + 1000 * 60);
 
     const token = jwt.sign(
         {
-            tokenId: '39',
-            oldTokenId: '38',
+            tokenId: '43',
+            oldTokenId: '42',
             consumerId,
+            expiredAt,
             userId: 'someUser1',
             docs: [
                 {

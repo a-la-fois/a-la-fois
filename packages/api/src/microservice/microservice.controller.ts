@@ -24,7 +24,7 @@ export class MicroserviceController {
             };
         }
 
-        if (payload.expiredAt && payload.expiredAt < new Date()) {
+        if (payload.expiredAt && new Date(payload.expiredAt) < new Date()) {
             return {
                 status: 401,
                 error: 'Unauthorized',
