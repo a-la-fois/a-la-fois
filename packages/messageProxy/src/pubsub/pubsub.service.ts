@@ -1,5 +1,5 @@
+import { KafkaService } from '@a-la-fois/nest-common';
 import { Injectable } from '@nestjs/common';
-import { KafkaPubsubService, TopicKeys } from './kafka-pubsub.service';
 import {
     awarenessBroadcastMessageType,
     BroadcastMessage,
@@ -8,7 +8,7 @@ import {
     updateTokenBroadcastMessageType,
 } from './types';
 
-const MESSAGE_TYPE_TO_TOPIC: Record<BroadcastMessageTypes, TopicKeys> = {
+const MESSAGE_TYPE_TO_TOPIC: Record<BroadcastMessageTypes, string> = {
     [changesBroadcastMessageType]: 'changes',
     [awarenessBroadcastMessageType]: 'changes',
     [updateTokenBroadcastMessageType]: 'service',
@@ -27,11 +27,11 @@ export type MessageSubscriber<TPayload> = (message: BroadcastMessage<BroadcastMe
 export class PubsubService {
     private subscribers: Map<BroadcastMessageTypes, MessageSubscriber<Object>[]> = new Map();
 
-    constructor(private readonly kafka: KafkaPubsubService) {
+    constructor(private readonly kafka: KafkaService) {
         this.kafka.addCallback(this.onMessageRaw);
     }
 
-    private onMessageRaw = (message: string) => {
+    private onMessageRaw = (topic: string, message: string) => {
         const broadcastMessage: BroadcastMessage<BroadcastMessageTypes, Object> = JSON.parse(message);
         this.onMessage(broadcastMessage);
     };

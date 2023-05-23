@@ -1,8 +1,15 @@
-import { UpdateTokenBroadcastMessage } from '@a-la-fois/message-proxy';
-import { BadRequestException, Body, Controller, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    ConflictException,
+    Controller,
+    Post,
+    UnauthorizedException,
+    UseGuards,
+} from '@nestjs/common';
 import { AuthService } from 'src/auth';
-import { KafkaService } from 'src/kafka/kafka.service';
-import { UpdateJWTPayload } from 'src/messages';
+import { PubsubService } from 'src/pubsub/pubsub.service';
+import { UpdateJWTPayload, UpdateTokenBroadcastMessage } from 'src/messages';
 import { TokenModel } from 'src/models';
 import { ConsumerGuard, ConsumerService } from './consumer';
 
@@ -16,7 +23,7 @@ export class TokenController {
     constructor(
         private authService: AuthService,
         private consumerService: ConsumerService,
-        private kafkaService: KafkaService
+        private pubsubService: PubsubService
     ) {}
 
     @Post()
@@ -51,8 +58,11 @@ export class TokenController {
         }
 
         for (const t of parsedTokens) {
-            if (await TokenModel.findOne({ tokenId: t.payload.id, consumerId: t.payload.consumerId })) {
-                console.log('Already updated');
+            if (await TokenModel.findOne({ tokenId: t.payload.tokenId, consumerId: t.payload.consumerId })) {
+                throw new ConflictException({
+                    message: 'tokenId already exists',
+                    data: { tokenId: t.payload.tokenId },
+                });
             }
 
             // Revoke all other tokens
@@ -68,7 +78,7 @@ export class TokenController {
             );
 
             await TokenModel.create({
-                tokenId: t.payload.id,
+                tokenId: t.payload.tokenId,
                 consumerId: t.payload.consumerId,
                 userId: t.payload.userId,
                 docs: t.payload.docs.map((doc) => doc.id),
@@ -83,7 +93,9 @@ export class TokenController {
                 },
             };
 
-            this.kafkaService.publish(JSON.stringify(message));
+            this.pubsubService.publish(JSON.stringify(message));
         }
+
+        return { status: 'ok' };
     }
 }

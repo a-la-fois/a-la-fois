@@ -1,4 +1,4 @@
-import { UpdateJWTPayload } from '@a-la-fois/api';
+import { UpdateJWTPayload } from '../updateToken';
 import { BroadcastMessage } from './broadcastMessage';
 
 export const updateTokenBroadcastMessageType = 'updateToken';

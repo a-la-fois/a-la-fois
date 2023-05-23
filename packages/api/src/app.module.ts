@@ -1,12 +1,29 @@
 import { Module } from '@nestjs/common';
-import { AsyncStorageModule, DaprClientModule, DaprServerModule } from '@a-la-fois/nest-common';
+import {
+    AsyncStorageModule,
+    DaprClientModule,
+    DaprServerModule,
+    KafkaModule,
+    KafkaOptions,
+} from '@a-la-fois/nest-common';
 import { ConsumerApiModule } from './consumerApi';
 import { ClientApiModule } from './clientApi';
 import { AdminApiModule } from './adminApi';
 import { DbModule } from './db';
 import { config } from './config';
 import { MicroserviceModule } from './microservice';
-import { KafkaModule } from './kafka/kafka.module';
+
+const buildKafkaOptions = (): KafkaOptions => {
+    return {
+        topicsToSubscribe: [],
+        clientId: 'api',
+        hosts: config.kafka.hosts.split(','),
+        caPath: config.kafka.caPath,
+        username: config.kafka.username,
+        password: config.kafka.password,
+        saslMechanism: config.kafka.mechanism,
+    };
+};
 
 @Module({
     imports: [
@@ -14,7 +31,6 @@ import { KafkaModule } from './kafka/kafka.module';
         ClientApiModule,
         MicroserviceModule,
         AdminApiModule,
-        KafkaModule,
 
         DbModule.forRoot(),
         AsyncStorageModule.forRoot(),
@@ -28,6 +44,7 @@ import { KafkaModule } from './kafka/kafka.module';
             daprHost: config.dapr.host,
             daprPort: config.dapr.port,
         }),
+        KafkaModule.forRoot(buildKafkaOptions()),
     ],
     controllers: [],
     providers: [],

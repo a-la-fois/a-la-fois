@@ -17,7 +17,7 @@ export class MicroserviceController {
     async checkClientToken(body: CheckClientTokenRequest): Promise<CheckClientTokenResponse> {
         const payload = await this.authService.checkJWT(body.jwt);
 
-        if (!payload || !payload.userId || !payload.id) {
+        if (!payload || !payload.userId || !payload.tokenId) {
             return {
                 status: 401,
                 error: 'Unauthorized',
@@ -45,12 +45,12 @@ export class MicroserviceController {
             }
         }
 
-        const token = await TokenModel.findOne({ tokenId: payload.id, consumerId: payload.consumerId });
+        const token = await TokenModel.findOne({ tokenId: payload.tokenId, consumerId: payload.consumerId });
 
         // Token is updated, but a client is trying to connect with old one
         if (!token) {
             TokenModel.create({
-                tokenId: payload.id,
+                tokenId: payload.tokenId,
                 consumerId: payload.consumerId,
                 userId: payload.userId,
                 docs: payload.docs.map((doc) => doc.id),

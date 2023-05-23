@@ -49,7 +49,7 @@ export class AuthService {
         }
 
         conn.userId = response.payload.userId;
-        conn.tokenId = response.payload.id;
+        conn.tokenId = response.payload.tokenId;
         conn.access = createAccessObject(response.payload.docs);
 
         this.tokenService.addConnection(conn);
