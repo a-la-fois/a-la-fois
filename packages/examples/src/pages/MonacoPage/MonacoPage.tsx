@@ -6,7 +6,6 @@ import { MonacoBinding } from 'y-monaco';
 import { ConnectionOverlay } from '~/shared/components/ConnectionOverlay';
 import { codeEditorDocId, serverUrl, apiUrl } from '~/config';
 import monacoStyles from './Monaco.module.css';
-import { UpdateTokenPayload } from '@a-la-fois/message-proxy';
 
 export const MonacoPage = () => {
     const [client, setClient] = useState<Client | null>(null);
@@ -20,7 +19,6 @@ export const MonacoPage = () => {
                 url: serverUrl,
                 apiUrl,
             });
-            client.on('updateToken', handleTokenUpdate);
             console.log('client created');
             try {
                 await client.connect();
@@ -39,10 +37,6 @@ export const MonacoPage = () => {
     const handleMount: NonNullable<EditorProps['onMount']> = useCallback((editor) => {
         setEditor(editor);
     }, []);
-
-    const handleTokenUpdate = (payload: UpdateTokenPayload) => {
-        console.log(payload);
-    };
 
     useEffect(() => {
         if (client && editor) {

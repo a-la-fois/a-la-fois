@@ -17,11 +17,4 @@ export type JWTPayload = {
     }[];
 };
 
-/*
- *  If there are several rights
- *  they will be applyied in such oreder:
- *      - noAccess
- *      - write
- *      - read
- */
-export type Right = 'read' | 'write' | 'noAccess';
+export type Right = 'read' | 'write';

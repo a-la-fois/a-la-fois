@@ -17,7 +17,7 @@ type UpdateTokenDto = {
     tokens: string[];
 };
 
-@Controller('auth')
+@Controller('tokens')
 @UseGuards(ConsumerGuard)
 export class TokenController {
     constructor(
