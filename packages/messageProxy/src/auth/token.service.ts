@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { DocKey } from 'src/doc/types';
 import { TokenExpiredServiceMessage, UpdateTokenServiceEvent } from 'src/messages';
 import { PubsubService } from 'src/pubsub/pubsub.service';
@@ -10,6 +10,7 @@ import {
 import { AttachDocBroadcastMessage } from 'src/pubsub/types/attachDocMessage';
 import { AccessData, WebSocketConnection } from 'src/ws/types';
 import { createAccessObject, docIdsFromAccess } from './utils';
+import { config } from '../config';
 
 type TokenRightsDiff = {
     added: AccessData[];
@@ -18,16 +19,17 @@ type TokenRightsDiff = {
     removed: DocKey[];
 };
 
-const EXPIRATION_CHECK_INTERVAL = 5_000; // 5 minutes
-
 @Injectable()
-export class TokenService {
+export class TokenService implements OnModuleDestroy {
     private tokenConnections: Map<string, WebSocketConnection[]> = new Map();
     private expirationInterval: NodeJS.Timer;
 
     constructor(private readonly pubsub: PubsubService) {
         this.pubsub.subscribe(updateTokenBroadcastMessageType, this.onUpdateTokenMessage);
-        this.expirationInterval = setInterval(this.checkTokenExpiration, EXPIRATION_CHECK_INTERVAL);
+        this.expirationInterval = setInterval(this.checkTokenExpiration, parseInt(config.auth.expiredCheckIntervalMs));
+    }
+    onModuleDestroy() {
+        clearInterval(this.expirationInterval);
     }
 
     addConnection(conn: WebSocketConnection) {
@@ -167,30 +169,32 @@ export class TokenService {
             // have the same expiration time
             const conn = connections[0];
 
-            if (conn.tokenExpiredAt && conn.tokenExpiredAt < new Date()) {
-                for (const conn of connections) {
-                    // Send message about token expiration to the client
-                    const message: TokenExpiredServiceMessage = {
-                        event: 'service',
-                        data: {
-                            event: 'expiredToken',
-                            data: {
-                                tokenId: conn.tokenId,
-                                expiredAt: conn.tokenExpiredAt.toJSON(),
-                            },
-                        },
-                    };
-                    conn.send(JSON.stringify(message));
+            if (!conn.tokenExpiredAt || conn.tokenExpiredAt > new Date()) {
+                continue;
+            }
 
-                    // Send message to detach from docs
-                    this.pubsub.publishInternal({
-                        type: 'detachDoc',
-                        message: {
-                            docs: docIdsFromAccess(conn.access),
-                            connectionId: conn.id,
+            for (const conn of connections) {
+                // Send message about token expiration to the client
+                const message: TokenExpiredServiceMessage = {
+                    event: 'service',
+                    data: {
+                        event: 'expiredToken',
+                        data: {
+                            tokenId: conn.tokenId,
+                            expiredAt: conn.tokenExpiredAt.toJSON(),
                         },
-                    } as DetachDocBroadcastMessage);
-                }
+                    },
+                };
+                conn.send(JSON.stringify(message));
+
+                // Send message to detach from docs
+                this.pubsub.publishInternal({
+                    type: 'detachDoc',
+                    message: {
+                        docs: docIdsFromAccess(conn.access),
+                        connectionId: conn.id,
+                    },
+                } as DetachDocBroadcastMessage);
             }
         }
     };

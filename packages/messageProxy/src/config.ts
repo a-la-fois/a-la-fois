@@ -13,4 +13,7 @@ export const config = {
         port: process.env.DAPR_HTTP_PORT || '3500',
         gport: process.env.DAPR_GRPC_PORT || '4500',
     },
+    auth: {
+        expiredCheckIntervalMs: process.env.EXPIRED_CHECK_INTERVAL_MS || '5000',
+    },
 } as const;
