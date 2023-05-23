@@ -18,11 +18,16 @@ const run = async () => {
 
     const token = jwt.sign(
         {
-            tokenId: '20',
-            oldTokenId: '19',
+            tokenId: '39',
+            oldTokenId: '38',
             consumerId,
             userId: 'someUser1',
-            docs: [{ id: docId, rights: [] }],
+            docs: [
+                {
+                    id: docId,
+                    rights: ['read', 'write'],
+                },
+            ],
         },
         privateKey,
         {

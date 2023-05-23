@@ -14,4 +14,4 @@ export * from './syncComplete';
 export * from './syncResponse';
 export * from './syncStart';
 export * from './types';
-export * from './updateToken';
+export * from './service';

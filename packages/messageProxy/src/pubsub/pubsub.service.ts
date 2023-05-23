@@ -7,19 +7,22 @@ import {
     detachDocBroadcastMessageType,
     updateTokenBroadcastMessageType,
 } from './types';
+import { attachDocBroadcastMessageType } from './types/attachDocMessage';
 
 const MESSAGE_TYPE_TO_TOPIC: Record<BroadcastMessageTypes, string> = {
     [changesBroadcastMessageType]: 'changes',
     [awarenessBroadcastMessageType]: 'changes',
     [updateTokenBroadcastMessageType]: 'service',
     [detachDocBroadcastMessageType]: 'service',
+    [attachDocBroadcastMessageType]: 'service',
 };
 
 export type BroadcastMessageTypes =
     | typeof changesBroadcastMessageType
     | typeof awarenessBroadcastMessageType
     | typeof updateTokenBroadcastMessageType
-    | typeof detachDocBroadcastMessageType;
+    | typeof detachDocBroadcastMessageType
+    | typeof attachDocBroadcastMessageType;
 
 export type MessageSubscriber<TPayload> = (message: BroadcastMessage<BroadcastMessageTypes, TPayload>) => void;
 

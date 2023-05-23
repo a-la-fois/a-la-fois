@@ -1,3 +1,5 @@
+import { PossibleServiceEvents, serviceEvent } from '@a-la-fois/message-proxy';
+import EventEmitter from 'eventemitter3';
 import { Api } from './Api';
 import { DocContainer } from './DocContainer';
 import { Messenger } from './Messenger';
@@ -10,20 +12,36 @@ export type ClientConfig = {
     token?: string;
 };
 
-export class Client {
+export interface Client {
+    once(event: PossibleServiceEvents['event'], listener: (payload: PossibleServiceEvents['data']) => void): this;
+
+    on(event: PossibleServiceEvents['event'], listener: (payload: PossibleServiceEvents['data']) => void): this;
+
+    off(event: PossibleServiceEvents['event'], listener: (payload: PossibleServiceEvents['data']) => void): this;
+
+    emit(event: PossibleServiceEvents['event'], payload: PossibleServiceEvents['data']): boolean;
+}
+
+export class Client extends EventEmitter<PossibleServiceEvents['event'], PossibleServiceEvents['data']> {
     private connection!: WsConnection;
     private ping!: Ping;
     private docs: Record<string, DocContainer> = {};
     private messenger!: Messenger;
     private api!: Api;
 
-    constructor(private readonly config: ClientConfig) {}
+    constructor(private readonly config: ClientConfig) {
+        super();
+    }
 
     async connect() {
         this.connection = new WsConnection({ url: this.config.url, token: this.config.token });
         this.ping = new Ping({ connection: this.connection });
+
         await this.connection.connect();
+
         this.messenger = new Messenger({ connection: this.connection });
+        this.messenger.on(serviceEvent, this.handleServiceEvent);
+
         this.api = new Api({
             url: this.config.apiUrl,
             token: this.config.token,
@@ -58,4 +76,8 @@ export class Client {
             throw new Error('Connection not established');
         }
     }
+
+    private handleServiceEvent = (payload: PossibleServiceEvents) => {
+        this.emit(payload.event, payload.data);
+    };
 }

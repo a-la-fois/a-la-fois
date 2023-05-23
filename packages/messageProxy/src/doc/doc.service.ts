@@ -22,6 +22,7 @@ import { ActorService } from '../actor/actor.service';
 import { DocKey } from './types';
 import { NotJoinedError } from '../errors';
 import { PubsubService } from 'src/pubsub/pubsub.service';
+import { AttachDocBroadcastMessage, attachDocBroadcastMessageType } from 'src/pubsub/types/attachDocMessage';
 
 @Injectable()
 export class DocService implements OnModuleDestroy {
@@ -37,6 +38,7 @@ export class DocService implements OnModuleDestroy {
         this.pubsub.subscribe(changesBroadcastMessageType, this.onChangesOrAwarenessMessage);
         this.pubsub.subscribe(awarenessBroadcastMessageType, this.onChangesOrAwarenessMessage);
         this.pubsub.subscribe(detachDocBroadcastMessageType, this.onDetachDocMessage);
+        this.pubsub.subscribe(attachDocBroadcastMessageType, this.onAttachDocMessage);
     }
 
     applyChanges(client: WebSocketConnection, payload: ChangesPayload) {
@@ -111,7 +113,7 @@ export class DocService implements OnModuleDestroy {
         };
     }
 
-    detachDoc(connectionId: string, docId: DocKey) {
+    private detachDoc(connectionId: string, docId: DocKey) {
         const doc = this.docs.get(docId);
         if (doc && doc.contains(connectionId)) {
             doc.removeConnection(connectionId);
@@ -154,6 +156,12 @@ export class DocService implements OnModuleDestroy {
     private onDetachDocMessage = (message: DetachDocBroadcastMessage) => {
         for (const docId of message.message.docs) {
             this.detachDoc(message.message.connectionId, docId);
+        }
+    };
+
+    private onAttachDocMessage = (message: AttachDocBroadcastMessage) => {
+        for (const docId of message.message.docs) {
+            this.joinToDoc(message.message.connection, docId);
         }
     };
 
