@@ -50,7 +50,11 @@ export class AuthService {
 
         conn.userId = response.payload.userId;
         conn.tokenId = response.payload.tokenId;
-        conn.tokenExpiredAt = new Date(response.payload.expiredAt);
+
+        if (response.payload.expiredAt) {
+            conn.tokenExpiredAt = new Date(response.payload.expiredAt);
+        }
+
         conn.access = createAccessObject(response.payload.docs);
 
         this.tokenService.addConnection(conn);
@@ -117,10 +121,6 @@ export class AuthService {
         }
 
         return UNAUTHORIZED_RESULT;
-    }
-
-    private isTokenExpired(conn: WebSocketConnection): boolean {
-        return conn.tokenExpiredAt < new Date();
     }
 
     disconnect(conn: WebSocketConnection) {

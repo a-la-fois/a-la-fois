@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { DocKey } from 'src/doc/types';
-import { TokenExpiredServiceMessage, UpdateTokenServiceEvent } from 'src/messages';
+import { TokenExpiredServiceMessage, UpdateTokenServiceMessage } from 'src/messages';
 import { PubsubService } from 'src/pubsub/pubsub.service';
 import {
     DetachDocBroadcastMessage,
@@ -9,8 +9,10 @@ import {
 } from 'src/pubsub/types';
 import { AttachDocBroadcastMessage } from 'src/pubsub/types/attachDocMessage';
 import { AccessData, WebSocketConnection } from 'src/ws/types';
-import { createAccessObject, docIdsFromAccess } from './utils';
+import { createAccessObject } from './utils';
 import { config } from '../config';
+import { DisconnectBroadcastMessage } from 'src/pubsub/types/disconnectMessage';
+import { WS_CLOSE_STATUS_NORMAL } from 'src/ws/constants';
 
 type TokenRightsDiff = {
     added: AccessData[];
@@ -46,7 +48,23 @@ export class TokenService implements OnModuleDestroy {
     }
 
     removeConnection(conn: WebSocketConnection) {
-        this.tokenConnections.delete(conn.tokenId);
+        const connections = this.tokenConnections.get(conn.tokenId);
+
+        if (!connections) {
+            return;
+        }
+
+        const index = connections.indexOf(conn);
+
+        // Delete connection
+        if (index != -1) {
+            connections.splice(index, 1);
+        }
+
+        // Delete a record if there is no connections with this tokenId
+        if (connections.length === 0) {
+            this.tokenConnections.delete(conn.tokenId);
+        }
     }
 
     private onUpdateTokenMessage = (message: UpdateTokenBroadcastMessage) => {
@@ -92,7 +110,7 @@ export class TokenService implements OnModuleDestroy {
             }
 
             // Send message to client with new token
-            const updateTokenMessage: UpdateTokenServiceEvent = {
+            const updateTokenMessage: UpdateTokenServiceMessage = {
                 event: 'service',
                 data: {
                     event: 'updateToken',
@@ -187,14 +205,18 @@ export class TokenService implements OnModuleDestroy {
                 };
                 conn.send(JSON.stringify(message));
 
-                // Send message to detach from docs
+                // Send message to disconnect from docService
                 this.pubsub.publishInternal({
-                    type: 'detachDoc',
+                    type: 'disconnect',
                     message: {
-                        docs: docIdsFromAccess(conn.access),
                         connectionId: conn.id,
                     },
-                } as DetachDocBroadcastMessage);
+                } as DisconnectBroadcastMessage);
+
+                // ws.gateway calls removeConnection() on conn.close()
+                // call removeConnection() for more clarity
+                conn.close(WS_CLOSE_STATUS_NORMAL);
+                this.removeConnection(conn);
             }
         }
     };

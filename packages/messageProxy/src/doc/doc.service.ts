@@ -16,6 +16,8 @@ import {
     changesBroadcastMessageType,
     DetachDocBroadcastMessage,
     detachDocBroadcastMessageType,
+    DisconnectBroadcastMessage,
+    disconnectBroadcastMessageType,
 } from '../pubsub/types';
 import { WebSocketConnection } from '../ws/types';
 import { ActorService } from '../actor/actor.service';
@@ -37,8 +39,9 @@ export class DocService implements OnModuleDestroy {
     constructor(private readonly pubsub: PubsubService, private actorService: ActorService) {
         this.pubsub.subscribe(changesBroadcastMessageType, this.onChangesOrAwarenessMessage);
         this.pubsub.subscribe(awarenessBroadcastMessageType, this.onChangesOrAwarenessMessage);
-        this.pubsub.subscribe(detachDocBroadcastMessageType, this.onDetachDocMessage);
         this.pubsub.subscribe(attachDocBroadcastMessageType, this.onAttachDocMessage);
+        this.pubsub.subscribe(detachDocBroadcastMessageType, this.onDetachDocMessage);
+        this.pubsub.subscribe(disconnectBroadcastMessageType, this.onDisconnectMessage);
     }
 
     applyChanges(connection: WebSocketConnection, payload: ChangesPayload) {
@@ -152,6 +155,7 @@ export class DocService implements OnModuleDestroy {
     };
 
     private onDetachDocMessage = (message: DetachDocBroadcastMessage) => {
+        console.log('onDetachDocMessage');
         for (const docId of message.message.docs) {
             this.detachDoc(message.message.connectionId, docId);
         }
@@ -163,6 +167,10 @@ export class DocService implements OnModuleDestroy {
         }
     };
 
+    private onDisconnectMessage = (message: DisconnectBroadcastMessage) => {
+        this.disconnect(message.message.connectionId);
+    };
+
     private assertClientJoined(connection: WebSocketConnection, docId: string) {
         const doc = this.docs.get(docId);
 
@@ -171,22 +179,22 @@ export class DocService implements OnModuleDestroy {
         }
     }
 
-    disconnect(connection: WebSocketConnection) {
-        const joinedDocs = this.connectionsToDocs.get(connection.id);
+    disconnect(connectionId: string) {
+        const joinedDocs = this.connectionsToDocs.get(connectionId);
 
         if (!joinedDocs) {
             return;
         }
 
         for (const i in joinedDocs) {
-            joinedDocs[i].removeConnection(connection.id);
+            joinedDocs[i].removeConnection(connectionId);
 
             if (joinedDocs[i].isEmpty()) {
                 this.docs.delete(joinedDocs[i].id);
             }
         }
 
-        this.connectionsToDocs.delete(connection.id);
+        this.connectionsToDocs.delete(connectionId);
     }
 
     onModuleDestroy() {

@@ -1,4 +1,4 @@
-import { Message } from '../message';
-import { UpdateTokenPayload, updateTokenServiceEvent } from './updateToken';
+import { TokenExpiredServiceMessage } from './tokenExpired';
+import { UpdateTokenServiceMessage } from './updateToken';
 
-export type PossibleServiceEvents = Message<typeof updateTokenServiceEvent, UpdateTokenPayload>;
+export type PossibleServiceEvents = UpdateTokenServiceMessage | TokenExpiredServiceMessage;

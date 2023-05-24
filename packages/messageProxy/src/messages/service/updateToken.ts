@@ -13,4 +13,4 @@ export type UpdateTokenPayload = {
 
 export const updateTokenServiceEvent = 'updateToken';
 
-export type UpdateTokenServiceEvent = ServiceMessage<typeof updateTokenServiceEvent, UpdateTokenPayload>;
+export type UpdateTokenServiceMessage = ServiceMessage<typeof updateTokenServiceEvent, UpdateTokenPayload>;

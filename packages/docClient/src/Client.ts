@@ -12,17 +12,20 @@ export type ClientConfig = {
     token?: string;
 };
 
+export type ServiceEvent = PossibleServiceEvents['data']['event'];
+export type ServicePayload = PossibleServiceEvents['data']['data'];
+
 export interface Client {
-    once(event: PossibleServiceEvents['event'], listener: (payload: PossibleServiceEvents['data']) => void): this;
+    once(event: ServiceEvent, listener: (payload: ServicePayload) => void): this;
 
-    on(event: PossibleServiceEvents['event'], listener: (payload: PossibleServiceEvents['data']) => void): this;
+    on(event: ServiceEvent, listener: (payload: ServicePayload) => void): this;
 
-    off(event: PossibleServiceEvents['event'], listener: (payload: PossibleServiceEvents['data']) => void): this;
+    off(event: ServiceEvent, listener: (payload: ServicePayload) => void): this;
 
-    emit(event: PossibleServiceEvents['event'], payload: PossibleServiceEvents['data']): boolean;
+    emit(event: ServiceEvent, payload: ServicePayload): boolean;
 }
 
-export class Client extends EventEmitter<PossibleServiceEvents['event'], PossibleServiceEvents['data']> {
+export class Client extends EventEmitter<ServiceEvent, ServicePayload> {
     private connection!: WsConnection;
     private ping!: Ping;
     private docs: Record<string, DocContainer> = {};
@@ -54,6 +57,10 @@ export class Client extends EventEmitter<PossibleServiceEvents['event'], Possibl
         this.ping?.dispose();
         this.messenger?.dispose();
         this.connection?.dispose();
+
+        for (const docId in this.docs) {
+            this.docs[docId].dispose();
+        }
     }
 
     async getDoc(id: string) {
@@ -77,7 +84,10 @@ export class Client extends EventEmitter<PossibleServiceEvents['event'], Possibl
         }
     }
 
-    private handleServiceEvent = (payload: PossibleServiceEvents) => {
+    private handleServiceEvent = (payload: PossibleServiceEvents['data']) => {
+        if (payload.event === 'expiredToken') {
+            this.dispose();
+        }
         this.emit(payload.event, payload.data);
     };
 }

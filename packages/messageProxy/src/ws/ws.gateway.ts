@@ -6,8 +6,6 @@ import {
     JoinPayload,
     changesEvent,
     ChangesPayload,
-    closeEvent,
-    ClosePayload,
     pingEvent,
     PongMessage,
     pongEvent,
@@ -60,7 +58,7 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     handleDisconnect(client: WebSocketConnection) {
-        this.docService.disconnect(client);
+        this.docService.disconnect(client.id);
         this.authServise.disconnect(client);
     }
 

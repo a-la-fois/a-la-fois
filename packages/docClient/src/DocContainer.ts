@@ -126,7 +126,7 @@ export class DocContainer {
         }
     };
 
-    private handleServiceEvent = (payload: PossibleServiceEvents) => {
+    private handleServiceEvent = (payload: PossibleServiceEvents['data']) => {
         if (payload.event === updateTokenServiceEvent) {
             this.sync();
         }
