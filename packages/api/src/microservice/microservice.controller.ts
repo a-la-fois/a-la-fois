@@ -47,7 +47,7 @@ export class MicroserviceController {
 
         const token = await TokenModel.findOne({ tokenId: payload.tokenId, consumerId: payload.consumerId });
 
-        // Token is updated, but a client is trying to connect with old one
+        // Token is updated, but a client is trying to connect with the old one
         if (!token) {
             TokenModel.create({
                 tokenId: payload.tokenId,
