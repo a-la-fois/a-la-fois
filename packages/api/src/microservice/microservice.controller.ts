@@ -7,7 +7,7 @@ import {
     DocIsPublicRequest,
     DocIsPublicResponse,
 } from '../messages';
-import { DocModel, TokenModel } from 'src/models';
+import { DocModel, TokenModel } from '../models';
 
 @Controller()
 export class MicroserviceController {

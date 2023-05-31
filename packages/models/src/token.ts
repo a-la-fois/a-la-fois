@@ -1,5 +1,10 @@
-import { prop } from '@typegoose/typegoose';
+import { ModelOptions, prop } from '@typegoose/typegoose';
 
+@ModelOptions({
+    schemaOptions: {
+        timestamps: true,
+    },
+})
 export class Token {
     @prop({ required: true, index: true })
     tokenId: string;
@@ -9,9 +14,6 @@ export class Token {
 
     @prop({ required: true })
     userId: string;
-
-    @prop({ required: true })
-    docs: string[];
 
     @prop({ required: false, default: false })
     taint: boolean;

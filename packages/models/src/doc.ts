@@ -1,6 +1,11 @@
-import { prop, Ref } from '@typegoose/typegoose';
+import { ModelOptions, prop, Ref } from '@typegoose/typegoose';
 import { Consumer } from './consumer';
 
+@ModelOptions({
+    schemaOptions: {
+        timestamps: true,
+    },
+})
 export class Doc {
     id: string;
 

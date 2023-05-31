@@ -16,12 +16,12 @@ const run = async () => {
     const consumerId = process.argv[3];
     const privateKey = fs.readFileSync(keyPath);
     const expiredAt = new Date();
-    expiredAt.setTime(expiredAt.getTime() + 1000 * 60);
+    expiredAt.setTime(expiredAt.getTime() + 1000 * 60 * 60);
 
     const token = jwt.sign(
         {
-            tokenId: '52',
-            oldTokenId: '51',
+            tokenId: '56',
+            oldTokenId: '55',
             consumerId,
             expiredAt,
             userId: 'someUser1',

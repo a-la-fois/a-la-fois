@@ -76,7 +76,7 @@ export class TokenController {
         for (const t of parsedTokens) {
             if (await TokenModel.findOne({ tokenId: t.payload.tokenId, consumerId: t.payload.consumerId })) {
                 throw new ConflictException({
-                    message: 'tokenId already exists',
+                    message: 'token with such tokenId already exists',
                     data: { tokenId: t.payload.tokenId },
                 });
             }
@@ -97,7 +97,6 @@ export class TokenController {
                 tokenId: t.payload.tokenId,
                 consumerId: t.payload.consumerId,
                 userId: t.payload.userId,
-                docs: t.payload.docs.map((doc) => doc.id),
                 ...(t.payload.expiredAt && { expiredAt: t.payload.expiredAt }),
             });
 

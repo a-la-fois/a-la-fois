@@ -23,8 +23,8 @@ import { WebSocketConnection } from '../ws/types';
 import { ActorService } from '../actor/actor.service';
 import { DocKey } from './types';
 import { NotJoinedError } from '../errors';
-import { PubsubService } from 'src/pubsub/pubsub.service';
-import { AttachDocBroadcastMessage, attachDocBroadcastMessageType } from 'src/pubsub/types/attachDocMessage';
+import { PubsubService } from '../pubsub/pubsub.service';
+import { AttachDocBroadcastMessage, attachDocBroadcastMessageType } from '../pubsub/types/attachDocMessage';
 
 @Injectable()
 export class DocService implements OnModuleDestroy {

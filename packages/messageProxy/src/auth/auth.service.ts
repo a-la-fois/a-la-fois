@@ -62,9 +62,6 @@ export class AuthService {
         return OK_RESULT;
     }
 
-    /*
-     * Changes client object
-     * */
     async checkDocAccess(conn: WebSocketConnection, docId: string): Promise<AuthCheckResult> {
         const docAccess = conn.access[docId];
 
