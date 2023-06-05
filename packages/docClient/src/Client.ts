@@ -1,4 +1,4 @@
-import { PossibleServiceEvent, serviceEvent, TokenExpiredPayload, UpdateTokenPayload } from '@a-la-fois/message-proxy';
+import { PossibleServiceEvent, serviceEvent } from '@a-la-fois/message-proxy';
 import EventEmitter from 'eventemitter3';
 import { Api } from './Api';
 import { DocContainer } from './DocContainer';
@@ -57,6 +57,7 @@ export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['dat
         this.ping?.dispose();
         this.messenger?.dispose();
         this.connection?.dispose();
+        this.messenger.off(serviceEvent, this.handleServiceEvent);
 
         for (const docId in this.docs) {
             this.docs[docId].dispose();

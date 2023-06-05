@@ -23,7 +23,6 @@ const buildPubsubOptions = (): PubsubOptions => {
             daprHost: config.dapr.host,
             daprPort: config.dapr.port,
         }),
-        // KafkaModule.forRoot(buildKafkaOptions()),
         PubsubModule.forRoot(buildPubsubOptions()),
     ],
     controllers: [],

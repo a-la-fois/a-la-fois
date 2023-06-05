@@ -1,4 +1,4 @@
-import { Client, ServiceEvent, ServicePayload } from '@a-la-fois/doc-client';
+import { Client, ServicePayload } from '@a-la-fois/doc-client';
 import Editor, { EditorProps } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import { useCallback, useEffect, useState } from 'react';

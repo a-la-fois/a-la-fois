@@ -136,7 +136,6 @@ export class Pubsub {
     };
 
     private onMessage = (message: PossiblePubsubMessage) => {
-        console.log('message type = ', message);
         const subscribersByType = this.subscribers.get(message.type);
 
         if (!subscribersByType) {

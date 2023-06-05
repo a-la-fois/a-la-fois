@@ -9,7 +9,7 @@ export abstract class MessageError {
     }
 
     toMessage(): ErrorMessage {
-        let message = {
+        const message = {
             event: 'error' as const,
             data: {
                 message: this.message,
