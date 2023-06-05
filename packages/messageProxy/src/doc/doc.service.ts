@@ -9,22 +9,24 @@ import {
     AwarenessPayload,
 } from '../messages';
 
-import {
-    AwarenessBroadcastMessage,
-    awarenessBroadcastMessageType,
-    ChangesBroadcastMessage,
-    changesBroadcastMessageType,
-    DetachDocBroadcastMessage,
-    detachDocBroadcastMessageType,
-    DisconnectBroadcastMessage,
-    disconnectBroadcastMessageType,
-} from '../pubsub/types';
 import { WebSocketConnection } from '../ws/types';
 import { ActorService } from '../actor/actor.service';
 import { DocKey } from './types';
 import { NotJoinedError } from '../errors';
-import { PubsubService } from '../pubsub/pubsub.service';
-import { AttachDocBroadcastMessage, attachDocBroadcastMessageType } from '../pubsub/types/attachDocMessage';
+import {
+    awarenessMessageType,
+    AwarenessPubsubMessage,
+    attachDocMessageType,
+    AttachDocPubsubMessage,
+    changesMessageType,
+    ChangesPubsubMessage,
+    detachDocMessageType,
+    DetachDocPubsubMessage,
+    disconnectMessageType,
+    DisconnectPubsubMessage,
+    Pubsub,
+    PubsubDecorator,
+} from '@a-la-fois/pubsub';
 
 @Injectable()
 export class DocService implements OnModuleDestroy {
@@ -36,12 +38,12 @@ export class DocService implements OnModuleDestroy {
     // to find all connected documents of a client fast (not iterating over docs map)
     private connectionsToDocs: Map<string, DocManager[]> = new Map();
 
-    constructor(private readonly pubsub: PubsubService, private actorService: ActorService) {
-        this.pubsub.subscribe(changesBroadcastMessageType, this.onChangesOrAwarenessMessage);
-        this.pubsub.subscribe(awarenessBroadcastMessageType, this.onChangesOrAwarenessMessage);
-        this.pubsub.subscribe(attachDocBroadcastMessageType, this.onAttachDocMessage);
-        this.pubsub.subscribe(detachDocBroadcastMessageType, this.onDetachDocMessage);
-        this.pubsub.subscribe(disconnectBroadcastMessageType, this.onDisconnectMessage);
+    constructor(@PubsubDecorator() private readonly pubsub: Pubsub, private actorService: ActorService) {
+        this.pubsub.subscribe<typeof changesMessageType>(changesMessageType, this.onChangesOrAwarenessMessage);
+        this.pubsub.subscribe<typeof awarenessMessageType>(awarenessMessageType, this.onChangesOrAwarenessMessage);
+        this.pubsub.subscribe<typeof attachDocMessageType>(attachDocMessageType, this.onAttachDocMessage);
+        this.pubsub.subscribe<typeof detachDocMessageType>(detachDocMessageType, this.onDetachDocMessage);
+        this.pubsub.subscribe<typeof disconnectMessageType>(disconnectMessageType, this.onDisconnectMessage);
     }
 
     applyChanges(connection: WebSocketConnection, payload: ChangesPayload) {
@@ -58,7 +60,7 @@ export class DocService implements OnModuleDestroy {
                 docId: doc.id,
                 data: payload.changes,
             },
-        } as ChangesBroadcastMessage);
+        } as ChangesPubsubMessage);
 
         this.actorService.sendChanges(connection.id, payload);
     }
@@ -77,7 +79,7 @@ export class DocService implements OnModuleDestroy {
                 docId: doc.id,
                 data: payload.awareness,
             },
-        } as AwarenessBroadcastMessage);
+        } as AwarenessPubsubMessage);
     }
 
     async syncStart(connection: WebSocketConnection, payload: SyncStartPayload): Promise<SyncResponsePayload> {
@@ -128,7 +130,7 @@ export class DocService implements OnModuleDestroy {
         }
     }
 
-    private onChangesOrAwarenessMessage = (message: ChangesBroadcastMessage | AwarenessBroadcastMessage) => {
+    private onChangesOrAwarenessMessage = (message: ChangesPubsubMessage | AwarenessPubsubMessage) => {
         const docId = message.message.docId;
 
         // Do nothing if there are no connections in this instance
@@ -154,20 +156,20 @@ export class DocService implements OnModuleDestroy {
         }
     };
 
-    private onDetachDocMessage = (message: DetachDocBroadcastMessage) => {
+    private onDetachDocMessage = (message: DetachDocPubsubMessage) => {
         console.log('onDetachDocMessage');
         for (const docId of message.message.docs) {
             this.detachDoc(message.message.connectionId, docId);
         }
     };
 
-    private onAttachDocMessage = (message: AttachDocBroadcastMessage) => {
+    private onAttachDocMessage = (message: AttachDocPubsubMessage) => {
         for (const docId of message.message.docs) {
             this.joinToDoc(message.message.connection, docId);
         }
     };
 
-    private onDisconnectMessage = (message: DisconnectBroadcastMessage) => {
+    private onDisconnectMessage = (message: DisconnectPubsubMessage) => {
         this.disconnect(message.message.connectionId);
     };
 

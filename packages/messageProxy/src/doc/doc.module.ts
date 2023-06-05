@@ -2,10 +2,9 @@ import { Module } from '@nestjs/common';
 import { DocService } from './doc.service';
 import { ActorModule } from '../actor/actor.module';
 import { AuthModule } from 'src/auth/auth.module';
-import { PubsubModule } from 'src/pubsub/pubsub.module';
 
 @Module({
-    imports: [ActorModule, AuthModule, PubsubModule],
+    imports: [ActorModule, AuthModule],
     providers: [DocService],
     exports: [DocService],
 })

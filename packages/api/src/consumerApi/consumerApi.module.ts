@@ -4,11 +4,10 @@ import { DocsModule } from './docs';
 import { ConsumerModule } from './consumer';
 import { TokenController } from './token.controller';
 import { AuthModule } from 'src/auth';
-import { PubsubModule } from 'src/pubsub/pubsub.module';
 
 @Module({
     controllers: [DocsController, TokenController],
-    imports: [DocsModule, ConsumerModule, AuthModule, PubsubModule],
+    imports: [DocsModule, ConsumerModule, AuthModule],
     providers: [],
 })
 export class ConsumerApiModule {}

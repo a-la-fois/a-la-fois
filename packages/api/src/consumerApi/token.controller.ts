@@ -1,3 +1,4 @@
+import { Pubsub, PubsubDecorator, UpdateTokenPubsubMessage } from '@a-la-fois/pubsub';
 import {
     BadRequestException,
     Body,
@@ -8,8 +9,7 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth';
-import { PubsubService } from 'src/pubsub/pubsub.service';
-import { UpdateJWTPayload, UpdateTokenBroadcastMessage } from 'src/messages';
+import { UpdateJWTPayload } from 'src/messages';
 import { TokenModel } from 'src/models';
 import { ConsumerGuard, ConsumerService } from './consumer';
 
@@ -21,9 +21,9 @@ type UpdateTokenDto = {
 @UseGuards(ConsumerGuard)
 export class TokenController {
     constructor(
+        @PubsubDecorator() private readonly pubsub: Pubsub,
         private authService: AuthService,
-        private consumerService: ConsumerService,
-        private pubsubService: PubsubService
+        private consumerService: ConsumerService
     ) {}
 
     @Post()
@@ -100,7 +100,7 @@ export class TokenController {
                 ...(t.payload.expiredAt && { expiredAt: t.payload.expiredAt }),
             });
 
-            const message: UpdateTokenBroadcastMessage = {
+            const message: UpdateTokenPubsubMessage = {
                 type: 'updateToken',
                 message: {
                     token: t.token,
@@ -108,7 +108,7 @@ export class TokenController {
                 },
             };
 
-            this.pubsubService.publish(JSON.stringify(message));
+            this.pubsub.publish(message);
         }
 
         return { status: 'ok' };

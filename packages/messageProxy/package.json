@@ -42,6 +42,7 @@
     "dependencies": {
         "@a-la-fois/doc-handler": "0.0.16",
         "@a-la-fois/nest-common": "0.0.16",
+        "@a-la-fois/pubsub": "0.0.16",
         "@dapr/dapr": "2.5.0",
         "@nestjs/common": "8.4.4",
         "@nestjs/config": "2.2.0",

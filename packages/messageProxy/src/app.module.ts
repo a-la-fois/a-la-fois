@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { DaprClientModule, KafkaModule, KafkaOptions } from '@a-la-fois/nest-common';
+import { DaprClientModule } from '@a-la-fois/nest-common';
+import { PubsubModule, PubsubOptions } from '@a-la-fois/pubsub';
 import { WsModule } from './ws';
 import { config } from './config';
 
-const buildKafkaOptions = (): KafkaOptions => {
+const buildPubsubOptions = (): PubsubOptions => {
     return {
         clientId: 'messageProxy',
         topicsToSubscribe: [config.kafka.changesTopic, config.kafka.serviceTopic],
@@ -22,7 +23,8 @@ const buildKafkaOptions = (): KafkaOptions => {
             daprHost: config.dapr.host,
             daprPort: config.dapr.port,
         }),
-        KafkaModule.forRoot(buildKafkaOptions()),
+        // KafkaModule.forRoot(buildKafkaOptions()),
+        PubsubModule.forRoot(buildPubsubOptions()),
     ],
     controllers: [],
     providers: [],

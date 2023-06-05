@@ -1,18 +1,19 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { DocKey } from 'src/doc/types';
 import { TokenExpiredServiceMessage, UpdateTokenServiceMessage } from 'src/messages';
-import { PubsubService } from 'src/pubsub/pubsub.service';
-import {
-    DetachDocBroadcastMessage,
-    UpdateTokenBroadcastMessage,
-    updateTokenBroadcastMessageType,
-} from 'src/pubsub/types';
-import { AttachDocBroadcastMessage } from 'src/pubsub/types/attachDocMessage';
 import { AccessData, WebSocketConnection } from 'src/ws/types';
 import { createAccessObject } from './utils';
 import { config } from '../config';
-import { DisconnectBroadcastMessage } from 'src/pubsub/types/disconnectMessage';
 import { WS_CLOSE_STATUS_NORMAL } from 'src/ws/constants';
+import {
+    AttachDocPubsubMessage,
+    DetachDocPubsubMessage,
+    DisconnectPubsubMessage,
+    Pubsub,
+    PubsubDecorator,
+    updateTokenMessageType,
+    UpdateTokenPubsubMessage,
+} from '@a-la-fois/pubsub';
 
 type TokenRightsDiff = {
     added: AccessData[];
@@ -20,14 +21,13 @@ type TokenRightsDiff = {
     unchanged: AccessData[];
     removed: DocKey[];
 };
-
 @Injectable()
 export class TokenService implements OnModuleDestroy {
     private tokenConnections: Map<string, WebSocketConnection[]> = new Map();
     private expirationInterval: NodeJS.Timer;
 
-    constructor(private readonly pubsub: PubsubService) {
-        this.pubsub.subscribe(updateTokenBroadcastMessageType, this.onUpdateTokenMessage);
+    constructor(@PubsubDecorator() private readonly pubsub: Pubsub) {
+        this.pubsub.subscribe<typeof updateTokenMessageType>(updateTokenMessageType, this.onUpdateTokenMessage);
         this.expirationInterval = setInterval(this.checkTokenExpiration, parseInt(config.auth.expiredCheckIntervalMs));
     }
     onModuleDestroy() {
@@ -67,7 +67,7 @@ export class TokenService implements OnModuleDestroy {
         }
     }
 
-    private onUpdateTokenMessage = (message: UpdateTokenBroadcastMessage) => {
+    private onUpdateTokenMessage = (message: UpdateTokenPubsubMessage) => {
         const tokenData = message.message.data;
         const oldTokenId = message.message.data.oldTokenId;
         const tokenId = tokenData.tokenId;
@@ -94,7 +94,7 @@ export class TokenService implements OnModuleDestroy {
                         docs: tokenRightsDiff.removed,
                         connectionId: conn.id,
                     },
-                } as DetachDocBroadcastMessage);
+                } as DetachDocPubsubMessage);
             }
 
             // Send message to attach connection to documents
@@ -106,7 +106,7 @@ export class TokenService implements OnModuleDestroy {
                         docs: tokenRightsDiff.added.map((doc) => doc.id),
                         connection: conn,
                     },
-                } as AttachDocBroadcastMessage);
+                } as AttachDocPubsubMessage);
             }
 
             // Send message to client with new token
@@ -211,7 +211,7 @@ export class TokenService implements OnModuleDestroy {
                     message: {
                         connectionId: conn.id,
                     },
-                } as DisconnectBroadcastMessage);
+                } as DisconnectPubsubMessage);
 
                 // ws.gateway calls removeConnection() on conn.close()
                 // call removeConnection() for more clarity

@@ -1,0 +1,37 @@
+{
+  "name": "@a-la-fois/pubsub",
+  "version": "0.0.16",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    "require": "./dist/cjs/index.js",
+    "import": "./dist/esm/index.js",
+    "types": "./dist/esm/index.d.ts"
+  },
+  "scripts": {
+    "build": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
+    "dev": "tsc --project ./tsconfig.build.lib.cjs.json --watch --preserveWatchOutput & tsc --project ./tsconfig.build.lib.esm.json --watch --preserveWatchOutput",
+    "prebuild": "rimraf dist",
+    "prepare": "npm run build",
+    "clear": "rimraf dist",
+    "lint": "eslint './src/**/*.ts'",
+    "format": "prettier --write '**/*.{ts,tsx,css,json,yaml,yml,md}'"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "8.4.4",
+    "@nestjs/core": "8.4.4"
+  },
+  "dependencies": {
+    "kafkajs": "2.2.0"
+  },
+  "devDependencies": {
+    "rimraf": "3.0.2",
+    "typescript": "4.6.3"
+  },
+  "gitHead": "e757a752497e9c4ee4ad85603998907ef3d54c22"
+}

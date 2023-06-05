@@ -1,19 +1,14 @@
 import { Module } from '@nestjs/common';
-import {
-    AsyncStorageModule,
-    DaprClientModule,
-    DaprServerModule,
-    KafkaModule,
-    KafkaOptions,
-} from '@a-la-fois/nest-common';
+import { AsyncStorageModule, DaprClientModule, DaprServerModule } from '@a-la-fois/nest-common';
 import { ConsumerApiModule } from './consumerApi';
 import { ClientApiModule } from './clientApi';
 import { AdminApiModule } from './adminApi';
 import { DbModule } from './db';
 import { config } from './config';
 import { MicroserviceModule } from './microservice';
+import { PubsubModule, PubsubOptions } from '@a-la-fois/pubsub';
 
-const buildKafkaOptions = (): KafkaOptions => {
+const buildPubsubOptions = (): PubsubOptions => {
     return {
         topicsToSubscribe: [],
         clientId: 'api',
@@ -44,7 +39,7 @@ const buildKafkaOptions = (): KafkaOptions => {
             daprHost: config.dapr.host,
             daprPort: config.dapr.port,
         }),
-        KafkaModule.forRoot(buildKafkaOptions()),
+        PubsubModule.forRoot(buildPubsubOptions()),
     ],
     controllers: [],
     providers: [],
