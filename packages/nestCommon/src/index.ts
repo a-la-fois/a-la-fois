@@ -2,7 +2,6 @@ export * from './asyncStorage';
 export * from './cookie';
 export * from './daprClient';
 export * from './daprServer';
-export * from './kafka';
 export * from './memoize';
 export * from './protobufWSAdapter';
 export * from './redis';

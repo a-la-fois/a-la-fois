@@ -79,7 +79,7 @@ export class Pubsub {
     }
 
     publish(message: PossiblePubsubMessage) {
-        this.send(MESSAGE_TYPE_TO_TOPIC[message.type], JSON.stringify(message.message));
+        this.send(MESSAGE_TYPE_TO_TOPIC[message.type], JSON.stringify(message));
     }
 
     publishInternal(message: PossiblePubsubMessage) {
@@ -136,6 +136,7 @@ export class Pubsub {
     };
 
     private onMessage = (message: PossiblePubsubMessage) => {
+        console.log('message type = ', message);
         const subscribersByType = this.subscribers.get(message.type);
 
         if (!subscribersByType) {
