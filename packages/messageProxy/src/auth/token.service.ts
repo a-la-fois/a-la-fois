@@ -84,6 +84,8 @@ export class TokenService implements OnModuleDestroy {
 
         for (const conn of connections) {
             conn.access = newConnAccess;
+            conn.tokenExpiredAt = new Date(tokenData.expiredAt);
+            conn.tokenId = tokenId;
 
             // Send message to detach connection from documents
             // so the connection doesn't get new changes
@@ -182,7 +184,7 @@ export class TokenService implements OnModuleDestroy {
     }
 
     private checkTokenExpiration = () => {
-        for (const [_tokenId, connections] of this.tokenConnections) {
+        for (const [tokenId, connections] of this.tokenConnections) {
             // Check only one because all connections with the same token
             // have the same expiration time
             const conn = connections[0];
@@ -216,8 +218,8 @@ export class TokenService implements OnModuleDestroy {
                 // ws.gateway calls removeConnection() on conn.close()
                 // call removeConnection() for more clarity
                 conn.close(WS_CLOSE_STATUS_NORMAL);
-                this.removeConnection(conn);
             }
+            this.tokenConnections.delete(tokenId);
         }
     };
 }

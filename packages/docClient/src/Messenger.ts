@@ -24,7 +24,7 @@ import {
     awarenessEvent,
     AwarenessPayload,
     serviceEvent,
-    PossibleServiceEvents,
+    PossibleServiceEvent,
 } from '@a-la-fois/message-proxy';
 
 export type MessengerConfig = {
@@ -36,25 +36,25 @@ export interface Messenger {
     once(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     once(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
     once(event: typeof broadcastAwarenessEvent, listener: (payload: BroadcastAwarenessPayload) => void): this;
-    once(event: typeof serviceEvent, listener: (payload: PossibleServiceEvents['data']) => void): this;
+    once(event: typeof serviceEvent, listener: (payload: PossibleServiceEvent['data']) => void): this;
 
     on(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
     on(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     on(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
     on(event: typeof broadcastAwarenessEvent, listener: (payload: BroadcastAwarenessPayload) => void): this;
-    on(event: typeof serviceEvent, listener: (payload: PossibleServiceEvents['data']) => void): this;
+    on(event: typeof serviceEvent, listener: (payload: PossibleServiceEvent['data']) => void): this;
 
     off(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
     off(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
     off(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
     off(event: typeof broadcastAwarenessEvent, listener: (payload: BroadcastAwarenessPayload) => void): this;
-    off(event: typeof serviceEvent, listener: (payload: PossibleServiceEvents['data']) => void): this;
+    off(event: typeof serviceEvent, listener: (payload: PossibleServiceEvent['data']) => void): this;
 
     emit(event: typeof joinResponseEvent, payload: JoinResponsePayload): boolean;
     emit(event: typeof syncResponseEvent, payload: SyncResponsePayload): boolean;
     emit(event: typeof broadcastChangesEvent, payload: BroadcastChangesPayload): boolean;
     emit(event: typeof broadcastAwarenessEvent, payload: BroadcastAwarenessPayload): boolean;
-    emit(event: typeof serviceEvent, payload: PossibleServiceEvents['data']): boolean;
+    emit(event: typeof serviceEvent, payload: PossibleServiceEvent['data']): boolean;
 }
 
 export class Messenger extends EventEmitter {

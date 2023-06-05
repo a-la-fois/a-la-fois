@@ -20,8 +20,8 @@ const run = async () => {
 
     const token = jwt.sign(
         {
-            tokenId: '62',
-            oldTokenId: '61',
+            tokenId: '71',
+            oldTokenId: '70',
             consumerId,
             expiredAt,
             userId: 'someUser1',

@@ -1,4 +1,4 @@
-import { PossibleServiceEvents, serviceEvent } from '@a-la-fois/message-proxy';
+import { PossibleServiceEvent, serviceEvent, TokenExpiredPayload, UpdateTokenPayload } from '@a-la-fois/message-proxy';
 import EventEmitter from 'eventemitter3';
 import { Api } from './Api';
 import { DocContainer } from './DocContainer';
@@ -12,20 +12,20 @@ export type ClientConfig = {
     token?: string;
 };
 
-export type ServiceEvent = PossibleServiceEvents['data']['event'];
-export type ServicePayload = PossibleServiceEvents['data']['data'];
+export type ServiceEvent = PossibleServiceEvent['data']['event'];
+export type ServicePayload<T extends ServiceEvent> = Extract<PossibleServiceEvent['data'], { event: T }>['data'];
 
 export interface Client {
-    once(event: ServiceEvent, listener: (payload: ServicePayload) => void): this;
+    once<T extends ServiceEvent>(event: T, listener: (payload: ServicePayload<T>) => void): this;
 
-    on(event: ServiceEvent, listener: (payload: ServicePayload) => void): this;
+    on<T extends ServiceEvent>(event: T, listener: (payload: ServicePayload<T>) => void): this;
 
-    off(event: ServiceEvent, listener: (payload: ServicePayload) => void): this;
+    off<T extends ServiceEvent>(event: T, listener: (payload: ServicePayload<T>) => void): this;
 
-    emit(event: ServiceEvent, payload: ServicePayload): boolean;
+    emit<T extends ServiceEvent>(event: T, payload: ServicePayload<T>): boolean;
 }
 
-export class Client extends EventEmitter<ServiceEvent, ServicePayload> {
+export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['data']> {
     private connection!: WsConnection;
     private ping!: Ping;
     private docs: Record<string, DocContainer> = {};
@@ -84,10 +84,10 @@ export class Client extends EventEmitter<ServiceEvent, ServicePayload> {
         }
     }
 
-    private handleServiceEvent = (payload: PossibleServiceEvents['data']) => {
+    private handleServiceEvent = (payload: PossibleServiceEvent['data']) => {
         if (payload.event === 'expiredToken') {
             this.dispose();
         }
-        this.emit(payload.event, payload.data);
+        this.emit<ServiceEvent>(payload.event, payload.data);
     };
 }

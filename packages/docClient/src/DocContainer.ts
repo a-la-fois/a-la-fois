@@ -5,7 +5,7 @@ import {
     BroadcastChangesPayload,
     joinResponseEvent,
     JoinResponsePayload,
-    PossibleServiceEvents,
+    PossibleServiceEvent,
     serviceEvent,
     syncResponseEvent,
     SyncResponsePayload,
@@ -126,7 +126,7 @@ export class DocContainer {
         }
     };
 
-    private handleServiceEvent = (payload: PossibleServiceEvents['data']) => {
+    private handleServiceEvent = (payload: PossibleServiceEvent['data']) => {
         if (payload.event === updateTokenServiceEvent) {
             this.sync();
         }
