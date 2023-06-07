@@ -50,6 +50,7 @@ export class ExplorerService {
         instancePrototype: Controller,
         methodKey: string
     ): DaprInvokeMetadataConfiguration | null {
+        // @ts-ignore
         const targetCallback = instancePrototype[methodKey];
         const handler = Reflect.getMetadata(DAPR_INVOKE_SUBSCRIBER, targetCallback);
 

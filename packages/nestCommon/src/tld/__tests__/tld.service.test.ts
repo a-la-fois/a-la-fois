@@ -8,7 +8,7 @@ const domains = {
     'some.host.ru': 'ru',
     'yandex.ru:8080': 'ru',
     'bla.yandex.kyprizel.net': 'net',
-    'localhost': 'localhost',
+    localhost: 'localhost',
     '.': '',
     '127.0.0.1': null,
     '[::1]': null,
@@ -38,6 +38,7 @@ describe('TldService', () => {
 
     describe('hosts in data.js', function () {
         Object.keys(domains).forEach((key) => {
+            // @ts-ignore
             doTest(key, domains[key]);
         });
     });

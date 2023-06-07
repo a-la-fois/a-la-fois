@@ -6,7 +6,14 @@ import { DAPR_SERVER_TOKEN } from './constants';
 import { DaprServerAsyncOptions, DaprServerOptions } from './types';
 
 const buildModuleMetadata = (config: DaprServerOptions): ModuleMetadata => {
-    const daprServer = new DaprServer(config.serverHost, config.serverPort, config.daprHost, config.daprPort);
+    const daprServer = new DaprServer({
+        serverHost: config.serverHost,
+        serverPort: config.serverPort,
+        clientOptions: {
+            daprHost: config.daprHost,
+            daprPort: config.daprPort,
+        },
+    });
 
     const daprServerProvider = {
         provide: DAPR_SERVER_TOKEN,
@@ -42,7 +49,14 @@ export class DaprServerModule implements OnModuleInit {
             useFactory: async (...args: any[]) => {
                 const config = await options.useFactory(...args);
 
-                return new DaprServer(config.serverHost, config.serverPort, config.daprHost, config.daprPort);
+                return new DaprServer({
+                    serverHost: config.serverHost,
+                    serverPort: config.serverPort,
+                    clientOptions: {
+                        daprHost: config.daprHost,
+                        daprPort: config.daprPort,
+                    },
+                });
             },
         };
 

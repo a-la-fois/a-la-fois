@@ -7,10 +7,13 @@ export const Memoize = (): MethodDecorator => {
             const originalMethod = descriptor.value;
 
             descriptor.value = function (...args: unknown[]) {
+                // @ts-ignore
                 if (!this[storageKey]) {
+                    // @ts-ignore
                     this[storageKey] = memoize(originalMethod);
                 }
 
+                // @ts-ignore
                 return this[storageKey](...args);
             };
         }

@@ -15,7 +15,14 @@ const mongoConnect = () => {
 
 async function start() {
     mongoConnect();
-    const server = new DaprServer(config.server.host, config.server.port, config.dapr.host, config.dapr.port);
+    const server = new DaprServer({
+        serverHost: config.server.host,
+        serverPort: config.server.port,
+        clientOptions: {
+            daprHost: config.dapr.host,
+            daprPort: config.dapr.port,
+        },
+    });
 
     await server.actor.init();
     await server.actor.registerActor(DocHandler);

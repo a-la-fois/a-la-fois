@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "name": "@a-la-fois/a-la-fois",
     "private": true,
     "version": "0.0.1",
@@ -57,4 +58,62 @@
     "dependencies": {
         "@nestjs/config": "2.2.0"
     }
+=======
+  "name": "@a-la-fois/a-la-fois",
+  "private": true,
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "lint": "lerna run lint",
+    "clean": "rimraf node_modules",
+    "clear": "lerna run clear",
+    "build": "lerna run build",
+    "build:lib": "yarn build:cleanPackage && yarn build:models && lerna run build:lib && yarn build:docClient",
+    "dev": "./dev.sh",
+    "setup:dev": "./utils/setupDev.js",
+    "publish:all": "lerna publish --exact --yes --cd-version patch",
+    "publish:canary": "lerna publish --canary",
+    "publish:images": "lerna run publish:image",
+    "build:cleanPackage": "yarn workspace @a-la-fois/clean-package build",
+    "build:api": "yarn workspace @a-la-fois/api build",
+    "build:messageProxy": "yarn workspace @a-la-fois/message-proxy build",
+    "build:nestCommon": "yarn workspace @a-la-fois/nest-common build",
+    "build:docHandler": "yarn workspace @a-la-fois/doc-handler build",
+    "build:docClient": "yarn workspace @a-la-fois/doc-client build",
+    "build:examples": "yarn workspace @a-la-fois/examples build",
+    "build:models": "yarn workspace @a-la-fois/models build",
+    "start:api": "yarn workspace @a-la-fois/api start",
+    "start:api:dapr:dev": "yarn workspace @a-la-fois/api start:dapr:dev",
+    "start:docClient:dev": "yarn workspace @a-la-fois/doc-client build:dev",
+    "start:messageProxy": "yarn workspace @a-la-fois/message-proxy start",
+    "start:messageProxy:dapr": "yarn workspace @a-la-fois/message-proxy start:dapr",
+    "start:messageProxy:dapr:dev": "yarn workspace @a-la-fois/message-proxy start:dapr:dev",
+    "start:docHandler": "yarn workspace @a-la-fois/doc-handler start",
+    "start:docHandler:dapr": "yarn workspace @a-la-fois/doc-handler start:dapr",
+    "start:docHandler:dapr:dev": "yarn workspace @a-la-fois/doc-handler start:dapr:dev",
+    "start:examples:dev": "yarn workspace @a-la-fois/examples dev",
+    "start:models:dev": "yarn workspace @a-la-fois/models dev"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "5.59.9",
+    "@typescript-eslint/parser": "5.59.9",
+    "eslint": "8.42.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "got": "13.0.0",
+    "jsonwebtoken": "9.0.0",
+    "lerna": "6.6.2",
+    "prettier": "2.8.8",
+    "rimraf": "5.0.1",
+    "typescript": "5.1.3",
+    "uuid": "9.0.0"
+  },
+  "dependencies": {
+    "@nestjs/config": "2.3.2"
+  }
+>>>>>>> 1259ae0 (packages updated)
 }
