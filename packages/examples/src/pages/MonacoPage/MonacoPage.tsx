@@ -24,7 +24,7 @@ export const MonacoPage = () => {
             const onUpdateToken = (payload: ServicePayload<'updateToken'>) => {
                 console.log(payload);
             };
-            client.on<'updateToken'>('updateToken', onUpdateToken);
+            client.on('updateToken', onUpdateToken);
 
             try {
                 await client.connect();
