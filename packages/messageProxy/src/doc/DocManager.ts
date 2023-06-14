@@ -1,4 +1,4 @@
-import { ConnectionId, WebSocketConnection } from 'src/ws/types';
+import { ConnectionId, WebSocketConnection } from '../ws/types';
 import {
     Awareness,
     broadcastAwarenessEvent,

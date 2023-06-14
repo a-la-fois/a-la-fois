@@ -21,9 +21,9 @@ import {
 } from '../messages';
 import { DocService } from '../doc/doc.service';
 import { WebSocketConnection } from './types';
-import { awarenessEvent, AwarenessPayload } from 'src/messages/awareness';
-import { MessageError } from 'src/errors';
-import { AuthCheckResult, AuthService } from 'src/auth/auth.service';
+import { awarenessEvent, AwarenessPayload } from '../messages/awareness';
+import { MessageError } from '../errors';
+import { AuthCheckResult, AuthService } from '../auth/auth.service';
 
 @WebSocketGateway()
 export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {

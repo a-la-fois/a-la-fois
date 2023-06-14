@@ -3,7 +3,7 @@ import { DocsController } from './docs.controller';
 import { DocsModule } from './docs';
 import { ConsumerModule } from './consumer';
 import { TokenController } from './token.controller';
-import { AuthModule } from 'src/auth';
+import { AuthModule } from '../auth';
 
 @Module({
     controllers: [DocsController, TokenController],

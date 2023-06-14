@@ -8,9 +8,9 @@ import {
     UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
-import { AuthService } from 'src/auth';
-import { UpdateJWTPayload } from 'src/messages';
-import { TokenModel } from 'src/models';
+import { AuthService } from '../auth';
+import { UpdateJWTPayload } from '../messages';
+import { TokenModel } from '../models';
 import { ConsumerGuard, ConsumerService } from './consumer';
 
 type UpdateTokenDto = {

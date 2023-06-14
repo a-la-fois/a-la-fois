@@ -1,6 +1,6 @@
 import { DaprClient } from '@dapr/dapr';
 import { Injectable } from '@nestjs/common';
-import { WebSocketConnection } from 'src/ws/types';
+import { WebSocketConnection } from '../ws/types';
 import { v4 as uuid } from 'uuid';
 import { DaprClient as DaprClientDecorator } from '@a-la-fois/nest-common';
 import { AuthClient } from '@a-la-fois/api';

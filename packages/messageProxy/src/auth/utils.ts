@@ -1,5 +1,5 @@
 import { JWTPayload } from '@a-la-fois/api';
-import { AccessData, WebSocketConnection } from 'src/ws/types';
+import { AccessData, WebSocketConnection } from '../ws/types';
 
 export const createAccessObject = (docs: JWTPayload['docs']): Record<string, AccessData> => {
     return (

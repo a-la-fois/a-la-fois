@@ -1,10 +1,10 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { DocKey } from 'src/doc/types';
-import { TokenExpiredServiceMessage, UpdateTokenServiceMessage } from 'src/messages';
-import { AccessData, WebSocketConnection } from 'src/ws/types';
+import { DocKey } from '../doc/types';
+import { TokenExpiredServiceMessage, UpdateTokenServiceMessage } from '../messages';
+import { AccessData, WebSocketConnection } from '../ws/types';
 import { createAccessObject } from './utils';
 import { config } from '../config';
-import { WS_CLOSE_STATUS_NORMAL } from 'src/ws/constants';
+import { WS_CLOSE_STATUS_NORMAL } from '../ws/constants';
 import {
     AttachDocPubsubMessage,
     DetachDocPubsubMessage,

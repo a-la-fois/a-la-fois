@@ -1,4 +1,4 @@
-import { AccessData } from 'src/ws/types';
+import { AccessData } from '../../ws/types';
 import { ServiceMessage } from './serviceMessage';
 
 export type UpdateTokenPayload = {
