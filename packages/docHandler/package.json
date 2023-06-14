@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/doc-handler",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "license": "MIT",
   "files": [
     "lib"
@@ -30,7 +30,7 @@
     "start:dapr:dev": "dapr run --app-id docHandler --app-protocol http --app-port 3001 --dapr-http-port 3501 --config ./dapr-config.yaml --placement-host-address localhost:50006 --resources-path ../../daprComponents/dev yarn start:dev"
   },
   "dependencies": {
-    "@a-la-fois/models": "0.0.16",
+    "@a-la-fois/models": "0.0.17",
     "@dapr/dapr": "2.5.0",
     "@typegoose/typegoose": "10.1.1",
     "js-base64": "3.7.2",
