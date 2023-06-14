@@ -24,4 +24,12 @@ export const config = {
     cors: {
         origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : false,
     },
+    kafka: {
+        serviceTopic: process.env.KAFKA_SERVICE_TOPIC || 'service',
+        hosts: process.env.KAFKA_HOSTS || '127.0.0.1:9092',
+        caPath: process.env.KAFKA_CA_PATH || '',
+        username: process.env.KAFKA_USERNAME || '',
+        password: process.env.KAFKA_PASSWORD || '',
+        mechanism: process.env.KAFKA_SASL_MECHANISM || '',
+    },
 } as const;

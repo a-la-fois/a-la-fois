@@ -1,3 +1,5 @@
+import { PossibleServiceEvent, serviceEvent } from '@a-la-fois/message-proxy';
+import EventEmitter from 'eventemitter3';
 import { Api } from './Api';
 import { DocContainer } from './DocContainer';
 import { Messenger } from './Messenger';
@@ -10,20 +12,39 @@ export type ClientConfig = {
     token?: string;
 };
 
-export class Client {
+export type ServiceEvent = PossibleServiceEvent['data']['event'];
+export type ServicePayload<T extends ServiceEvent> = Extract<PossibleServiceEvent['data'], { event: T }>['data'];
+
+export interface Client {
+    once<T extends ServiceEvent>(event: T, listener: (payload: ServicePayload<T>) => void): this;
+
+    on<T extends ServiceEvent>(event: T, listener: (payload: ServicePayload<T>) => void): this;
+
+    off<T extends ServiceEvent>(event: T, listener: (payload: ServicePayload<T>) => void): this;
+
+    emit<T extends ServiceEvent>(event: T, payload: ServicePayload<T>): boolean;
+}
+
+export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['data']> {
     private connection!: WsConnection;
     private ping!: Ping;
     private docs: Record<string, DocContainer> = {};
     private messenger!: Messenger;
     private api!: Api;
 
-    constructor(private readonly config: ClientConfig) {}
+    constructor(private readonly config: ClientConfig) {
+        super();
+    }
 
     async connect() {
         this.connection = new WsConnection({ url: this.config.url, token: this.config.token });
         this.ping = new Ping({ connection: this.connection });
+
         await this.connection.connect();
+
         this.messenger = new Messenger({ connection: this.connection });
+        this.messenger.on(serviceEvent, this.handleServiceEvent);
+
         this.api = new Api({
             url: this.config.apiUrl,
             token: this.config.token,
@@ -36,6 +57,11 @@ export class Client {
         this.ping?.dispose();
         this.messenger?.dispose();
         this.connection?.dispose();
+        this.messenger.off(serviceEvent, this.handleServiceEvent);
+
+        for (const docId in this.docs) {
+            this.docs[docId].dispose();
+        }
     }
 
     async getDoc(id: string) {
@@ -58,4 +84,11 @@ export class Client {
             throw new Error('Connection not established');
         }
     }
+
+    private handleServiceEvent = (payload: PossibleServiceEvent['data']) => {
+        if (payload.event === 'expiredToken') {
+            this.dispose();
+        }
+        this.emit<ServiceEvent>(payload.event, payload.data);
+    };
 }

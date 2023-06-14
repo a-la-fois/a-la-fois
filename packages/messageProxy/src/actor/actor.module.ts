@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { ActorService } from './actor.service';
 
 @Module({
-    imports: [ConfigModule],
+    imports: [],
     providers: [ActorService],
     exports: [ActorService],
 })

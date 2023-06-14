@@ -1,3 +1,4 @@
+import { ConnectionId, WebSocketConnection } from '../ws/types';
 import {
     Awareness,
     broadcastAwarenessEvent,
@@ -7,25 +8,23 @@ import {
     Changes,
 } from '../messages';
 
-type connection = { id: string; send: Function; close: Function } & Object;
-
 export class DocManager {
     readonly id: string;
-    private connections: Map<string, connection> = new Map();
+    private connections: Map<ConnectionId, WebSocketConnection> = new Map();
 
     constructor(docId: string) {
         this.id = docId;
     }
 
-    addConnection(client: connection) {
-        if (!this.contains(client)) {
+    addConnection(client: WebSocketConnection) {
+        if (!this.contains(client.id)) {
             this.connections.set(client.id, client);
         }
     }
 
-    removeConnection(client: connection) {
-        if (this.contains(client)) {
-            this.connections.delete(client.id);
+    removeConnection(connectionId: ConnectionId) {
+        if (this.contains(connectionId)) {
+            this.connections.delete(connectionId);
         }
     }
 
@@ -40,9 +39,9 @@ export class DocManager {
         return this.connections.size === 0;
     }
 
-    broadcastDiff(authorClient: connection, changes: Changes) {
+    broadcastDiff(authorConnectionId: ConnectionId, changes: Changes) {
         for (const [, connection] of this.connections) {
-            if (connection.id !== authorClient.id) {
+            if (connection.id !== authorConnectionId) {
                 const message: BroadcastChangesMessage = {
                     event: broadcastChangesEvent,
                     data: {
@@ -55,9 +54,9 @@ export class DocManager {
         }
     }
 
-    broadcastAwareness(authorClient: connection, awareness: Awareness) {
+    broadcastAwareness(authorConnectionId: ConnectionId, awareness: Awareness) {
         for (const [, connection] of this.connections) {
-            if (connection.id !== authorClient.id) {
+            if (connection.id !== authorConnectionId) {
                 const message: BroadcastAwarenessMessage = {
                     event: broadcastAwarenessEvent,
                     data: {
@@ -70,7 +69,7 @@ export class DocManager {
         }
     }
 
-    contains(client: connection): boolean {
-        return this.connections.has(client.id);
+    contains(connectionId: ConnectionId): boolean {
+        return this.connections.has(connectionId);
     }
 }

@@ -1,4 +1,4 @@
-import { Client } from '@a-la-fois/doc-client';
+import { Client, ServicePayload } from '@a-la-fois/doc-client';
 import Editor, { EditorProps } from '@monaco-editor/react';
 import type * as monaco from 'monaco-editor';
 import { useCallback, useEffect, useState } from 'react';
@@ -20,6 +20,12 @@ export const MonacoPage = () => {
                 apiUrl,
             });
             console.log('client created');
+
+            const onUpdateToken = (payload: ServicePayload<'updateToken'>) => {
+                console.log(payload);
+            };
+            client.on('updateToken', onUpdateToken);
+
             try {
                 await client.connect();
             } catch (err) {
@@ -27,7 +33,6 @@ export const MonacoPage = () => {
             }
 
             console.log('after connect');
-
             setClient(client);
         };
 

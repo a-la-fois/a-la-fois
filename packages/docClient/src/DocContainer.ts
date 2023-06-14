@@ -5,8 +5,11 @@ import {
     BroadcastChangesPayload,
     joinResponseEvent,
     JoinResponsePayload,
+    PossibleServiceEvent,
+    serviceEvent,
     syncResponseEvent,
     SyncResponsePayload,
+    updateTokenServiceEvent,
 } from '@a-la-fois/message-proxy';
 import { fromUint8Array, toUint8Array } from 'js-base64';
 import { applyAwarenessUpdate, Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
@@ -44,6 +47,7 @@ export class DocContainer {
 
         this.messenger.on(broadcastAwarenessEvent, this.handleReceiveAwareness);
         this.messenger.on(broadcastChangesEvent, this.handleReceiveChanges);
+        this.messenger.on(serviceEvent, this.handleServiceEvent);
         this.messenger.on(joinResponseEvent, (data: JoinResponsePayload) => {
             if (data.status === 'ok') {
                 this.sync();
@@ -119,6 +123,12 @@ export class DocContainer {
             const update = toUint8Array(payload.awareness);
 
             applyAwarenessUpdate(this.awareness, update, this.awareness.clientID);
+        }
+    };
+
+    private handleServiceEvent = (payload: PossibleServiceEvent['data']) => {
+        if (payload.event === updateTokenServiceEvent) {
+            this.sync();
         }
     };
 

@@ -6,6 +6,19 @@ import { AdminApiModule } from './adminApi';
 import { DbModule } from './db';
 import { config } from './config';
 import { MicroserviceModule } from './microservice';
+import { PubsubModule, PubsubOptions } from '@a-la-fois/pubsub';
+
+const buildPubsubOptions = (): PubsubOptions => {
+    return {
+        topicsToSubscribe: [],
+        clientId: 'api',
+        hosts: config.kafka.hosts.split(','),
+        caPath: config.kafka.caPath,
+        username: config.kafka.username,
+        password: config.kafka.password,
+        saslMechanism: config.kafka.mechanism,
+    };
+};
 
 @Module({
     imports: [
@@ -26,6 +39,7 @@ import { MicroserviceModule } from './microservice';
             daprHost: config.dapr.host,
             daprPort: config.dapr.port,
         }),
+        PubsubModule.forRoot(buildPubsubOptions()),
     ],
     controllers: [],
     providers: [],

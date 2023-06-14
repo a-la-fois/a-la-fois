@@ -1,12 +1,17 @@
-import { Right, JWTPayload } from '@a-la-fois/api';
+import { Right } from '@a-la-fois/api';
 
 export type AccessData = {
     id: string;
     rights: Right[];
 };
 
-export type WebSocketClient = { id: string; access: Record<string, AccessData> } & WebSocket;
+export type WebSocketConnection = {
+    id: string;
+    tokenId: string;
+    tokenExpiredAt: Date;
+    userId: string;
+    consumerId: string;
+    access: Record<string, AccessData>;
+} & WebSocket;
 
-export type ClientJWTPayload = JWTPayload & {
-    clientId: string;
-};
+export type ConnectionId = WebSocketConnection['id'];

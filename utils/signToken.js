@@ -15,9 +15,23 @@ const run = async () => {
     const docId = process.argv[2];
     const consumerId = process.argv[3];
     const privateKey = fs.readFileSync(keyPath);
+    const expiredAt = new Date();
+    expiredAt.setTime(expiredAt.getTime() + 1000 * 60 * 60);
 
     const token = jwt.sign(
-        { consumerId, clientId: uuid.v4(), docs: [{ id: docId, rights: ['read', 'write'] }] },
+        {
+            tokenId: '71',
+            oldTokenId: '70',
+            consumerId,
+            expiredAt,
+            userId: 'someUser1',
+            docs: [
+                {
+                    id: docId,
+                    rights: ['read', 'write'],
+                },
+            ],
+        },
         privateKey,
         {
             algorithm: 'RS256',

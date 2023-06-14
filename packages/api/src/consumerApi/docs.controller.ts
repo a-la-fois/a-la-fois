@@ -23,7 +23,7 @@ export class DocsController {
 
         const docId = await this.docsService.createDoc({
             // @ts-ignore
-            owner: consumer._id,
+            owner: consumer.id,
             public: docParams.public,
         });
 
