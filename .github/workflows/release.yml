@@ -34,8 +34,8 @@ jobs:
         run: yarn publish:all
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Push new versions
-        run: git push
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
       - name: Registry login
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login --username ${{ github.actor }} --password-stdin ghcr.io
       - name: Build and push images
