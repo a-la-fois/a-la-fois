@@ -40,7 +40,6 @@
         "test:cov": "jest --coverage"
     },
     "dependencies": {
-        "@a-la-fois/api": "0.0.16",
         "@a-la-fois/doc-handler": "0.0.16",
         "@a-la-fois/nest-common": "0.0.16",
         "@a-la-fois/pubsub": "0.0.16",
@@ -51,7 +50,6 @@
         "@nestjs/platform-express": "9.4.2",
         "@nestjs/platform-ws": "9.4.2",
         "@nestjs/websockets": "9.4.2",
-        "kafkajs": "2.2.4",
         "reflect-metadata": "0.1.13",
         "uuid": "9.0.0"
     },
