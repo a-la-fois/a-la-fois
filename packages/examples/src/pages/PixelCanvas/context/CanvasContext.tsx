@@ -45,7 +45,7 @@ export const CanvasContextProvider = ({ children }: CanvasContextProviderProps) 
         if (client) {
             const init = async () => {
                 const docContainer = await client.getDoc(canvasDocId);
-                const ymap = docContainer.doc.getMap('canvas');
+                const ymap: Y.Map<string> = docContainer.doc.getMap('canvas');
                 setConnected(true);
                 setYMap(ymap);
 

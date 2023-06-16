@@ -1,8 +1,6 @@
 # tld
 
 tld (Top level domain)
-Nest аналог `@yandex-int/express-tld`  
-Не является оберткой, просто скопирован код
 
 Экспортирует:
 
@@ -22,7 +20,7 @@ export {
 Парсит tld из текущего запроса
 
 ```ts
-import { TldService } from '@yandex-int/nest-common';
+import { TldService } from '@a-la-fois/nest-common';
 
 export class SomeService {
     constructor(tldService: TldService) {

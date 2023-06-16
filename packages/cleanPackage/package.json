@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/args": "5.0.0",
-    "typescript": "4.6.3"
+    "typescript": "5.1.3"
   },
   "gitHead": "e757a752497e9c4ee4ad85603998907ef3d54c22"
 }

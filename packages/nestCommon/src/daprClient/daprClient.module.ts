@@ -5,7 +5,10 @@ import { DaprClientAsyncOptions, DaprClientOptions } from './types';
 import { DAPR_CLIENT_TOKEN } from './constants';
 
 const buildModuleMetadata = (config: DaprClientOptions): ModuleMetadata => {
-    const daprClient = new DaprClient(config.daprHost, config.daprPort);
+    const daprClient = new DaprClient({
+        daprHost: config.daprHost,
+        daprPort: config.daprPort,
+    });
 
     const daprClientProvider = {
         provide: DAPR_CLIENT_TOKEN,
@@ -41,7 +44,10 @@ export class DaprClientModule {
             useFactory: async (...args: any[]) => {
                 const config = await options.useFactory(...args);
 
-                return new DaprClient(config.daprHost, config.daprPort);
+                return new DaprClient({
+                    daprHost: config.daprHost,
+                    daprPort: config.daprPort,
+                });
             },
         };
 

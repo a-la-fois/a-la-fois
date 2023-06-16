@@ -38,6 +38,7 @@ describe('TldService', () => {
 
     describe('hosts in data.js', function () {
         Object.keys(domains).forEach((key) => {
+            // @ts-ignore
             doTest(key, domains[key]);
         });
     });
