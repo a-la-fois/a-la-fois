@@ -22,11 +22,12 @@ jobs:
         id: regex-match
         with:
           text: ${{ github.event.head_commit.message }}
-          regex: '^^v[0-9]+\.[0-9]+\.[0-9]+$'
+          regex: '^v[0-9]+\.[0-9]+\.[0-9]+$'
       - name: AAAA
         run: |
           echo ${{github.event.pull_request.merged}}
           echo ${{steps.regex-match.outputs.match}}
+          echo ${{github.event.head_commit.message}}
           echo ${{github.event.pull_request.merged == true}}
           echo ${{steps.regex-match.outputs.match != ''}}
       # - name: Setup git user
