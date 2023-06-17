@@ -10,6 +10,8 @@ on:
       - closed
     branches:
       - main
+env:
+  IS_RELEASE:  ([[ "v0.0.17" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] && echo "true" || echo "false")
 
 jobs:
   publish:
@@ -21,9 +23,9 @@ jobs:
       - name: AAAA
         run: |
           echo ${{github.event.pull_request.merged}}
-          echo ${{github.event.commits[0].author.name}}
+          echo $IS_RELEASE
           echo ${{github.event.pull_request.merged == true}}
-          echo ${{github.event.commits[0].author.name == 'githubBot'}}
+          echo ${{env.IS_RELEASE == 'true'}}
       # - name: Setup git user
       #   run: |
       #     git config --global user.name "githubBot"
