@@ -10,8 +10,6 @@ on:
       - closed
     branches:
       - main
-env:
-  IS_RELEASE:  ([[ "v0.0.17" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] && echo "true" || echo "false")
 
 jobs:
   publish:
@@ -20,12 +18,17 @@ jobs:
     #         && github.event.commits[0].author.name == 'githubBot'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions-ecosystem/action-regex-match@v2
+        id: regex-match
+        with:
+          text: ${{ github.event.head_commit.message }}
+          regex: '^^v[0-9]+\.[0-9]+\.[0-9]+$'
       - name: AAAA
         run: |
           echo ${{github.event.pull_request.merged}}
-          echo $IS_RELEASE
+          echo ${{steps.regex-match.outputs.match}}
           echo ${{github.event.pull_request.merged == true}}
-          echo ${{env.IS_RELEASE == 'true'}}
+          echo ${{steps.regex-match.outputs.match != ''}}
       # - name: Setup git user
       #   run: |
       #     git config --global user.name "githubBot"
