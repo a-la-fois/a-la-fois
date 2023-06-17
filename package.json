@@ -12,7 +12,7 @@
         "build:lib": "yarn build:cleanPackage && yarn build:models && lerna run build:lib && yarn build:docClient",
         "dev": "./dev.sh",
         "setup:dev": "./utils/setupDev.js",
-        "publish:all": "lerna version --no-push --exact --yes --cd-version patch",
+        "version:bump": "lerna version --no-push --exact --yes --cd-version patch",
         "publish:canary": "lerna publish --canary",
         "publish:images": "lerna run publish:image",
         "build:cleanPackage": "yarn workspace @a-la-fois/clean-package build",

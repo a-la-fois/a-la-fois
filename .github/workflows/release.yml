@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Setup git user
@@ -31,7 +31,12 @@ jobs:
       - name: Get next version
         id: get-next-version
         run: echo NEXT_VERSION=`./utils/getNextVersion.js` >> "$GITHUB_OUTPUT"
+      - name: Bump version
+        run: yarn version:bump
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           branch: release_${{ steps.get-next-version.outputs.NEXT_VERSION }}
+          delete-branch: true
+          title: Release ${{ steps.get-next-version.outputs.NEXT_VERSION }}
+          commit-message: v${{ steps.get-next-version.outputs.NEXT_VERSION }}
