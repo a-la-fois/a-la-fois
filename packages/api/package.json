@@ -15,6 +15,7 @@
     },
     "scripts": {
         "prebuild:server": "rimraf dist",
+        "pub": "echo api",
         "build": "yarn build:lib && yarn build:server",
         "build:server": "nest build",
         "build:lib": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",

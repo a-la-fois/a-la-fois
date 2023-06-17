@@ -10,6 +10,7 @@
     "scripts": {
         "build": "tsc --build",
         "build:watch": "tsc --build --watch  --preserveWatchOutput",
+        "pub": "echo nest-common",
         "prebuild": "rimraf dist",
         "prepare": "npm run build",
         "test": "jest",

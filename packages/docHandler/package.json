@@ -15,6 +15,7 @@
   },
   "scripts": {
     "build": "yarn build:lib && yarn build:server",
+    "pub": "echo handler",
     "build:server": "tsc --build",
     "build:lib": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
     "build:lib:dev": "tsc --project ./tsconfig.build.lib.cjs.json --watch --preserveWatchOutput & tsc --project ./tsconfig.build.lib.esm.json --watch --preserveWatchOutput",

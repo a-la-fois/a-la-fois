@@ -19,6 +19,7 @@
     "build": "tsc --project tsconfig.build.cjs.json && tsc --project tsconfig.build.esm.json",
     "build:dev": "tsc --project tsconfig.build.cjs.json --watch --preserveWatchOutput & tsc --project tsconfig.build.esm.json --watch --preserveWatchOutput",
     "prebuild": "rimraf dist",
+    "pub": "echo doc-client",
     "prepare": "npm run build",
     "clear": "rimraf dist",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
