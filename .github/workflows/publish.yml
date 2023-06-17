@@ -5,11 +5,17 @@
 name: Publish
 
 on:
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  pull_request_target:
+    types:
+      - closed
+    branches:
+      - main
 
 jobs:
   publish:
+    if: |
+          github.event.pull_request.merged == true
+            && github.event.commits[0].author.name == 'GitHubActions'
     runs-on: ubuntu-latest
     steps:
       - name: Setup git user
@@ -21,22 +27,22 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
-          cache: yarn
-      - name: Install dependencies
-        run: yarn install
-      - name: Bootstrap
-        run: yarn bootstrap
-      - name: Publish packages
-        run: yarn publish:all
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-      - name: Registry login
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login --username ${{ github.actor }} --password-stdin ghcr.io
-      - name: Build and push images
-        run: yarn publish:images
+      # - name: Setup Node
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: "16"
+      #     cache: yarn
+      # - name: Install dependencies
+      #   run: yarn install
+      # - name: Bootstrap
+      #   run: yarn bootstrap
+      # - name: Publish packages
+      #   run: yarn publish:all
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Create Pull Request
+      #   uses: peter-evans/create-pull-request@v5
+      # - name: Registry login
+      #   run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login --username ${{ github.actor }} --password-stdin ghcr.io
+      # - name: Build and push images
+      #   run: yarn publish:images
