@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/message-proxy",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "",
   "license": "MIT",
   "author": "",
@@ -41,9 +41,9 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
-    "@a-la-fois/doc-handler": "0.0.18",
-    "@a-la-fois/nest-common": "0.0.18",
-    "@a-la-fois/pubsub": "0.0.18",
+    "@a-la-fois/doc-handler": "0.0.19",
+    "@a-la-fois/nest-common": "0.0.19",
+    "@a-la-fois/pubsub": "0.0.19",
     "@dapr/dapr": "3.0.0",
     "@nestjs/common": "9.4.2",
     "@nestjs/config": "2.3.2",
@@ -55,7 +55,7 @@
     "uuid": "9.0.0"
   },
   "devDependencies": {
-    "@a-la-fois/clean-package": "0.0.18",
+    "@a-la-fois/clean-package": "0.0.19",
     "@nestjs/cli": "9.5.0",
     "@nestjs/schematics": "9.2.0",
     "@nestjs/testing": "9.4.2",
