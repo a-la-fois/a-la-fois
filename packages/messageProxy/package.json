@@ -41,6 +41,7 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
+    "@a-la-fois/api": "0.0.25",
     "@a-la-fois/doc-handler": "0.0.25",
     "@a-la-fois/nest-common": "0.0.25",
     "@a-la-fois/pubsub": "0.0.25",
