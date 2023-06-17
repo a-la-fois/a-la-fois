@@ -40,3 +40,4 @@ jobs:
           delete-branch: true
           title: Release ${{ steps.get-next-version.outputs.NEXT_VERSION }}
           commit-message: v${{ steps.get-next-version.outputs.NEXT_VERSION }}
+          body: New Release v${{ steps.get-next-version.outputs.NEXT_VERSION }} 🥖🍷🇲🇫
