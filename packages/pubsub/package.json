@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/pubsub",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "license": "MIT",
   "files": [
     "dist"
