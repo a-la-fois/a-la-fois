@@ -21,7 +21,7 @@ jobs:
       - name: AAAA
         run: |
           echo ${{github.event.pull_request.merged}}
-          echo github.event.commits[0].author.name
+          echo ${{github.event.commits[0].author.name}}
       # - name: Setup git user
       #   run: |
       #     git config --global user.name "githubBot"
