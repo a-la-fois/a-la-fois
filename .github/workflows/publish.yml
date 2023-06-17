@@ -18,39 +18,29 @@ jobs:
       github.event.pull_request.user.login == 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name: AAAA
+      - name: Setup git user
         run: |
-          echo ${{github.event.pull_request.merged}}
-          echo ${{steps.regex-match.outputs.match}}
-          echo login: ${{github.event.pull_request.user.login}}
-          echo name: ${{github.event.pull_request.user.name}}
-          echo type: ${{github.event.pull_request.user.type}}
-          echo ${{github.event.pull_request.merged == true}}
-      # - name: Setup git user
-      #   run: |
-      #     git config --global user.name "githubBot"
-      #     git config --global user.email "githubbot@mail.com"
-      # - uses: actions/setup-node@v3
-      #   with:
-      #     registry-url: 'https://registry.npmjs.org'
-      # - name: Checkout
-      #   uses: actions/checkout@v3
-      # - name: Setup Node
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: "16"
-      #     cache: yarn
-      # - name: Install dependencies
-      #   run: yarn install
-      # - name: Bootstrap
-      #   run: yarn bootstrap
-      # - name: Publish packages
-      #   run: yarn publish:all
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      # - name: Create Pull Request
-      #   uses: peter-evans/create-pull-request@v5
-      # - name: Registry login
-      #   run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login --username ${{ github.actor }} --password-stdin ghcr.io
-      # - name: Build and push images
-      #   run: yarn publish:images
+          git config --global user.name "githubBot"
+          git config --global user.email "githubbot@mail.com"
+      - uses: actions/setup-node@v3
+        with:
+          registry-url: 'https://registry.npmjs.org'
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install
+      - name: Bootstrap
+        run: yarn bootstrap
+      - name: Publish packages
+        run: yarn publish:all
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Registry login
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login --username ${{ github.actor }} --password-stdin ghcr.io
+      - name: Build and push images
+        run: yarn publish:images

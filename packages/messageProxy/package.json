@@ -19,7 +19,7 @@
     "build": "yarn build:lib && yarn build:server",
     "build:server": "nest build",
     "build:lib": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
-    "pub": "echo proxy",
+    "pub": "yarn publish",
     "prebuild:server": "rimraf dist",
     "prebuild:lib": "rimraf lib",
     "prepare": "npm run build:lib",
