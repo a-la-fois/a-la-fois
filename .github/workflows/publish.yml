@@ -13,16 +13,11 @@ on:
 
 jobs:
   publish:
-    # if: |
-    #       github.event.pull_request.merged == true
-    #         && github.event.commits[0].author.name == 'githubBot'
+    if: |
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.user.login == 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions-ecosystem/action-regex-match@v2
-        id: regex-match
-        with:
-          text: ${{ github.event.head_commit.message }}
-          regex: '^v[0-9]+\.[0-9]+\.[0-9]+$'
       - name: AAAA
         run: |
           echo ${{github.event.pull_request.merged}}
@@ -31,7 +26,6 @@ jobs:
           echo name: ${{github.event.pull_request.user.name}}
           echo type: ${{github.event.pull_request.user.type}}
           echo ${{github.event.pull_request.merged == true}}
-          echo ${{steps.regex-match.outputs.match != ''}}
       # - name: Setup git user
       #   run: |
       #     git config --global user.name "githubBot"
