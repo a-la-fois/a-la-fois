@@ -27,8 +27,9 @@ jobs:
         run: |
           echo ${{github.event.pull_request.merged}}
           echo ${{steps.regex-match.outputs.match}}
-          echo login: ${{github.event.pull_request_target.sender.login}}
-          echo login2: ${{github.event.pull_request.sender.login}}
+          echo login: ${{github.event.pull_request.user.login}}
+          echo name: ${{github.event.pull_request.user.name}}
+          echo type: ${{github.event.pull_request.user.type}}
           echo ${{github.event.pull_request.merged == true}}
           echo ${{steps.regex-match.outputs.match != ''}}
       # - name: Setup git user
