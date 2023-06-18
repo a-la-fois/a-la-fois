@@ -11,7 +11,7 @@ export class ConsumerService {
     constructor(private storageService: AsyncStorageService, private authService: AuthService) {}
 
     async getConsumer(id: string): Promise<Consumer | null> {
-        return ConsumerModel.findOne({ id }) ?? null;
+        return ConsumerModel.findOne({ _id: id }) ?? null;
     }
 
     @StorageMemoize(CONSUMER_KEY)
@@ -29,7 +29,6 @@ export class ConsumerService {
         }
 
         const consumer = await this.getConsumer(payload.consumerId);
-
         return consumer;
     }
 }

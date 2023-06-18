@@ -5,6 +5,7 @@ import { ArrayMaxSize, IsArray, IsBoolean, IsDefined, IsString } from 'class-val
 export class DocPublicDto {
     id: string;
     state: Doc['state'];
+    public: boolean;
 }
 
 export class DocsByIdsQueryDto {
