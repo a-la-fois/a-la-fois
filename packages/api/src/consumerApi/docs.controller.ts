@@ -10,10 +10,15 @@ export class DocsController {
 
     @Get()
     async getDocsByIds(@Query() { ids }: DocsByIdsQueryDto): Promise<DocsByIdsDto> {
-        const docs = await this.docsService.getDocsByIds(ids);
+        const consumer = await this.consumerService.getCurrentConsumer();
+        const docs = await this.docsService.getDocsByIds(ids, consumer.id);
 
         return {
-            data: docs,
+            data: docs.map((doc) => ({
+                id: doc.id,
+                public: doc.public,
+                state: doc.state,
+            })),
         };
     }
 
