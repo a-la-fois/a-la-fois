@@ -65,6 +65,28 @@ export class AdminService {
     }
 
     /**
+     * Used only for dev setup
+     * @deprecated
+     */
+    async createConsumerWithKey({ name, id }: Pick<Consumer, 'name'> & { id?: string }) {
+        const { publicKey, privateKey } = await this.generateKeyPair();
+
+        const consumer = new ConsumerModel({ name, publicKey });
+
+        if (id) {
+            consumer._id = new mongoose.Types.ObjectId(id);
+        }
+
+        await consumer.save();
+
+        return {
+            consumer,
+            privateKey,
+        };
+    }
+
+    /**
+     * Used only for dev setup
      * @deprecated
      */
     async regenerateKeys(consumerId: string) {
@@ -123,6 +145,7 @@ export class AdminService {
     }
 
     /**
+     * Used only for dev setup
      * @deprecated
      */
     private generateKeyPair() {

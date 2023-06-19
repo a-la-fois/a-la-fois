@@ -32,7 +32,7 @@ export class AuthService {
     async consumerOwnsDocs(consumerId: string, docs: string[]): Promise<boolean> {
         const docModels = await DocModel.find(
             {
-                consumer: new mongoose.Types.ObjectId(consumerId),
+                owner: new mongoose.Types.ObjectId(consumerId),
                 _id: { $in: docs.map((docId) => new mongoose.Types.ObjectId(docId)) },
             },
             { _id: 1 }

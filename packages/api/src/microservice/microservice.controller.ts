@@ -16,7 +16,6 @@ export class MicroserviceController {
     @Invoke('checkClientToken', 'post')
     async checkClientToken(body: CheckClientTokenRequest): Promise<CheckClientTokenResponse> {
         const payload = await this.authService.checkJWT(body.jwt);
-
         if (!payload || !payload.userId || !payload.tokenId) {
             return {
                 status: 401,

@@ -28,7 +28,7 @@ export class SetupService {
 
     private async setupConsumer() {
         try {
-            const result = await this.adminService.createConsumer({ name: 'dev', id: devConsumerId });
+            const result = await this.adminService.createConsumerWithKey({ name: 'dev', id: devConsumerId });
 
             return {
                 id: result.consumer.id,
