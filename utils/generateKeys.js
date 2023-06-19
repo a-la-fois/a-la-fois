@@ -25,4 +25,4 @@ const generateKeyPair = () => {
     });
 };
 
-generateKeyPair().then((keys) => console.log(JSON.stringify(keys)));
+generateKeyPair().then(JSON.stringify).then(console.log);

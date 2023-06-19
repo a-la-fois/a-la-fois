@@ -34,7 +34,7 @@ export class AdminController {
     }
 
     @Patch('consumer/:id')
-    async updateKey(@Param('id') consumerId: string, @Body() payload: UpdateConsumerDto) {
+    async updateConsumer(@Param('id') consumerId: string, @Body() payload: UpdateConsumerDto) {
         const result = await this.adminService.updateConsumer({ ...payload, consumerId });
 
         if (!result) {
