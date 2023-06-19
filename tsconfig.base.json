@@ -1,11 +1,11 @@
 {
-    "compilerOptions": {
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "strictPropertyInitialization": true,
-        "strict": true,
-        "strictNullChecks": true,
-        "declaration": true,
-        "removeComments": true
-    }
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strictPropertyInitialization": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "declaration": true,
+    "removeComments": true
+  }
 }
