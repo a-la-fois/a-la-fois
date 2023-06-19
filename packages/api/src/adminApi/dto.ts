@@ -1,4 +1,4 @@
-import { IsString, IsDefined } from 'class-validator';
+import { IsString, IsDefined, IsOptional } from 'class-validator';
 
 export class CreateConsumerDto {
     @IsString()
@@ -12,9 +12,11 @@ export class CreateConsumerDto {
 
 export class UpdateConsumerDto {
     @IsString()
+    @IsOptional()
     publicKey?: string;
 
     @IsString()
+    @IsOptional()
     name?: string;
 }
 

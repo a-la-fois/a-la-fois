@@ -27,7 +27,7 @@ export class AdminService {
     async getConsumer(consumerId: string) {
         const consumer = await ConsumerModel.findById(consumerId);
 
-        if (consumer) {
+        if (!consumer) {
             return null;
         }
 

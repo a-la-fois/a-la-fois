@@ -48,17 +48,6 @@ export class AdminController {
         };
     }
 
-    // @Post('regenerateKeys')
-    // async regenerateKeys(@Body() payload: RegenerateKeysDto) {
-    //     const result = await this.adminService.regenerateKeys(payload.consumerId);
-
-    //     return {
-    //         id: result.consumer.id,
-    //         name: result.consumer.name,
-    //         privateKey: result.privateKey,
-    //     };
-    // }
-
     @Post('publicDoc')
     async publicDoc() {
         const doc = await this.adminService.createPublicDoc();
