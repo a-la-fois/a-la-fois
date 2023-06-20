@@ -20,6 +20,7 @@
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.cjs.json && tsc --project tsconfig.build.esm.json",
+    "build:lib": "yarn build",
     "pub": "yarn publish",
     "prebuild": "rimraf dist",
     "prepare": "npm run build",

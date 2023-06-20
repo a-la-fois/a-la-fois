@@ -9,7 +9,7 @@
     "clean": "rimraf node_modules",
     "clear": "lerna run clear",
     "build": "lerna run build",
-    "build:lib": "yarn build:cleanPackage && yarn build:models && lerna run build:lib && yarn build:docClient",
+    "build:lib": "lerna run build:lib",
     "dev": "./dev.sh",
     "kill:ports": "./utils/kill.js",
     "setup:dev": "./utils/setupDev.js",
