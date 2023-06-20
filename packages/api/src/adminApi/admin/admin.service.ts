@@ -10,7 +10,65 @@ import { ConsumerModel, DocModel } from '../../models';
 export class AdminService {
     constructor(private storageService: AsyncStorageService) {}
 
-    async createConsumer({ name, id }: Pick<Consumer, 'name'> & { id?: string }) {
+    async createConsumer({ name, id, publicKey }: Pick<Consumer, 'name' | 'publicKey'> & { id?: string }) {
+        const consumer = new ConsumerModel({ name, publicKey });
+
+        if (id) {
+            consumer._id = new mongoose.Types.ObjectId(id);
+        }
+
+        await consumer.save();
+
+        return {
+            consumer,
+        };
+    }
+
+    async getConsumer(consumerId: string) {
+        const consumer = await ConsumerModel.findById(consumerId);
+
+        if (!consumer) {
+            return null;
+        }
+
+        return {
+            consumer,
+        };
+    }
+
+    async updateConsumer({
+        consumerId,
+        publicKey,
+        name,
+    }: Partial<Pick<Consumer, 'publicKey' | 'name'>> & { consumerId: string }) {
+        const consumer = await ConsumerModel.findById(consumerId);
+
+        if (!consumer) {
+            return null;
+        }
+
+        if (publicKey) {
+            consumer.publicKey = publicKey;
+        }
+
+        if (name) {
+            consumer.name = name;
+        }
+
+        if (publicKey || name) {
+            await consumer.save();
+        }
+
+        return {
+            consumer,
+        };
+    }
+
+    /**
+     * Used only for dev setup
+     * @deprecated
+     */
+    async createConsumerWithKey({ name, id }: Pick<Consumer, 'name'> & { id?: string }) {
         const { publicKey, privateKey } = await this.generateKeyPair();
 
         const consumer = new ConsumerModel({ name, publicKey });
@@ -27,6 +85,10 @@ export class AdminService {
         };
     }
 
+    /**
+     * Used only for dev setup
+     * @deprecated
+     */
     async regenerateKeys(consumerId: string) {
         const consumer = await ConsumerModel.findById(consumerId);
 
@@ -82,6 +144,10 @@ export class AdminService {
         return token === config.admin.secret;
     }
 
+    /**
+     * Used only for dev setup
+     * @deprecated
+     */
     private generateKeyPair() {
         return new Promise<{ publicKey: string; privateKey: string }>((resolve, reject) => {
             generateKeyPair(

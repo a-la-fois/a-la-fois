@@ -1,5 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { CreateConsumerDto, RegenerateKeysDto } from './dto';
+import { BadRequestException, Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { CreateConsumerDto, UpdateConsumerDto } from './dto';
 import { SetupService, Admin, AdminService } from './admin';
 
 @Admin()
@@ -14,18 +14,37 @@ export class AdminController {
         return {
             id: result.consumer.id,
             name: result.consumer.name,
-            privateKey: result.privateKey,
+            publicKey: result.consumer.publicKey,
         };
     }
 
-    @Post('regenerateKeys')
-    async regenerateKeys(@Body() payload: RegenerateKeysDto) {
-        const result = await this.adminService.regenerateKeys(payload.consumerId);
+    @Get('consumer/:id')
+    async getConsumer(@Param('id') consumerId: string) {
+        const result = await this.adminService.getConsumer(consumerId);
+
+        if (!result) {
+            throw new BadRequestException('No such consumer');
+        }
 
         return {
             id: result.consumer.id,
             name: result.consumer.name,
-            privateKey: result.privateKey,
+            publicKey: result.consumer.publicKey,
+        };
+    }
+
+    @Patch('consumer/:id')
+    async updateConsumer(@Param('id') consumerId: string, @Body() payload: UpdateConsumerDto) {
+        const result = await this.adminService.updateConsumer({ ...payload, consumerId });
+
+        if (!result) {
+            throw new BadRequestException('No such consumer');
+        }
+
+        return {
+            id: result.consumer.id,
+            name: result.consumer.name,
+            publicKey: result.consumer.publicKey,
         };
     }
 
