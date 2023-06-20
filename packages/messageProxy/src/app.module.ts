@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { DaprClientModule } from '@a-la-fois/nest-common';
+import { DaprClientModule, LoggerModule } from '@a-la-fois/nest-common';
 import { PubsubModule, PubsubOptions } from '@a-la-fois/pubsub';
 import { WsModule } from './ws';
 import { config } from './config';
@@ -24,6 +24,7 @@ const buildPubsubOptions = (): PubsubOptions => {
             daprPort: config.dapr.port,
         }),
         PubsubModule.forRoot(buildPubsubOptions()),
+        LoggerModule.forRoot({ service: 'messageProxy' }),
     ],
     controllers: [],
     providers: [],

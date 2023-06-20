@@ -23,13 +23,19 @@ import { DocService } from '../doc/doc.service';
 import { WebSocketConnection } from './types';
 import { awarenessEvent, AwarenessPayload } from '../messages/awareness';
 import { MessageError } from '../errors';
+import { LoggerService } from '@a-la-fois/nest-common';
 import { AuthCheckResult, AuthService } from '../auth/auth.service';
 
 @WebSocketGateway()
 export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
-    constructor(private readonly docService: DocService, private readonly authServise: AuthService) {}
+    constructor(
+        private readonly docService: DocService,
+        private readonly authServise: AuthService,
+        private readonly loggerService: LoggerService
+    ) {}
 
     async handleConnection(client: WebSocketConnection, context: IncomingMessage) {
+        this.loggerService.info({}, 'New connection');
         const url = new URL(context.url, 'http://localhost');
         const token = url.searchParams.get('token');
 
