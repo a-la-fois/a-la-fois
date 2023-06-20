@@ -15,6 +15,7 @@
   },
   "scripts": {
     "build": "tsc --project ./tsconfig.build.lib.cjs.json && tsc --project ./tsconfig.build.lib.esm.json",
+    "build:lib": "yarn build",
     "dev": "tsc --project ./tsconfig.build.lib.cjs.json --watch --preserveWatchOutput & tsc --project ./tsconfig.build.lib.esm.json --watch --preserveWatchOutput",
     "pub": "yarn publish",
     "prebuild": "rimraf dist",
