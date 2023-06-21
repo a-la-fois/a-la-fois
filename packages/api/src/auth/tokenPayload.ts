@@ -7,7 +7,7 @@ export type ValidationResult = {
     message?: string;
 };
 
-const TTL = parseInt(config.admin.maxTokenTtl);
+const TTL = parseInt(config.admin.maxTokenTtlHours);
 
 export class TokenPayload {
     isUpdateToken: boolean;
@@ -37,7 +37,7 @@ export class TokenPayload {
         },
         { message: `Token TTL must not be longer then ${TTL} hours` }
     )
-    expiredAt?: Date; // UTC YYYY-MM-DDTHH:mm:ss.sssZ
+    expiredAt?: Date;
 
     @IsDefined()
     docs?: {

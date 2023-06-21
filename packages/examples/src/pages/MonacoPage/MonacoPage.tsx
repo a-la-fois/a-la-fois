@@ -31,6 +31,7 @@ export const MonacoPage = () => {
             } catch (err) {
                 console.log('err', err);
             }
+
             console.log('after connect');
             setClient(client);
         };

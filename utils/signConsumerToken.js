@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const path = require('node:path');
 const fs = require('node:fs');
+const path = require('node:path');
 const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
 
