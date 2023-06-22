@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/api",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "license": "MIT",
   "files": [
     "lib"
@@ -39,9 +39,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@a-la-fois/models": "0.0.26",
-    "@a-la-fois/nest-common": "0.0.26",
-    "@a-la-fois/pubsub": "0.0.26",
+    "@a-la-fois/models": "0.0.27",
+    "@a-la-fois/nest-common": "0.0.27",
+    "@a-la-fois/pubsub": "0.0.27",
     "@dapr/dapr": "3.0.0",
     "@nestjs/common": "9.4.2",
     "@nestjs/core": "9.4.2",
@@ -57,7 +57,7 @@
     "yjs": "13.6.1"
   },
   "devDependencies": {
-    "@a-la-fois/clean-package": "0.0.26",
+    "@a-la-fois/clean-package": "0.0.27",
     "@nestjs/cli": "9.5.0",
     "@nestjs/schematics": "9.2.0",
     "@nestjs/testing": "9.4.2",
