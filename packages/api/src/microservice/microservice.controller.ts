@@ -8,6 +8,7 @@ import {
     DocIsPublicResponse,
 } from '../messages';
 import { DocModel, TokenModel } from '../models';
+import { TokenPayload } from 'src/auth';
 
 @Controller()
 export class MicroserviceController {
@@ -16,14 +17,17 @@ export class MicroserviceController {
     @Invoke('checkClientToken', 'post')
     async checkClientToken(body: CheckClientTokenRequest): Promise<CheckClientTokenResponse> {
         const payload = await this.authService.checkJWT(body.jwt);
-        if (!payload || !payload.userId || !payload.tokenId) {
+
+        if (!payload) {
             return {
                 status: 401,
                 error: 'Unauthorized',
             };
         }
 
-        if (payload.expiredAt && new Date(payload.expiredAt) < new Date()) {
+        const errors = await new TokenPayload(payload).validate();
+
+        if (errors.length != 0) {
             return {
                 status: 401,
                 error: 'Unauthorized',

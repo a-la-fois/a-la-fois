@@ -20,6 +20,7 @@ export const config = {
     },
     admin: {
         secret: process.env.ADMIN_SECRET ?? null,
+        maxTokenTtlHours: process.env.MAX_TOKEN_TTL_HOURS || '8',
     },
     cors: {
         origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : false,

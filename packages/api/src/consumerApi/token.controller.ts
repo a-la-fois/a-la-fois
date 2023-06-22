@@ -12,6 +12,7 @@ import { AuthService } from '../auth';
 import { UpdateJWTPayload } from '../messages';
 import { TokenModel } from '../models';
 import { ConsumerGuard, ConsumerService } from './consumer';
+import { TokenPayload } from 'src/auth';
 
 type UpdateTokenDto = {
     tokens: string[];
@@ -37,21 +38,16 @@ export class TokenController {
             if (!payload) {
                 throw new BadRequestException({
                     message: 'Token is invalid',
-                    data: { tokenId: payload.tokenId },
+                    data: { token: t },
                 });
             }
 
-            if (!payload.docs) {
-                throw new BadRequestException({
-                    message: 'No documents',
-                    data: { tokenId: payload.tokenId },
-                });
-            }
+            const errors = await new TokenPayload(payload, true).validate();
 
-            if (payload.expiredAt && new Date(payload.expiredAt) < new Date()) {
+            if (errors.length != 0) {
                 throw new BadRequestException({
-                    message: 'Token expiration date must be in the future',
-                    data: { tokenId: payload.tokenId },
+                    message: errors,
+                    data: { token: t },
                 });
             }
 
@@ -63,7 +59,7 @@ export class TokenController {
             if (!consumerOwnsDocs) {
                 throw new UnauthorizedException({
                     message: 'You dont have permission to documents',
-                    data: { tokenId: payload.tokenId },
+                    data: { token: t },
                 });
             }
 
