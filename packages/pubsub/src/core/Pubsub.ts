@@ -118,7 +118,7 @@ export class Pubsub {
 
         if (username && password) {
             params['sasl'] = {
-                saslMechanism,
+                mechanism: saslMechanism,
                 username,
                 password,
             };
