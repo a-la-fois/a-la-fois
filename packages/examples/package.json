@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build --base=${BASE_PATH:-/}",
+    "publish:image": "./scripts/dockerPublish.sh",
     "preview": "vite preview"
   },
   "resolutions": {
