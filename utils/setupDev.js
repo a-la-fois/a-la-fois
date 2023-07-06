@@ -12,7 +12,10 @@ const run = async () => {
         })
         .json();
 
-    const keyPath = path.resolve(__dirname, '../.dev/private_key');
+    const keyFolderPath = path.resolve(__dirname, '../.dev');
+
+    fs.mkdirSync(keyFolderPath, { recursive: true });
+    const keyPath = path.resolve(__dirname, keyFolderPath, 'private_key');
     fs.writeFileSync(keyPath, res.consumer.privateKey);
 
     console.log('Test consumer private key is saved: ', keyPath);
