@@ -9,9 +9,11 @@ export const errorEvent = 'error';
 
 export type ErrorMessage = Message<typeof errorEvent, ErrorPayload>;
 
-export const baseErrorMessage: Message<typeof errorEvent, ErrorPayload> = {
+export const error = (payload: ErrorPayload): ErrorMessage => ({
     event: errorEvent,
-    data: {
-        message: 'Internal server error',
-    },
-};
+    data: payload,
+});
+
+export const baseErrorMessage = error({
+    message: 'Internal server error',
+});

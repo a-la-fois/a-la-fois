@@ -9,3 +9,8 @@ export interface JoinResponsePayload {
 export const joinResponseEvent = 'joinResponse';
 
 export type JoinResponseMessage = Message<typeof joinResponseEvent, JoinResponsePayload>;
+
+export const joinResponse = (payload: JoinResponsePayload): JoinResponseMessage => ({
+    event: joinResponseEvent,
+    data: payload,
+});

@@ -1,36 +1,40 @@
-import { URL } from 'node:url';
-import { IncomingMessage } from 'http';
-import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-import {
-    joinEvent,
-    JoinPayload,
-    changesEvent,
-    ChangesPayload,
-    pingEvent,
-    PongMessage,
-    pongEvent,
-    SyncStartPayload,
-    syncStartEvent,
-    SyncResponseMessage,
-    syncResponseEvent,
-    SyncCompletePayload,
-    syncCompleteEvent,
-    JoinResponseMessage,
-    joinResponseEvent,
-    baseErrorMessage,
-} from '../messages';
-import { DocService } from '../doc/doc.service';
-import { WebSocketConnection } from './types';
-import { awarenessEvent, AwarenessPayload } from '../messages/awareness';
-import { MessageError } from '../errors';
 import { LoggerService } from '@a-la-fois/nest-common';
-import { AuthCheckResult, AuthService } from '../auth/auth.service';
+import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { IncomingMessage } from 'http';
+import { URL } from 'node:url';
+import { AuthService } from '../auth/auth.service';
+import { DocService } from '../doc/doc.service';
+import { MessageError } from '../errors';
+import {
+    ChangesPayload,
+    JoinPayload,
+    JoinResponseMessage,
+    PongMessage,
+    SetTokenPayload,
+    SyncCompletePayload,
+    SyncStartPayload,
+    baseErrorMessage,
+    changesEvent,
+    connectResponse,
+    error,
+    joinEvent,
+    joinResponse,
+    pingEvent,
+    pong,
+    setTokenEvent,
+    setTokenResponse,
+    syncCompleteEvent,
+    syncResponse,
+    syncStartEvent,
+} from '../messages';
+import { AwarenessPayload, awarenessEvent } from '../messages/awareness';
+import { WebSocketConnection } from './types';
 
 @WebSocketGateway()
 export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     constructor(
         private readonly docService: DocService,
-        private readonly authServise: AuthService,
+        private readonly authService: AuthService,
         private readonly loggerService: LoggerService
     ) {}
 
@@ -39,71 +43,59 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const url = new URL(context.url, 'http://localhost');
         const token = url.searchParams.get('token');
 
-        const clientInitResult: AuthCheckResult = await this.authServise.initClient(client, token);
+        const clientInitResult = await this.authService.initClient(client, token);
 
-        if (clientInitResult.status == 'ok') {
-            client.send(
-                JSON.stringify({
-                    event: 'connectResponse',
-                    data: {
-                        status: 'ok',
-                    },
-                })
-            );
+        if (clientInitResult.status === 'ok') {
+            return client.send(JSON.stringify(connectResponse({ status: 'ok' })));
         }
 
-        client.send(
-            JSON.stringify({
-                event: 'connectResponse',
-                data: {
-                    status: 'err',
-                    message: clientInitResult.message,
-                },
-            })
-        );
+        client.send(JSON.stringify(connectResponse({ status: 'err', message: clientInitResult.message })));
     }
 
     handleDisconnect(client: WebSocketConnection) {
         this.docService.disconnect(client.id);
-        this.authServise.disconnect(client);
+        this.authService.disconnect(client);
     }
 
     @SubscribeMessage(joinEvent)
     async onJoin(client: WebSocketConnection, { docId }: JoinPayload): Promise<JoinResponseMessage> {
-        const docRightCheckResult = await this.authServise.checkDocAccess(client, docId);
+        const docRightCheckResult = await this.authService.checkDocAccess(client, docId);
 
         if (docRightCheckResult.status == 'err') {
-            return {
-                event: 'joinResponse',
-                data: {
-                    docId,
-                    status: 'err',
-                    message: docRightCheckResult.message,
-                },
-            };
+            return joinResponse({
+                status: 'err',
+                docId,
+                message: docRightCheckResult.message,
+            });
         }
 
         const data = this.docService.joinToDoc(client, docId);
-        const message: JoinResponseMessage = {
-            event: joinResponseEvent,
-            data,
-        };
 
-        return message;
+        return joinResponse(data);
+    }
+
+    @SubscribeMessage(setTokenEvent)
+    async onSetToken(client: WebSocketConnection, payload: SetTokenPayload) {
+        const result = await this.authService.applyToken(client, payload.token);
+
+        if (result.status === 'err') {
+            return setTokenResponse({ status: 'err', message: result.message });
+        }
+
+        this.docService.disconnect(client.id);
+
+        return setTokenResponse({ status: 'ok' });
     }
 
     @SubscribeMessage(changesEvent)
     async onChanges(client: WebSocketConnection, payload: ChangesPayload) {
-        const rightCheckResult = this.authServise.checkWriteAccess(client, payload.docId);
+        const rightCheckResult = this.authService.checkWriteAccess(client, payload.docId);
 
         if (rightCheckResult.status === 'err') {
-            return {
-                event: 'error',
-                data: {
-                    docId: payload.docId,
-                    message: rightCheckResult.message,
-                },
-            };
+            return error({
+                docId: payload.docId,
+                message: rightCheckResult.message,
+            });
         }
 
         try {
@@ -119,40 +111,31 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage(syncStartEvent)
     async onSyncStart(client: WebSocketConnection, payload: SyncStartPayload) {
-        const rightCheckResult = this.authServise.checkReadAccess(client, payload.docId);
+        const rightCheckResult = this.authService.checkReadAccess(client, payload.docId);
 
-        if (rightCheckResult.status == 'err') {
-            return {
-                event: 'error',
-                data: {
-                    docId: payload.docId,
-                    message: rightCheckResult.message,
-                },
-            };
+        if (rightCheckResult.status === 'err') {
+            return error({
+                docId: payload.docId,
+                message: rightCheckResult.message,
+            });
         }
 
         const data = await this.docService.syncStart(client, payload);
-        const message: SyncResponseMessage = {
-            event: syncResponseEvent,
-            data,
-        };
 
-        return message;
+        return syncResponse(data);
     }
 
     @SubscribeMessage(syncCompleteEvent)
     async onSyncComplete(client: WebSocketConnection, payload: SyncCompletePayload) {
-        const rightCheckResult = this.authServise.checkWriteAccess(client, payload.docId);
+        const rightCheckResult = this.authService.checkWriteAccess(client, payload.docId);
 
         if (rightCheckResult.status == 'err') {
-            return {
-                event: 'error',
-                data: {
-                    docId: payload.docId,
-                    message: rightCheckResult.message,
-                },
-            };
+            return error({
+                docId: payload.docId,
+                message: rightCheckResult.message,
+            });
         }
+
         this.docService.syncComplete(client, payload);
     }
 
@@ -170,9 +153,7 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage(pingEvent)
-    async ping(client: WebSocketConnection): Promise<PongMessage> {
-        return {
-            event: pongEvent,
-        };
+    async ping(): Promise<PongMessage> {
+        return pong();
     }
 }
