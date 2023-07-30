@@ -17,6 +17,11 @@ const UNAUTHORIZED_RESULT: AuthCheckResult = {
     message: 'Unauthorized',
 };
 
+const INVALID_TOKEN_RESULT: AuthCheckResult = {
+    status: 'err',
+    message: 'Invalid token',
+};
+
 const OK_RESULT: AuthCheckResult = { status: 'ok' };
 
 @Injectable()
@@ -36,16 +41,18 @@ export class AuthService {
 
         if (!token) {
             conn.access = {};
+
             return OK_RESULT;
         }
 
+        return this.applyToken(conn, token);
+    }
+
+    async applyToken(conn: WebSocketConnection, token: string): Promise<AuthCheckResult> {
         const response = await this.authClient.checkClientToken(token);
 
         if (response.status !== 200) {
-            return {
-                status: 'err',
-                message: 'invalid token',
-            };
+            return INVALID_TOKEN_RESULT;
         }
 
         conn.userId = response.payload.userId;
@@ -68,7 +75,6 @@ export class AuthService {
         if (!docAccess) {
             const response = await this.authClient.docIsPublic(docId);
 
-            console.log(response);
             if (response.status !== 200) {
                 return {
                     status: 'err',
@@ -78,7 +84,7 @@ export class AuthService {
 
             if (response.payload.isPublic) {
                 this.publicDocs.set(docId, true);
-                console.log(this.publicDocs);
+
                 return OK_RESULT;
             } else {
                 return UNAUTHORIZED_RESULT;

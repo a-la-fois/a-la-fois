@@ -10,3 +10,8 @@ export type SyncResponsePayload = {
 export const syncResponseEvent = 'syncResponse';
 
 export type SyncResponseMessage = Message<typeof syncResponseEvent, SyncResponsePayload>;
+
+export const syncResponse = (payload: SyncResponsePayload): SyncResponseMessage => ({
+    event: syncResponseEvent,
+    data: payload,
+});

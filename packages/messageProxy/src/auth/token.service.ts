@@ -30,6 +30,7 @@ export class TokenService implements OnModuleDestroy {
         this.pubsub.subscribe<typeof updateTokenMessageType>(updateTokenMessageType, this.onUpdateTokenMessage);
         this.expirationInterval = setInterval(this.checkTokenExpiration, parseInt(config.auth.expiredCheckIntervalMs));
     }
+
     onModuleDestroy() {
         clearInterval(this.expirationInterval);
     }

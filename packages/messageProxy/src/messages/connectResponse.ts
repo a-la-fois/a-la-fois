@@ -8,3 +8,8 @@ export interface ConnectResponsePayload {
 export const connectResponseEvent = 'connectResponse';
 
 export type ConnectResponseMessage = Message<typeof connectResponseEvent, ConnectResponsePayload>;
+
+export const connectResponse = (payload: ConnectResponsePayload): ConnectResponseMessage => ({
+    event: connectResponseEvent,
+    data: payload,
+});
