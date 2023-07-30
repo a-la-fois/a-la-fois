@@ -48,7 +48,7 @@ export class DocContainer {
         this.messenger.on(broadcastAwarenessEvent, this.handleReceiveAwareness);
         this.messenger.on(broadcastChangesEvent, this.handleReceiveChanges);
         this.messenger.on(serviceEvent, this.handleServiceEvent);
-        this.messenger.on(joinResponseEvent, (data: JoinResponsePayload) => {
+        this.messenger.once(joinResponseEvent, (data: JoinResponsePayload) => {
             if (data.status === 'ok') {
                 this.sync();
             }
@@ -57,6 +57,12 @@ export class DocContainer {
 
     async init() {
         this.messenger.sendJoin({ docId: this.id });
+
+        const joinResult = await this.messenger.waitFor(joinResponseEvent);
+
+        if (joinResult.status === 'err') {
+            throw new Error(joinResult.message);
+        }
 
         if (this.awareness.getLocalState() !== null) {
             const arr = Array.from(this.awareness.getStates().keys());

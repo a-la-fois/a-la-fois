@@ -1,61 +1,51 @@
-import { EventEmitter } from 'eventemitter3';
-import { WsConnection } from './WsConnection';
 import {
+    AwarenessPayload,
+    BroadcastAwarenessPayload,
+    BroadcastChangesPayload,
+    ChangesPayload,
     JoinPayload,
+    JoinResponsePayload,
+    PingMessage,
+    PossibleServiceEvent,
+    SetTokenMessage,
+    SetTokenPayload,
+    SetTokenResponsePayload,
+    SyncCompleteMessage,
+    SyncCompletePayload,
+    SyncResponsePayload,
+    SyncStartMessage,
+    SyncStartPayload,
+    awarenessEvent,
+    broadcastAwarenessEvent,
+    broadcastChangesEvent,
+    changesEvent,
     joinEvent,
     joinResponseEvent,
-    JoinResponsePayload,
-    ChangesPayload,
-    changesEvent,
-    BroadcastChangesPayload,
-    broadcastChangesEvent,
-    PingMessage,
     pingEvent,
-    SyncStartPayload,
-    syncStartEvent,
-    SyncStartMessage,
-    SyncResponsePayload,
-    syncResponseEvent,
-    SyncCompletePayload,
-    syncCompleteEvent,
-    SyncCompleteMessage,
-    BroadcastAwarenessPayload,
-    broadcastAwarenessEvent,
-    awarenessEvent,
-    AwarenessPayload,
     serviceEvent,
-    PossibleServiceEvent,
+    setTokenEvent,
+    setTokenResponseEvent,
+    syncCompleteEvent,
+    syncResponseEvent,
+    syncStartEvent,
 } from '@a-la-fois/message-proxy';
+import { EventEmitter } from 'eventemitter3';
+import { WsConnection } from './WsConnection';
 
 export type MessengerConfig = {
     connection: WsConnection;
 };
 
-export interface Messenger {
-    once(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
-    once(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
-    once(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
-    once(event: typeof broadcastAwarenessEvent, listener: (payload: BroadcastAwarenessPayload) => void): this;
-    once(event: typeof serviceEvent, listener: (payload: PossibleServiceEvent['data']) => void): this;
+type IncomeEvents = {
+    [joinResponseEvent]: JoinResponsePayload;
+    [syncResponseEvent]: SyncResponsePayload;
+    [broadcastChangesEvent]: BroadcastChangesPayload;
+    [broadcastAwarenessEvent]: BroadcastAwarenessPayload;
+    [setTokenResponseEvent]: SetTokenResponsePayload;
+    [serviceEvent]: PossibleServiceEvent['data'];
+};
 
-    on(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
-    on(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
-    on(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
-    on(event: typeof broadcastAwarenessEvent, listener: (payload: BroadcastAwarenessPayload) => void): this;
-    on(event: typeof serviceEvent, listener: (payload: PossibleServiceEvent['data']) => void): this;
-
-    off(event: typeof joinResponseEvent, listener: (payload: JoinResponsePayload) => void): this;
-    off(event: typeof syncResponseEvent, listener: (payload: SyncResponsePayload) => void): this;
-    off(event: typeof broadcastChangesEvent, listener: (payload: BroadcastChangesPayload) => void): this;
-    off(event: typeof broadcastAwarenessEvent, listener: (payload: BroadcastAwarenessPayload) => void): this;
-    off(event: typeof serviceEvent, listener: (payload: PossibleServiceEvent['data']) => void): this;
-
-    emit(event: typeof joinResponseEvent, payload: JoinResponsePayload): boolean;
-    emit(event: typeof syncResponseEvent, payload: SyncResponsePayload): boolean;
-    emit(event: typeof broadcastChangesEvent, payload: BroadcastChangesPayload): boolean;
-    emit(event: typeof broadcastAwarenessEvent, payload: BroadcastAwarenessPayload): boolean;
-    emit(event: typeof serviceEvent, payload: PossibleServiceEvent['data']): boolean;
-}
+type IncomeEventType = keyof IncomeEvents;
 
 export class Messenger extends EventEmitter {
     private readonly connection: WsConnection;
@@ -116,6 +106,51 @@ export class Messenger extends EventEmitter {
         this.connection.sendJson(pingMessage);
     }
 
+    sendSetToken(payload: SetTokenPayload) {
+        const setToken: SetTokenMessage = {
+            event: setTokenEvent,
+            data: payload,
+        };
+
+        this.connection.sendJson(setToken);
+    }
+
+    // @ts-ignore
+    on<TType extends IncomeEventType>(type: TType, listener: (payload: IncomeEvents[TType]) => void): this {
+        return super.on(type, listener);
+    }
+
+    // @ts-ignore
+    once<TType extends IncomeEventType>(type: TType, listener: (payload: IncomeEvents[TType]) => void): this {
+        return super.once(type, listener);
+    }
+
+    // @ts-ignore
+    off<TType extends IncomeEventType>(type: TType, listener: (payload: IncomeEvents[TType]) => void): this {
+        return super.off(type, listener);
+    }
+
+    // @ts-ignore
+    emit<TType extends IncomeEventType>(type: TType, payload: IncomeEvents[TType]): boolean {
+        return super.emit(type, payload);
+    }
+
+    async waitFor<TType extends IncomeEventType>(type: TType, timeout: number = 5000): Promise<IncomeEvents[TType]> {
+        return new Promise<IncomeEvents[TType]>((resolve, reject) => {
+            const listener = (payload: IncomeEvents[TType]) => {
+                clearTimeout(timeoutId);
+                resolve(payload);
+            };
+
+            this.once(type, listener);
+
+            const timeoutId = setTimeout(() => {
+                this.off(type, listener);
+                reject(new Error('Timeout'));
+            }, timeout);
+        });
+    }
+
     private handleMessage = (event: MessageEvent) => {
         const message = JSON.parse(event.data);
         const messageEvent = message.event;
@@ -132,6 +167,9 @@ export class Messenger extends EventEmitter {
                 break;
             case broadcastAwarenessEvent:
                 this.emit(broadcastAwarenessEvent, message.data);
+                break;
+            case setTokenResponseEvent:
+                this.emit(setTokenResponseEvent, message.data);
                 break;
             case serviceEvent:
                 this.emit(serviceEvent, message.data);
