@@ -8,7 +8,7 @@ import {
     DocIsPublicResponse,
 } from '../messages';
 import { DocModel, TokenModel } from '../models';
-import { TokenPayload } from 'src/auth';
+import { TokenPayload } from '../auth';
 
 @Controller()
 export class MicroserviceController {

@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { devCanvasId, devCodeEditorId, devCodeEditorPrivateId, devConsumerId } from './constants';
+import {
+    devCanvasId,
+    devCodeEditorId,
+    devCodeEditorPrivateId,
+    devConsumerId,
+    devSwitch1Id,
+    devSwitch2Id,
+} from './constants';
 
 @Injectable()
 export class SetupService {
@@ -12,6 +19,9 @@ export class SetupService {
         const editorPrivateDoc = await this.setupDoc(devCodeEditorPrivateId);
         const canvasDoc = await this.setupDoc(devCanvasId, true);
 
+        const switch1Doc = await this.setupDoc(devSwitch1Id);
+        const switch2Doc = await this.setupDoc(devSwitch2Id);
+
         return {
             consumer,
             editorDoc: {
@@ -22,6 +32,12 @@ export class SetupService {
             },
             editorPrivateDoc: {
                 id: editorPrivateDoc.id,
+            },
+            switch1Doc: {
+                id: switch1Doc.id,
+            },
+            switch2Doc: {
+                id: switch2Doc.id,
             },
         };
     }
