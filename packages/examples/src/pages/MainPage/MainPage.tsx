@@ -10,6 +10,9 @@ export const MainPage = () => (
             <li>
                 <Link to="/pixelCanvas">PixelCanvas</Link>
             </li>
+            <li>
+                <Link to="/switchToken">SwitchToken</Link>
+            </li>
         </ul>
     </div>
 );
