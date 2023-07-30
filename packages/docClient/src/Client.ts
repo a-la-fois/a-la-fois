@@ -1,4 +1,4 @@
-import { PossibleServiceEvent, serviceEvent } from '@a-la-fois/message-proxy';
+import { PossibleServiceEvent, serviceEvent, setTokenResponseEvent } from '@a-la-fois/message-proxy';
 import EventEmitter from 'eventemitter3';
 import { Api } from './Api';
 import { DocContainer } from './DocContainer';
@@ -58,9 +58,16 @@ export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['dat
         this.messenger?.dispose();
         this.connection?.dispose();
         this.messenger.off(serviceEvent, this.handleServiceEvent);
+        this.disposeDocs();
+    }
 
-        for (const docId in this.docs) {
-            this.docs[docId].dispose();
+    async setToken(token: string) {
+        this.assertConnection();
+        this.messenger.sendSetToken({ token });
+        const response = await this.messenger.waitFor(setTokenResponseEvent);
+
+        if (response.status === 'err') {
+            throw new Error(response.message);
         }
     }
 
@@ -77,6 +84,14 @@ export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['dat
         this.docs[id] = doc;
 
         return doc;
+    }
+
+    disposeDocs() {
+        for (const docId in this.docs) {
+            this.docs[docId].dispose();
+        }
+
+        this.docs = {};
     }
 
     private assertConnection() {
