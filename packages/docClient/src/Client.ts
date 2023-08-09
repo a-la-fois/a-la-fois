@@ -13,16 +13,22 @@ export type ClientConfig = {
 };
 
 export type ServiceEvent = PossibleServiceEvent['data']['event'];
-export type ServicePayload<T extends ServiceEvent> = Extract<PossibleServiceEvent['data'], { event: T }>['data'];
+export type ServicePayload<EventName extends ServiceEvent> = Extract<
+    PossibleServiceEvent['data'],
+    { event: EventName }
+>['data'];
 
 export interface Client {
-    once<T extends ServiceEvent>(event: T, listener: (payload: ServicePayload<T>) => void): this;
+    once<EventName extends ServiceEvent>(
+        event: EventName,
+        listener: (payload: ServicePayload<EventName>) => void
+    ): this;
 
-    on<T extends ServiceEvent>(event: T, listener: (payload: ServicePayload<T>) => void): this;
+    on<EventName extends ServiceEvent>(event: EventName, listener: (payload: ServicePayload<EventName>) => void): this;
 
-    off<T extends ServiceEvent>(event: T, listener: (payload: ServicePayload<T>) => void): this;
+    off<EventName extends ServiceEvent>(event: EventName, listener: (payload: ServicePayload<EventName>) => void): this;
 
-    emit<T extends ServiceEvent>(event: T, payload: ServicePayload<T>): boolean;
+    emit<EventName extends ServiceEvent>(event: EventName, payload: ServicePayload<EventName>): boolean;
 }
 
 export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['data']> {
@@ -36,6 +42,9 @@ export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['dat
         super();
     }
 
+    /**
+     * Init connection to the server
+     */
     async connect() {
         this.connection = new WsConnection({ url: this.config.url, token: this.config.token });
         this.ping = new Ping({ connection: this.connection });
@@ -106,4 +115,31 @@ export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['dat
         }
         this.emit<ServiceEvent>(payload.event, payload.data);
     };
+
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    // Following properties are from EventEmitter class and are declared to hide from docs
+    /**
+     * @hidden
+     */
+    static prefixed: any;
+    /**
+     * @hidden
+     */
+    eventNames: any;
+    /**
+     * @hidden
+     */
+    listeners: any;
+    /**
+     * @hidden
+     */
+    listenerCount: any;
+    /**
+     * @hidden
+     */
+    removeListener: any;
+    /**
+     * @hidden
+     */
+    removeAllListeners: any;
 }
