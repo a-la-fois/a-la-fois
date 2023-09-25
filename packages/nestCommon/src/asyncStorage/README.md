@@ -3,7 +3,7 @@
 [AsyncLocalStorage](https://nodejs.org/api/async_context.html#async_context_class_asynclocalstorage) wrapper
 Helps in avoiding `@Injectable({ scope: Scope.REQUEST })`.
 
-EXports:
+Exports:
 
 ```ts
 export {
