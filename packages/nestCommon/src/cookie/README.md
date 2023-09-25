@@ -1,31 +1,31 @@
 # Cookie
 
-Для парсинга cookie
+Module for cookies parsing
 
-Экспортирует:
+Exports:
 
 ```ts
 export {
-    CookieModule, // Модуль
-    CookieService, // Сервис
-    Cookies, // Тайпинг cookies
+  CookieModule, // Module
+  CookieService, // Service
+  Cookies, // Cookies typings
 };
 ```
 
 ## CookieModule
 
-Экспортирует сервис `CookieService`
+Exports service `CookieService`
 
 ## CookieService
 
-Умеет возвращать распарсенные cookie запроса
+Returns parsed cookies
 
 ```ts
-import { CookieService } from '@yandex-int/nest-common';
+import { CookieService } from "@a-la-fois/nest-common";
 
 export class SomeService {
-    constructor(cookieService: CookieService) {
-        const cookies = cookieService.getCookies();
-    }
+  constructor(cookieService: CookieService) {
+    const cookies = cookieService.getCookies();
+  }
 }
 ```

@@ -1,24 +1,24 @@
 # Memoize
 
-Мемоизация
+Memoize method via lodash.memoize
 
-Экспортирует:
+Exports:
 
 ```ts
 export {
-    Memoize, // Декоратор
+  Memoize, // Декоратор
 };
 ```
 
 ## Memoize
 
-Мемоизирующий декоратор для методов
+Memoized decorator for methods
 
 ```ts
-import { Memoize } from '@yandex-int/nest-common';
+import { Memoize } from "@a-la-fois/nest-common";
 
 export class SomeService {
-    @Memoize()
-    method() {}
+  @Memoize()
+  method() {}
 }
 ```

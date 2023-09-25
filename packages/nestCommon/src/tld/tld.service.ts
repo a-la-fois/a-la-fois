@@ -15,7 +15,6 @@ export class TldService {
     }
 
     static parseTld(req: Request): string | null {
-        // взято из @yandex-int/express-tld
         let host = req.hostname || req.host || req.headers.host || null;
 
         if (!host) {

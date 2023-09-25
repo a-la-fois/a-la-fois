@@ -2,30 +2,30 @@
 
 tld (Top level domain)
 
-Экспортирует:
+Exports:
 
 ```ts
 export {
-    TldModule, // Модуль
-    TldService, // Сервис
+  TldModule, // Module
+  TldService, // Service
 };
 ```
 
 ## TldModule
 
-Экспортирует сервис `TldService`
+Exports serves `TldService`
 
 ## TldService
 
-Парсит tld из текущего запроса
+Parses Top Level Domain of the current request
 
 ```ts
-import { TldService } from '@a-la-fois/nest-common';
+import { TldService } from "@a-la-fois/nest-common";
 
 export class SomeService {
-    constructor(tldService: TldService) {
-        const tld = tldService.getTld();
-    }
+  constructor(tldService: TldService) {
+    const tld = tldService.getTld();
+  }
 }
 ```
 
@@ -33,9 +33,10 @@ export class SomeService {
 
 | Host             | tld       |
 | ---------------- | --------- |
-| yandex.ru        | ru        |
-| yandex.net       | net       |
-| yandex.com.tr    | com.tr    |
-| yandex.google.ru | ru        |
+| domain.com       | com       |
+| domain.ru        | ru        |
+| domain.net       | net       |
+| domain.com.tr    | com.tr    |
+| domain.google.ru | ru        |
 | localhost        | localhost |
 | 127.0.0.1        | null      |

@@ -1,68 +1,68 @@
 # AsyncStorage
 
-Обертка [AsyncLocalStorage](https://nodejs.org/api/async_context.html#async_context_class_asynclocalstorage)  
-Необходима, чтобы избежать `@Injectable({ scope: Scope.REQUEST })`. С этим модулем можно все сервисы делать синглтонами
+[AsyncLocalStorage](https://nodejs.org/api/async_context.html#async_context_class_asynclocalstorage) wrapper
+Helps in avoiding `@Injectable({ scope: Scope.REQUEST })`.
 
-Экспортирует:
+EXports:
 
 ```ts
 export {
-    AsyncStorageModule, // Модуль
-    AsyncStorageService, // Сервис
-    Context, // Контекст запроса с req, res, headers, ...
-    StorageMemoize, // Декоратор для методов. Умеет сладывать результат в AsyncStorage и вытаскивать его при повторном вызове
-    REQ_KEY,
-    RES_KEY,
+  AsyncStorageModule, // Module
+  AsyncStorageService, // Service
+  Context, // Service with access to request data live req, res, headers...
+  StorageMemoize, // Decorator for async storage memoization methods
+  REQ_KEY,
+  RES_KEY,
 };
 ```
 
 ## AsyncStorageModule
 
-Экспортирует сервис `AsyncStorageService`, `Context`
-Подключить в корневом модуле
+Exports services `AsyncStorageService`, `Context`
+Must be included in the root module of the app
 
 ```ts
 @Module({
-    imports: [AsyncStorageModule.forRoot()],
+  imports: [AsyncStorageModule.forRoot()],
 })
 export class AppModule {}
 ```
 
 ## AsyncStorageService
 
-Умеет хранить и отдавать данные со скоупом размером в запрос
+Has methods to store and retrieve data from async storage
 
 ```ts
-import { AsyncStorageService } from '@yandex-int/nest-common';
+import { AsyncStorageService } from "@a-la-fois/nest-common";
 
-const KEY = Symbol('MY_KEY');
+const KEY = Symbol("MY_KEY");
 
 export class SomeService {
-    constructor(private storageService: AsyncStorageService) {}
+  constructor(private storageService: AsyncStorageService) {}
 
-    requestContextMethod() {
-        storageService.setData(KEY, { foo: 'bar' });
-    }
+  requestContextMethod() {
+    storageService.setData(KEY, { foo: "bar" });
+  }
 
-    anotherRequestContextMethod() {
-        return storageService.getData(KEY);
-    }
+  anotherRequestContextMethod() {
+    return storageService.getData(KEY);
+  }
 }
 ```
 
 ## Context
 
-Умеет хранить и отдавать данные со скоупом размером в запрос
+Stores req, res and headers of the request
 
 ```ts
-import { Context } from '@yandex-int/nest-common';
+import { Context } from "@a-la-fois/nest-common";
 
 export class SomeService {
-    constructor(private context: Context) {}
+  constructor(private context: Context) {}
 
-    requestContextMethod() {
-        this.context.req; // express req
-    }
+  requestContextMethod() {
+    this.context.req; // express req
+  }
 }
 ```
 
@@ -71,25 +71,26 @@ export class SomeService {
 ```ts
 @Injectable()
 class AuthService {
-    constructor(private blackboxService: BlackboxService) {}
+  constructor(private userService: UserService) {}
 
-    @StorageMemoize()
-    async getUser() {
-        const bb = await this.blackboxService.getBlackbox();
+  @StorageMemoize()
+  async getUser() {
+    console.log('getUser is executed!');
+    const user = await this.userService.getUser();
 
-        return {
-            id: uid(),
-            name: bb.displayName,
-        };
-    }
+    return {
+      id: uid(),
+      name: user.name,
+    };
+  }
 }
-```
 
-Если дважды в рамках одного запроса вызвать метод он исполнится единожды
+...
 
-```ts
 const user = await this.authService.getUser();
 const userAgain = await this.authService.getUser();
 
 user === userAgain; // true
 ```
+
+getUser will be executed only once
