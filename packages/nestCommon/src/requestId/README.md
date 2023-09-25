@@ -1,54 +1,57 @@
 # requestId
 
-Модуль генерирующий requestId
+Generates requestId
 
-Экспортирует:
+Exports:
 
 ```ts
 export {
-    RequestIdModule, // Модуль
-    RequestIdService, // Сервис
-    RequestIdOptions, // Тайпинги конфига
+  RequestIdModule, // Module
+  RequestIdService, // Service
+  RequestIdOptions, // Config Typings
 };
 ```
 
 ## RequestIdModule
 
-Экспортирует сервис `RequestIdService`
+Exports `RequestIdService`
 
-Подключается 3 способами:
+Is able to included in 3 ways:
 
 ```ts
-import { Module } from '@nestjs/common';
-import { RequestIdModule, AsyncStorageModule } from '@yandex-int/nest-common';
+import { Module } from "@nestjs/common";
+import { RequestIdModule, AsyncStorageModule } from "@a-la-fois/nest-common";
 
-// Один раз на все приложение
+// Once per application
 @Module({
-    imports: [RequestIdModule.forRoot(/* RequestIdOptions */), AsyncStorageModule.forRoot()],
+  imports: [
+    RequestIdModule.forRoot(/* RequestIdOptions */),
+    AsyncStorageModule.forRoot(),
+  ],
 })
 export class AppModule {}
 
-// В какой-то модуль
+// To some module
 @Module({
-    imports: [RequestIdModule.register(/* RequestIdOptions */)],
+  imports: [RequestIdModule.register(/* RequestIdOptions */)],
 })
 export class SomeModule {}
 
-// В какой-то модуль c дефолтными настройками
+// To some module with default config
 @Module({
-    imports: [RequestIdModule],
+  imports: [RequestIdModule],
 })
 export class SomeModule {}
 ```
 
-Важно подключить `AsyncStorageModule.forRoot()` в каком либо месте (желательно в рутовом модуле)
+This module requires `AsyncStorageModule.forRoot()`
 
 ## RequestIdService
 
-Возвращается requestId
+Returns requestId
 
 ```ts
-import { RequestIdService } from '@yandex-int/nest-common';
+import { RequestIdService } from '@a-la-fois/nest-common';
 
 export class SomeService {
   constructor(private requestIdService: RequestIdService) {}
@@ -63,18 +66,18 @@ export class SomeService {
 
 ```ts
 type RequestIdOptions = {
-    /**
-     * Заголовок из которого будет брать requestId если он есть
-     *
-     * По-умолчанию: x-request-id
-     */
-    headerName?: string;
+  /**
+   * Header where module will be looking for requestId if it exists
+   *
+   * @default: x-request-id
+   */
+  headerName?: string;
 
-    /**
-     * Собственная функция генерации uid
-     *
-     * По-умолчанию используется nanoid из цифр и букв длинной 8 символов
-     */
-    uid?: () => string;
+  /**
+   * Function of uid generation
+   *
+   * By default it is [nanoid](https://www.npmjs.com/package/nanoid)
+   */
+  uid?: () => string;
 };
 ```

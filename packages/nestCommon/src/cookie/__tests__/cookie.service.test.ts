@@ -23,7 +23,7 @@ describe('CookieService', () => {
         await supertest(app.getHttpServer())
             .get('/cookie')
             .set('Cookie', `foo=1; bar=2`)
-            .set('Host', 'yandex.ru')
+            .set('Host', 'domain.com')
             .expect(200)
             .expect((res) => {
                 expect(res.body).toMatchObject({
@@ -40,7 +40,7 @@ describe('CookieService', () => {
 
         await supertest(app.getHttpServer())
             .get('/cookie')
-            .set('Host', 'yandex.ru')
+            .set('Host', 'domain.com')
             .expect(200)
             .expect((res) => {
                 expect(res.body).toMatchObject({

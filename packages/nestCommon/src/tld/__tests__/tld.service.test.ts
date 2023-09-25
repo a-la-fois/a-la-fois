@@ -1,14 +1,15 @@
 import { TldService } from '../tld.service';
 
 const domains = {
-    'yandex.ru': 'ru',
-    'yandex.net': 'net',
-    'yandex.com.tr': 'com.tr',
-    'yandex.co.il': 'co.il',
+    'domain.com': 'com',
+    'domain.ru': 'ru',
+    'domain.net': 'net',
+    'domain.com.tr': 'com.tr',
+    'domain.co.il': 'co.il',
     'some.host.ru': 'ru',
-    'yandex.ru:8080': 'ru',
-    'bla.yandex.kyprizel.net': 'net',
-    'localhost': 'localhost',
+    'domain.ru:8080': 'ru',
+    'subsubdomain.subdomain.domain.net': 'net',
+    localhost: 'localhost',
     '.': '',
     '127.0.0.1': null,
     '[::1]': null,

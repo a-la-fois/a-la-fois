@@ -1,55 +1,54 @@
 # Redis
 
-Модуль для работы с Redis
+[ioredis](https://www.npmjs.com/package/ioredis) addapter
 
-Экспортирует:
+Exports:
 
 ```ts
 export {
-    RedisModule, // Модуль
-    RedisClient, // Декоратор
+  RedisModule, // Module
+  RedisClient, // Decorator
 };
 ```
 
 ## RedisModule
 
-Провайдит redis клиент из библиотеки [ioredis](https://www.npmjs.com/package/ioredis)
+Provides [ioredis](https://www.npmjs.com/package/ioredis) Client instance
 
 ## RedisClient
 
-Инектит Redis клиент
+Injects Client
 
 ```ts
 // some.module.ts
 
-import { Module } from '@nestjs/common';
-import { RedisModule } from '@yandex-int/nest-common';
-import config from '@yandex-int/yandex-cfg';
+import { Module } from "@nestjs/common";
+import { RedisModule } from "@a-la-fois/nest-common";
 
-import { Some } from './some.service';
+import { Some } from "./some.service";
 
 @Module({
-    imports: [
-        RedisModule.register(/* конфиг redis клиента ioredis */),
+  imports: [
+    RedisModule.register(/* ioredis redis config */),
 
-        // Так же RedisModule может подключаться глобально через RedisModule.forRoot(RedisOptions)
-    ],
-    providers: [SomeService],
-    exports: [SomeService],
+    // Also able to to injected via RedisModule.forRoot(RedisOptions)
+  ],
+  providers: [SomeService],
+  exports: [SomeService],
 })
 export class SomeModule {}
 ```
 
 ```ts
 // some.service.ts
-import { RedisClient, Redis } from '@yandex-int/nest-common';
+import { RedisClient, Redis } from "@a-la-fois/nest-common";
 
 export class SomeService {
-    constructor(@RedisClient() private redis: Redis) {}
+  constructor(@RedisClient() private redis: Redis) {}
 
-    async uploadTextFile(text: string) {
-        await this.redis.set('key', 'value');
-        const val = await this.redis.get('key');
-    }
+  async uploadTextFile(text: string) {
+    await this.redis.set("key", "value");
+    const val = await this.redis.get("key");
+  }
 }
 ```
