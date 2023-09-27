@@ -73,7 +73,7 @@ export class DocHandler extends AbstractActor implements IDocHandler {
             DocModel.updateOne({ _id: this.docId }, { state: this.encodeStateAsUpdate() }),
             UpdateModel.create({
                 docId: this.getId(),
-                state: changes,
+                state: Buffer.from(changesBuffer),
                 userId: userId,
             }),
         ]);
