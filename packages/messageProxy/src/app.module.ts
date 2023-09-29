@@ -3,6 +3,7 @@ import { DaprClientModule, LoggerModule } from '@a-la-fois/nest-common';
 import { PubsubModule, PubsubOptions } from '@a-la-fois/pubsub';
 import { WsModule } from './ws';
 import { config } from './config';
+import { HealthModule } from '@a-la-fois/nest-common';
 
 const buildPubsubOptions = (): PubsubOptions => {
     return {
@@ -25,6 +26,7 @@ const buildPubsubOptions = (): PubsubOptions => {
         }),
         PubsubModule.forRoot(buildPubsubOptions()),
         LoggerModule.forRoot({ service: 'messageProxy' }),
+        HealthModule.forRoot(),
     ],
     controllers: [],
     providers: [],

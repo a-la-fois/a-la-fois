@@ -2,6 +2,7 @@ export * from './asyncStorage';
 export * from './cookie';
 export * from './daprClient';
 export * from './daprServer';
+export * from './health';
 export * from './logger';
 export * from './memoize';
 export * from './protobufWSAdapter';
