@@ -5,6 +5,7 @@ import { ClientApiModule } from './clientApi';
 import { AdminApiModule } from './adminApi';
 import { DbModule } from './db';
 import { config } from './config';
+import { HealthModule } from '@a-la-fois/nest-common';
 import { MicroserviceModule } from './microservice';
 import { PubsubModule, PubsubOptions } from '@a-la-fois/pubsub';
 
@@ -40,6 +41,7 @@ const buildPubsubOptions = (): PubsubOptions => {
             daprPort: config.dapr.port,
         }),
         PubsubModule.forRoot(buildPubsubOptions()),
+        HealthModule.forRoot(),
     ],
     controllers: [],
     providers: [],

@@ -2,6 +2,7 @@ import { DaprServer } from '@dapr/dapr';
 import mongoose from 'mongoose';
 import { DocHandler } from './actor';
 import { config } from './config';
+import { healthServer } from './health';
 
 const mongoConnect = () => {
     const mongoConfig = config.mongo;
@@ -26,7 +27,11 @@ async function start() {
 
     await server.actor.init();
     await server.actor.registerActor(DocHandler);
-    await server.start();
+    server.start();
+
+    healthServer.listen(config.server.healthPort, () =>
+        console.info(`Health server started on port ${config.server.healthPort}`)
+    );
 }
 
 start().catch((e) => {
