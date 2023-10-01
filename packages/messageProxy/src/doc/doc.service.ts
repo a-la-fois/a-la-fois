@@ -179,7 +179,11 @@ export class DocService implements OnModuleDestroy {
 
     private onAttachDocMessage = (message: AttachDocPubsubMessage) => {
         this.logger.debug(
-            { docId: message.message.docId, rights: message.message.rights },
+            {
+                connId: message.message.connection.id,
+                userId: message.message.connection.userId,
+                consumerId: message.message.connection.consumerId,
+            },
             'Attach doc message received',
         );
 
