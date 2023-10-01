@@ -14,6 +14,7 @@ import {
     updateTokenMessageType,
     UpdateTokenPubsubMessage,
 } from '@a-la-fois/pubsub';
+import { LoggerService } from '@a-la-fois/nest-common';
 
 type TokenRightsDiff = {
     added: AccessData[];
@@ -25,8 +26,11 @@ type TokenRightsDiff = {
 export class TokenService implements OnModuleDestroy {
     private tokenConnections: Map<string, WebSocketConnection[]> = new Map();
     private expirationInterval: NodeJS.Timer;
+    logger: LoggerService;
 
-    constructor(@PubsubDecorator() private readonly pubsub: Pubsub) {
+    constructor(@PubsubDecorator() private readonly pubsub: Pubsub, loggerService: LoggerService) {
+        this.logger = loggerService.child({ module: this.constructor.name });
+
         this.pubsub.subscribe<typeof updateTokenMessageType>(updateTokenMessageType, this.onUpdateTokenMessage);
         this.expirationInterval = setInterval(this.checkTokenExpiration, parseInt(config.auth.expiredCheckIntervalMs));
     }
@@ -78,6 +82,11 @@ export class TokenService implements OnModuleDestroy {
         if (!connections) {
             return;
         }
+
+        this.logger.debug(
+            { tokenId, oldTokenId, consumerId: tokenData.consumerId, userId: tokenData.userId },
+            'Update token messate received',
+        );
 
         const newConnAccess = createAccessObject(tokenData.docs);
 
@@ -139,7 +148,7 @@ export class TokenService implements OnModuleDestroy {
 
     private getTokenRightsDiff(
         rights: WebSocketConnection['access'],
-        newRights: WebSocketConnection['access']
+        newRights: WebSocketConnection['access'],
     ): TokenRightsDiff {
         const added = [];
         const changed = [];
@@ -185,6 +194,7 @@ export class TokenService implements OnModuleDestroy {
     }
 
     private checkTokenExpiration = () => {
+        this.logger.debug({}, 'Token expiration check started');
         for (const [tokenId, connections] of this.tokenConnections) {
             // Check only one because all connections with the same token
             // have the same expiration time

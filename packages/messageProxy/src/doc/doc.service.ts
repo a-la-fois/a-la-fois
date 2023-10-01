@@ -27,6 +27,7 @@ import {
     Pubsub,
     PubsubDecorator,
 } from '@a-la-fois/pubsub';
+import { LoggerService } from '@a-la-fois/nest-common';
 
 @Injectable()
 export class DocService implements OnModuleDestroy {
@@ -37,8 +38,15 @@ export class DocService implements OnModuleDestroy {
     // so we store a map: connectionId -> docs
     // to find all connected documents of a client fast (not iterating over docs map)
     private connectionsToDocs: Map<string, DocManager[]> = new Map();
+    logger: LoggerService;
 
-    constructor(@PubsubDecorator() private readonly pubsub: Pubsub, private actorService: ActorService) {
+    constructor(
+        @PubsubDecorator() private readonly pubsub: Pubsub,
+        private actorService: ActorService,
+        loggerService: LoggerService,
+    ) {
+        this.logger = loggerService.child({ module: this.constructor.name });
+
         this.pubsub.subscribe<typeof changesMessageType>(changesMessageType, this.onChangesOrAwarenessMessage);
         this.pubsub.subscribe<typeof awarenessMessageType>(awarenessMessageType, this.onChangesOrAwarenessMessage);
         this.pubsub.subscribe<typeof attachDocMessageType>(attachDocMessageType, this.onAttachDocMessage);
@@ -46,51 +54,51 @@ export class DocService implements OnModuleDestroy {
         this.pubsub.subscribe<typeof disconnectMessageType>(disconnectMessageType, this.onDisconnectMessage);
     }
 
-    applyChanges(connection: WebSocketConnection, payload: ChangesPayload) {
-        this.assertClientJoined(connection, payload.docId);
+    applyChanges(conn: WebSocketConnection, payload: ChangesPayload) {
+        this.assertClientJoined(conn, payload.docId);
 
         const doc = this.docs.get(payload.docId);
-        doc.broadcastDiff(connection.id, payload.changes);
+        doc.broadcastDiff(conn.id, payload.changes);
 
         // Sending changes to other instances
         this.pubsub.publish({
             type: 'changes',
             message: {
-                author: connection.id,
+                author: conn.id,
                 docId: doc.id,
                 data: payload.changes,
             },
         } as ChangesPubsubMessage);
 
-        this.actorService.sendChanges(connection.id, payload);
+        this.actorService.sendChanges(conn.id, payload);
     }
 
-    applyAwareness(connection: WebSocketConnection, payload: AwarenessPayload) {
-        this.assertClientJoined(connection, payload.docId);
+    applyAwareness(conn: WebSocketConnection, payload: AwarenessPayload) {
+        this.assertClientJoined(conn, payload.docId);
 
         const doc = this.docs.get(payload.docId);
-        doc.broadcastAwareness(connection.id, payload.awareness);
+        doc.broadcastAwareness(conn.id, payload.awareness);
 
         // Sending awareness to other instances
         this.pubsub.publish({
             type: 'awareness',
             message: {
-                author: connection.id,
+                author: conn.id,
                 docId: doc.id,
                 data: payload.awareness,
             },
         } as AwarenessPubsubMessage);
     }
 
-    async syncStart(connection: WebSocketConnection, payload: SyncStartPayload): Promise<SyncResponsePayload> {
+    async syncStart(_conn: WebSocketConnection, payload: SyncStartPayload): Promise<SyncResponsePayload> {
         return await this.actorService.syncStart(payload);
     }
 
-    syncComplete(connection: WebSocketConnection, payload: SyncCompletePayload) {
-        this.actorService.syncComplete(connection.id, payload);
+    syncComplete(conn: WebSocketConnection, payload: SyncCompletePayload) {
+        this.actorService.syncComplete(conn.id, payload);
     }
 
-    joinToDoc(connection: WebSocketConnection, docId: DocKey): JoinResponsePayload {
+    joinToDoc(conn: WebSocketConnection, docId: DocKey): JoinResponsePayload {
         let doc: DocManager;
 
         if (this.docs.has(docId)) {
@@ -99,16 +107,16 @@ export class DocService implements OnModuleDestroy {
             doc = new DocManager(docId);
             this.docs.set(docId, doc);
         }
-        doc.addConnection(connection);
+        doc.addConnection(conn);
 
-        let joinedDocs = this.connectionsToDocs.get(connection.id);
+        let joinedDocs = this.connectionsToDocs.get(conn.id);
 
         if (joinedDocs) {
             joinedDocs.push(doc);
         } else {
             joinedDocs = [doc];
         }
-        this.connectionsToDocs.set(connection.id, joinedDocs);
+        this.connectionsToDocs.set(conn.id, joinedDocs);
 
         return {
             docId,
@@ -116,15 +124,15 @@ export class DocService implements OnModuleDestroy {
         };
     }
 
-    private detachDoc(connectionId: string, docId: DocKey) {
+    private detachDoc(connId: string, docId: DocKey) {
         const doc = this.docs.get(docId);
-        if (doc && doc.contains(connectionId)) {
-            doc.removeConnection(connectionId);
+        if (doc && doc.contains(connId)) {
+            doc.removeConnection(connId);
 
             // If this is the only one connection
             // remove docManager and delete connection -> docManager relation
             if (doc.isEmpty()) {
-                this.connectionsToDocs.delete(connectionId);
+                this.connectionsToDocs.delete(connId);
                 this.docs.delete(docId);
             }
         }
@@ -146,6 +154,8 @@ export class DocService implements OnModuleDestroy {
             return;
         }
 
+        this.logger.debug({ docId, author: message.message.author, type: message.type }, 'Message received');
+
         switch (message.type) {
             case 'changes':
                 doc.broadcastDiff(message.message.author, message.message.data);
@@ -157,19 +167,29 @@ export class DocService implements OnModuleDestroy {
     };
 
     private onDetachDocMessage = (message: DetachDocPubsubMessage) => {
-        console.log('onDetachDocMessage');
+        this.logger.debug(
+            { docs: message.message.docs, connId: message.message.connectionId },
+            'Detach doc message received',
+        );
+
         for (const docId of message.message.docs) {
             this.detachDoc(message.message.connectionId, docId);
         }
     };
 
     private onAttachDocMessage = (message: AttachDocPubsubMessage) => {
+        this.logger.debug(
+            { docId: message.message.docId, rights: message.message.rights },
+            'Attach doc message received',
+        );
+
         for (const docId of message.message.docs) {
             this.joinToDoc(message.message.connection, docId);
         }
     };
 
     private onDisconnectMessage = (message: DisconnectPubsubMessage) => {
+        this.logger.debug({ connId: message.message.connectionId }, 'Dissconnect message received');
         this.disconnect(message.message.connectionId);
     };
 
@@ -181,22 +201,22 @@ export class DocService implements OnModuleDestroy {
         }
     }
 
-    disconnect(connectionId: string) {
-        const joinedDocs = this.connectionsToDocs.get(connectionId);
+    disconnect(connId: string) {
+        const joinedDocs = this.connectionsToDocs.get(connId);
 
         if (!joinedDocs) {
             return;
         }
 
         for (const i in joinedDocs) {
-            joinedDocs[i].removeConnection(connectionId);
+            joinedDocs[i].removeConnection(connId);
 
             if (joinedDocs[i].isEmpty()) {
                 this.docs.delete(joinedDocs[i].id);
             }
         }
 
-        this.connectionsToDocs.delete(connectionId);
+        this.connectionsToDocs.delete(connId);
     }
 
     onModuleDestroy() {
