@@ -6,6 +6,7 @@ import { DocModel, UpdateModel } from '../models';
 import { ApplyDiffRequest, Changes, SyncCompleteRequest, SyncStartRequest, SyncStartResponse } from '../messages';
 import { IDocHandler } from './docHandler.interface';
 import mongoose from 'mongoose';
+import { logger } from '../logger';
 
 export class DocHandler extends AbstractActor implements IDocHandler {
     private ydoc!: YDoc;
@@ -29,16 +30,20 @@ export class DocHandler extends AbstractActor implements IDocHandler {
         if (doc) {
             applyUpdate(this.ydoc, doc.state);
         }
+
+        logger.info({ docId: this.docId }, 'Actor activated');
     }
 
     async applyDiff({ changes, userId }: ApplyDiffRequest) {
-        console.log(`applying changes ${changes}`);
         await this.saveDiff(changes, userId);
+        logger.debug({ docId: this.docId, userId }, 'Changes applied');
     }
 
     async syncStart({ vector }: SyncStartRequest): Promise<SyncStartResponse> {
         const responseVector = Buffer.from(encodeStateVector(this.ydoc));
         const changes = encodeStateAsUpdate(this.ydoc, toUint8Array(vector));
+
+        logger.debug({ docId: this.docId }, 'Sync started');
 
         return {
             vector: fromUint8Array(responseVector),
@@ -47,6 +52,7 @@ export class DocHandler extends AbstractActor implements IDocHandler {
     }
 
     async syncComplete({ changes, userId }: SyncCompleteRequest) {
+        logger.debug({ docId: this.docId }, 'Sync completed');
         return this.saveDiff(changes, userId, true);
     }
 
