@@ -9,6 +9,8 @@ import { HealthModule } from '@a-la-fois/nest-common';
 import { MicroserviceModule } from './microservice';
 import { PubsubModule, PubsubOptions } from '@a-la-fois/pubsub';
 
+const LOGGER_SERVICE = 'messageProxy';
+
 const buildPubsubOptions = (): PubsubOptions => {
     return {
         topicsToSubscribe: [],
@@ -18,6 +20,7 @@ const buildPubsubOptions = (): PubsubOptions => {
         username: config.kafka.username,
         password: config.kafka.password,
         saslMechanism: config.kafka.mechanism,
+        loggerService: LOGGER_SERVICE,
     };
 };
 

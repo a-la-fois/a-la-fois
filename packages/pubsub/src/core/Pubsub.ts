@@ -1,3 +1,4 @@
+import { createLogger } from '@a-la-fois/nest-common';
 import { readFileSync } from 'fs';
 import { Kafka, Producer, Consumer } from 'kafkajs';
 import { v4 as uuidv4 } from 'uuid';
@@ -37,7 +38,7 @@ const MESSAGE_TYPE_TO_TOPIC: Record<PubsubMessageTypes, string> = {
 };
 
 export type MessageSubscriber<T extends PubsubMessageTypes> = (
-    message: Extract<PossiblePubsubMessage, { type: T }>
+    message: Extract<PossiblePubsubMessage, { type: T }>,
 ) => void;
 
 export class Pubsub {
@@ -46,20 +47,24 @@ export class Pubsub {
     private subscriber?: Consumer;
     private subscribers: Map<PubsubMessageTypes, MessageSubscriber<any>[]> = new Map();
     private kafka: Kafka;
+    private logger;
 
     constructor(options: PubsubOptions) {
+        // TODO: Find a way to use a consumer logger here
+        this.logger = createLogger({ service: options.loggerService }).child({ module: this.constructor.name });
+
         this.topicsToSubscribe = options.topicsToSubscribe;
 
         this.kafka = new Kafka(this.buildParams(options));
 
         this.publisher = this.kafka.producer();
-        this.publisher.connect().then(() => console.log('Publisher connected to a kafka broker'));
+        this.publisher.connect().then(() => this.logger.info({}, 'Publisher connected'));
 
         if (this.topicsToSubscribe) {
             this.subscriber = this.kafka.consumer({
                 groupId: uuidv4(),
             });
-            this.subscriber.connect().then(() => console.log('Subscriber connected to a kafka broker'));
+            this.subscriber.connect().then(() => this.logger.info({}, 'Subscriber connected'));
 
             this.subscriber.subscribe({
                 topics: this.topicsToSubscribe,
@@ -79,10 +84,12 @@ export class Pubsub {
     }
 
     publish(message: PossiblePubsubMessage) {
+        this.logger.debug({}, 'Publish message');
         this.send(MESSAGE_TYPE_TO_TOPIC[message.type], JSON.stringify(message));
     }
 
     publishInternal(message: PossiblePubsubMessage) {
+        this.logger.debug({}, 'Publish internal message');
         this.onMessage(message);
     }
 
@@ -130,12 +137,13 @@ export class Pubsub {
         };
     }
 
-    private onMessageRaw = (topic: string, message: string) => {
+    private onMessageRaw = (_topic: string, message: string) => {
         const broadcastMessage: PossiblePubsubMessage = JSON.parse(message);
         this.onMessage(broadcastMessage);
     };
 
     private onMessage = (message: PossiblePubsubMessage) => {
+        this.logger.debug({}, 'Message recieved');
         const subscribersByType = this.subscribers.get(message.type);
 
         if (!subscribersByType) {
@@ -157,7 +165,7 @@ export class Pubsub {
                     },
                 ],
             })
-            .then(console.log)
-            .catch(console.log);
+            .then((_r) => this.logger.debug({}, 'Message sent'))
+            .catch((err) => this.logger.error({ err }, `Couldnt't send message`));
     }
 }

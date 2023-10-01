@@ -5,6 +5,8 @@ import { WsModule } from './ws';
 import { config } from './config';
 import { HealthModule } from '@a-la-fois/nest-common';
 
+const LOGGER_SERVICE = 'messageProxy';
+
 const buildPubsubOptions = (): PubsubOptions => {
     return {
         clientId: 'messageProxy',
@@ -14,6 +16,7 @@ const buildPubsubOptions = (): PubsubOptions => {
         username: config.kafka.username,
         password: config.kafka.password,
         saslMechanism: config.kafka.mechanism,
+        loggerService: LOGGER_SERVICE,
     };
 };
 
@@ -25,7 +28,7 @@ const buildPubsubOptions = (): PubsubOptions => {
             daprPort: config.dapr.port,
         }),
         PubsubModule.forRoot(buildPubsubOptions()),
-        LoggerModule.forRoot({ service: 'messageProxy' }),
+        LoggerModule.forRoot({ service: LOGGER_SERVICE }),
         HealthModule.forRoot(),
     ],
     controllers: [],

@@ -9,12 +9,14 @@ export type LoggerOptions = {
     pretty: boolean;
     level: string;
     service: string;
+    module: string;
 };
 
 const defaultOptions: LoggerOptions = {
     pretty: process.env.NODE_ENV === 'development',
-    level: process.env.LOG_LEVEL ?? 'info',
+    level: process.env.LOG_LEVEL ?? 'debug',
     service: '',
+    module: '',
 };
 
 export const createLogger = (userOptions: Partial<LoggerOptions> = defaultOptions) => {
