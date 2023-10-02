@@ -52,6 +52,7 @@ export class Pubsub {
     constructor(options: PubsubOptions) {
         // TODO: Find a way to use a consumer logger here
         this.logger = createLogger({ service: options.loggerService }).child({ module: this.constructor.name });
+        delete options['loggerService'];
 
         this.topicsToSubscribe = options.topicsToSubscribe;
 

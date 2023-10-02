@@ -1,16 +1,21 @@
 import { BadRequestException, Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { CreateConsumerDto, UpdateConsumerDto } from './dto';
 import { SetupService, Admin, AdminService } from './admin';
+import { LoggerService } from '@a-la-fois/nest-common';
 
 @Admin()
 @Controller('admin')
 export class AdminController {
-    constructor(private adminService: AdminService, private setupService: SetupService) {}
+    private logger: LoggerService;
+    constructor(private adminService: AdminService, private setupService: SetupService, loggerService: LoggerService) {
+        this.logger = loggerService.child({ module: this.constructor.name });
+    }
 
     @Post('consumer')
     async createConsumer(@Body() payload: CreateConsumerDto) {
         const result = await this.adminService.createConsumer(payload);
 
+        this.logger.info({ consumerName: payload.name }, 'Consumer created');
         return {
             id: result.consumer.id,
             name: result.consumer.name,
@@ -23,9 +28,11 @@ export class AdminController {
         const result = await this.adminService.getConsumer(consumerId);
 
         if (!result) {
+            this.logger.warn({ consumerId }, 'Non existing consumer accessed');
             throw new BadRequestException('No such consumer');
         }
 
+        this.logger.info({ consumerId }, 'Consumer accessed');
         return {
             id: result.consumer.id,
             name: result.consumer.name,
@@ -38,9 +45,11 @@ export class AdminController {
         const result = await this.adminService.updateConsumer({ ...payload, consumerId });
 
         if (!result) {
+            this.logger.warn({ consumerId }, 'Non existing consumer updated');
             throw new BadRequestException('No such consumer');
         }
 
+        this.logger.info({ consumerId }, 'Consumer updated');
         return {
             id: result.consumer.id,
             name: result.consumer.name,
@@ -52,6 +61,7 @@ export class AdminController {
     async publicDoc() {
         const doc = await this.adminService.createPublicDoc();
 
+        this.logger.info({}, 'Public doc created');
         return {
             id: doc.id,
         };
@@ -61,6 +71,7 @@ export class AdminController {
     async devSetup() {
         const result = await this.setupService.devSetup();
 
+        this.logger.info({}, 'Development setup');
         return result;
     }
 }

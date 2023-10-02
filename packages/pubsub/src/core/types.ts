@@ -6,7 +6,7 @@ export type PubsubOptions = {
     username: string;
     password: string;
     saslMechanism: string;
-    loggerService: string;
+    loggerService?: string;
 };
 
 export type CallbackType = (topic: string, message: string) => void;
