@@ -14,7 +14,7 @@ import { config } from './config';
 import { MicroserviceModule } from './microservice';
 import { PubsubModule, PubsubOptions } from '@a-la-fois/pubsub';
 
-const LOGGER_SERVICE = 'messageProxy';
+const LOGGER_SERVICE = 'api';
 
 const buildPubsubOptions = (): PubsubOptions => {
     return {
