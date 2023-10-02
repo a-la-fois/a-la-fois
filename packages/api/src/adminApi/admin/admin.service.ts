@@ -163,7 +163,7 @@ export class AdminService {
                     }
 
                     resolve({ publicKey, privateKey });
-                }
+                },
             );
         });
     }

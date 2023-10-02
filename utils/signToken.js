@@ -35,7 +35,7 @@ const run = async () => {
         privateKey,
         {
             algorithm: 'RS256',
-        }
+        },
     );
 
     console.log(token);

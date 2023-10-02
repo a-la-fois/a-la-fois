@@ -1,10 +1,8 @@
 .Pixel {
-    width: 1rem;
-    height: 1rem;
-
+  width: 1rem;
+  height: 1rem;
 }
 
 .Pixel:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
-

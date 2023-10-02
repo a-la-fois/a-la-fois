@@ -30,7 +30,7 @@ async function start() {
     server.start();
 
     healthServer.listen(config.server.healthPort, () =>
-        console.info(`Health server started on port ${config.server.healthPort}`)
+        console.info(`Health server started on port ${config.server.healthPort}`),
     );
 }
 

@@ -9,8 +9,8 @@
 
 We can't use grpc as is because grpc routs messages via `path` of http requests. We have ws connection and we don't have `path`, so we will use one byte integer in messages to do messages routing. So we can create 256 different messages. That should be enough
 
-
 ## Scheme
+
 ```
 1. [Client] encode 'js data' -> 'protobuf Uint8Array'
 2. [Client] pack 'protobuf Uint8Array' and '1 byte int as type' -> 'Uint8Array'

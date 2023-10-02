@@ -27,7 +27,7 @@ export class ExplorerService {
                 // @ts-ignore
                 ...mapKeys.map((key) => {
                     return map.get(key);
-                })
+                }),
             );
         });
 
@@ -48,7 +48,7 @@ export class ExplorerService {
     public exploreMethodMetadata(
         instance: object,
         instancePrototype: Controller,
-        methodKey: string
+        methodKey: string,
     ): DaprInvokeMetadataConfiguration | null {
         // @ts-ignore
         const targetCallback = instancePrototype[methodKey];

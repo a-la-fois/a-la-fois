@@ -20,7 +20,7 @@ const generateKeyPair = () => {
                 }
 
                 resolve({ publicKey, privateKey });
-            }
+            },
         );
     });
 };

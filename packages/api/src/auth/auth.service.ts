@@ -35,7 +35,7 @@ export class AuthService {
                 owner: new mongoose.Types.ObjectId(consumerId),
                 _id: { $in: docs.map((docId) => new mongoose.Types.ObjectId(docId)) },
             },
-            { _id: 1 }
+            { _id: 1 },
         );
 
         return docModels.length === docs.length;
