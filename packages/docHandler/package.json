@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@a-la-fois/models": "0.0.29",
+    "@a-la-fois/nest-common": "0.0.29",
     "@dapr/dapr": "3.0.0",
     "@typegoose/typegoose": "11.2.0",
     "js-base64": "3.7.5",

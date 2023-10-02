@@ -83,7 +83,7 @@ export class DaprServerModule implements OnModuleInit {
 
                     return invokeHandler.callback(dataParsed);
                 },
-                { method: HttpMethod.POST }
+                { method: HttpMethod.POST },
             );
         });
     }

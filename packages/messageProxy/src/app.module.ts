@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { DaprClientModule, LoggerModule } from '@a-la-fois/nest-common';
+import { DaprClientModule, LoggerModule, HealthModule } from '@a-la-fois/nest-common';
 import { PubsubModule, PubsubOptions } from '@a-la-fois/pubsub';
 import { WsModule } from './ws';
 import { config } from './config';
-import { HealthModule } from '@a-la-fois/nest-common';
+
+const LOGGER_SERVICE = 'messageProxy';
 
 const buildPubsubOptions = (): PubsubOptions => {
     return {
@@ -14,18 +15,19 @@ const buildPubsubOptions = (): PubsubOptions => {
         username: config.kafka.username,
         password: config.kafka.password,
         saslMechanism: config.kafka.mechanism,
+        loggerService: LOGGER_SERVICE,
     };
 };
 
 @Module({
     imports: [
+        LoggerModule.forRoot({ service: LOGGER_SERVICE }),
         WsModule,
         DaprClientModule.forRoot({
             daprHost: config.dapr.host,
             daprPort: config.dapr.port,
         }),
         PubsubModule.forRoot(buildPubsubOptions()),
-        LoggerModule.forRoot({ service: 'messageProxy' }),
         HealthModule.forRoot(),
     ],
     controllers: [],

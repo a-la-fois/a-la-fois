@@ -35,7 +35,7 @@ export class TokenPayload {
 
             return nowPlusTtl;
         },
-        { message: `Token TTL must not be longer then ${TTL} hours` }
+        { message: `Token TTL must not be longer then ${TTL} hours` },
     )
     expiredAt?: Date;
 

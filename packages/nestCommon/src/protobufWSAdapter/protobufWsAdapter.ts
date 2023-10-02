@@ -1,11 +1,7 @@
 import { INestApplicationContext, Logger } from '@nestjs/common';
 import { loadPackage } from '@nestjs/common/utils/load-package.util';
 import { AbstractWsAdapter } from '@nestjs/websockets';
-import {
-    CLOSE_EVENT,
-    CONNECTION_EVENT,
-    ERROR_EVENT,
-} from '@nestjs/websockets/constants';
+import { CLOSE_EVENT, CONNECTION_EVENT, ERROR_EVENT } from '@nestjs/websockets/constants';
 import { MessageMappingProperties } from '@nestjs/websockets/gateway-metadata-explorer';
 import * as http from 'http';
 import { EMPTY, fromEvent, Observable } from 'rxjs';
@@ -31,29 +27,20 @@ const UNDERLYING_HTTP_SERVER_PORT = 0;
 
 export class ProtobufWsAdapter extends AbstractWsAdapter {
     protected readonly logger = new Logger(ProtobufWsAdapter.name);
-    protected readonly httpServersRegistry = new Map<
-        HttpServerRegistryKey,
-        HttpServerRegistryEntry
-    >();
-    protected readonly wsServersRegistry = new Map<
-        WsServerRegistryKey,
-        WsServerRegistryEntry
-    >();
+    protected readonly httpServersRegistry = new Map<HttpServerRegistryKey, HttpServerRegistryEntry>();
+    protected readonly wsServersRegistry = new Map<WsServerRegistryKey, WsServerRegistryEntry>();
 
     constructor(appOrHttpServer?: INestApplicationContext | any) {
         super(appOrHttpServer);
         wsPackage = loadPackage('ws', 'WsAdapter', () => require('ws'));
     }
 
-    public create(
-        port: number,
-        options?: Record<string, any> & { namespace?: string; server?: any }
-    ) {
+    public create(port: number, options?: Record<string, any> & { namespace?: string; server?: any }) {
         const { server, ...wsOptions } = options || {};
 
         if (wsOptions?.namespace) {
             const error = new Error(
-                '"WsAdapter" does not support namespaces. If you need namespaces in your project, consider using the "@nestjs/platform-socket.io" package instead.'
+                '"WsAdapter" does not support namespaces. If you need namespaces in your project, consider using the "@nestjs/platform-socket.io" package instead.',
             );
             this.logger.error(error);
             throw error;
@@ -65,7 +52,7 @@ export class ProtobufWsAdapter extends AbstractWsAdapter {
                 new wsPackage.Server({
                     noServer: true,
                     ...wsOptions,
-                })
+                }),
             );
 
             this.addWsServerToRegistry(wsServer, port, options?.path || '/');
@@ -87,7 +74,7 @@ export class ProtobufWsAdapter extends AbstractWsAdapter {
                 new wsPackage.Server({
                     noServer: true,
                     ...wsOptions,
-                })
+                }),
             );
             this.addWsServerToRegistry(wsServer, port, options?.path);
             return wsServer;
@@ -96,7 +83,7 @@ export class ProtobufWsAdapter extends AbstractWsAdapter {
             new wsPackage.Server({
                 port,
                 ...wsOptions,
-            })
+            }),
         );
         return wsServer;
     }
@@ -104,18 +91,14 @@ export class ProtobufWsAdapter extends AbstractWsAdapter {
     public bindMessageHandlers(
         client: any,
         handlers: MessageMappingProperties[],
-        transform: (data: any) => Observable<any>
+        transform: (data: any) => Observable<any>,
     ) {
         const handlersMap = this.mapHandlers(handlers);
 
         const close$ = fromEvent(client, CLOSE_EVENT).pipe(share(), first());
         const source$ = fromEvent(client, 'message').pipe(
-            mergeMap((data) =>
-                this.bindMessageHandler(data, handlersMap, transform).pipe(
-                    filter((result) => result)
-                )
-            ),
-            takeUntil(close$)
+            mergeMap((data) => this.bindMessageHandler(data, handlersMap, transform).pipe(filter((result) => result))),
+            takeUntil(close$),
         );
         const onMessage = (response: any) => {
             if (client.readyState !== READY_STATE.OPEN_STATE) {
@@ -130,7 +113,7 @@ export class ProtobufWsAdapter extends AbstractWsAdapter {
     public bindMessageHandler(
         buffer: any,
         handlersMap: MessageMappingMap,
-        transform: (data: any) => Observable<any>
+        transform: (data: any) => Observable<any>,
     ): Observable<any> {
         try {
             const data = bufferToArrayBuffer(buffer.data);
@@ -146,9 +129,7 @@ export class ProtobufWsAdapter extends AbstractWsAdapter {
     }
 
     public bindErrorHandler(server: any) {
-        server.on(CONNECTION_EVENT, (ws: any) =>
-            ws.on(ERROR_EVENT, (err: any) => this.logger.error(err))
-        );
+        server.on(CONNECTION_EVENT, (ws: any) => ws.on(ERROR_EVENT, (err: any) => this.logger.error(err)));
         server.on(ERROR_EVENT, (err: any) => this.logger.error(err));
         return server;
     }
@@ -160,19 +141,14 @@ export class ProtobufWsAdapter extends AbstractWsAdapter {
     public async dispose() {
         const closeEventSignals = Array.from(this.httpServersRegistry)
             .filter(([port]) => port !== UNDERLYING_HTTP_SERVER_PORT)
-            .map(
-                ([_, server]) => new Promise((resolve) => server.close(resolve))
-            );
+            .map(([_, server]) => new Promise((resolve) => server.close(resolve)));
 
         await Promise.all(closeEventSignals);
         this.httpServersRegistry.clear();
         this.wsServersRegistry.clear();
     }
 
-    protected ensureHttpServerExists(
-        port: number,
-        httpServer = http.createServer()
-    ) {
+    protected ensureHttpServerExists(port: number, httpServer = http.createServer()) {
         if (this.httpServersRegistry.has(port)) {
             return;
         }
@@ -186,14 +162,9 @@ export class ProtobufWsAdapter extends AbstractWsAdapter {
             let isRequestDelegated = false;
             for (const wsServer of wsServersCollection ?? []) {
                 if (pathname === wsServer.path) {
-                    wsServer.handleUpgrade(
-                        request,
-                        socket,
-                        head,
-                        (ws: unknown) => {
-                            wsServer.emit('connection', ws, request);
-                        }
-                    );
+                    wsServer.handleUpgrade(request, socket, head, (ws: unknown) => {
+                        wsServer.emit('connection', ws, request);
+                    });
                     isRequestDelegated = true;
                     break;
                 }
@@ -205,11 +176,7 @@ export class ProtobufWsAdapter extends AbstractWsAdapter {
         return httpServer;
     }
 
-    protected addWsServerToRegistry<T extends SomeType = any>(
-        wsServer: T,
-        port: number,
-        path: string
-    ) {
+    protected addWsServerToRegistry<T extends SomeType = any>(wsServer: T, port: number, path: string) {
         const entries = this.wsServersRegistry.get(port) ?? [];
         entries.push(wsServer);
 
@@ -226,9 +193,7 @@ export class ProtobufWsAdapter extends AbstractWsAdapter {
     }
 
     static parseMessage(message: Buffer) {
-        const dataViewer = new DataView(
-            ProtobufWsAdapter.bufferToArrayBuffer(message)
-        );
+        const dataViewer = new DataView(ProtobufWsAdapter.bufferToArrayBuffer(message));
 
         const type = dataViewer.getUint8(0);
         const body = message.slice(1);

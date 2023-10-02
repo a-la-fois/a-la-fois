@@ -7,7 +7,7 @@ on:
     paths:
       - "packages/messageProxy"
   workflow_dispatch:
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest

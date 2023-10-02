@@ -11,7 +11,7 @@ interface CanvasContextProviderProps {
 type CanvasContextValue = [
     connected: boolean,
     canvasState: Map<string, string> | null,
-    handle: (event: CanvasEvent) => void
+    handle: (event: CanvasEvent) => void,
 ];
 
 export const CanvasContext = createContext<CanvasContextValue | null>(null);

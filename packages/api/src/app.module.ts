@@ -1,13 +1,20 @@
 import { Module } from '@nestjs/common';
-import { AsyncStorageModule, DaprClientModule, DaprServerModule } from '@a-la-fois/nest-common';
+import {
+    AsyncStorageModule,
+    DaprClientModule,
+    DaprServerModule,
+    LoggerModule,
+    HealthModule,
+} from '@a-la-fois/nest-common';
 import { ConsumerApiModule } from './consumerApi';
 import { ClientApiModule } from './clientApi';
 import { AdminApiModule } from './adminApi';
 import { DbModule } from './db';
 import { config } from './config';
-import { HealthModule } from '@a-la-fois/nest-common';
 import { MicroserviceModule } from './microservice';
 import { PubsubModule, PubsubOptions } from '@a-la-fois/pubsub';
+
+const LOGGER_SERVICE = 'api';
 
 const buildPubsubOptions = (): PubsubOptions => {
     return {
@@ -18,11 +25,13 @@ const buildPubsubOptions = (): PubsubOptions => {
         username: config.kafka.username,
         password: config.kafka.password,
         saslMechanism: config.kafka.mechanism,
+        loggerService: LOGGER_SERVICE,
     };
 };
 
 @Module({
     imports: [
+        LoggerModule.forRoot({ service: LOGGER_SERVICE }),
         ConsumerApiModule,
         ClientApiModule,
         MicroserviceModule,

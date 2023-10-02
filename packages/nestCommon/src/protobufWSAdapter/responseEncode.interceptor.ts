@@ -13,7 +13,7 @@ export class ResponseEncodeInterceptor implements NestInterceptor {
                 const encodedData = this.encoder.encode(data).finish();
 
                 return packMessage(this.type, encodedData);
-            })
+            }),
         );
     }
 }

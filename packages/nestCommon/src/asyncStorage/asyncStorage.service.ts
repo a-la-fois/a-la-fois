@@ -32,9 +32,7 @@ export class AsyncStorageService {
         const store = this.asyncStore.getStore();
 
         if (!store) {
-            throw new Error(
-                'Стор отсутствует. Скорее всего не подключена asyncStorageMiddleware'
-            );
+            throw new Error('Стор отсутствует. Скорее всего не подключена asyncStorageMiddleware');
         }
 
         return store;

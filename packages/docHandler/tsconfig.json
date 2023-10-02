@@ -1,24 +1,21 @@
 {
-    "compilerOptions": {
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "strictPropertyInitialization": false,
-        "strict": true,
-        "strictNullChecks": true,
-        "removeComments": true,
-        "target": "es2019",
-        "module": "commonjs",
-        "rootDir": "src",
-        "outDir": "dist",
-        "moduleResolution": "node",
-        "resolveJsonModule": true,
-        "skipLibCheck": true,
-        "declaration": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
-    },
-    "exclude": [
-        "node_modules",
-        "dist"
-    ]
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strictPropertyInitialization": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "removeComments": true,
+    "target": "es2019",
+    "module": "commonjs",
+    "rootDir": "src",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "exclude": ["node_modules", "dist"]
 }

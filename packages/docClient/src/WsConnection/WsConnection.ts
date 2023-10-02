@@ -97,7 +97,7 @@ export class WsConnection extends EventEmitter {
                     this.ws?.removeEventListener('message', messageHandler);
                     reject(event);
                 },
-                { once: true }
+                { once: true },
             );
         });
     }

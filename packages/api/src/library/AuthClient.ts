@@ -23,7 +23,7 @@ export class AuthClient {
                 serviceId,
                 'checkClientToken',
                 'post' as HttpMethod,
-                requestPayload
+                requestPayload,
             )) as any as CheckClientTokenResponse<TJWTPayload>;
 
             return response;
@@ -47,7 +47,7 @@ export class AuthClient {
                 serviceId,
                 'docIsPublic',
                 'post' as HttpMethod,
-                request
+                request,
             )) as any as DocIsPublicResponse;
 
             return response;
