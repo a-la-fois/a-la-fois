@@ -1,7 +1,7 @@
 {
   "name": "@a-la-fois/examples",
   "private": true,
-  "version": "0.0.30",
+  "version": "0.0.31",
   "license": "MIT",
   "type": "module",
   "homepage": "https://a-la-fois.github.io/a-la-fois/",
@@ -15,7 +15,7 @@
     "@types/react": "18.0.18"
   },
   "dependencies": {
-    "@a-la-fois/doc-client": "0.0.30",
+    "@a-la-fois/doc-client": "0.0.31",
     "@monaco-editor/react": "4.5.1",
     "monaco-editor": "0.39.0",
     "react": "18.2.0",
