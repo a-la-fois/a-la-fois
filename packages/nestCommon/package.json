@@ -21,13 +21,6 @@
     "format": "prettier --write '**/*.{ts,tsx,css,json,yaml,yml,md}'",
     "proto:gen": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./ ./src/proto/hero.proto"
   },
-  "peerDependencies": {
-    "@nestjs/common": "8.4.4",
-    "@nestjs/core": "8.4.4",
-    "express": "4.17.3",
-    "reflect-metadata": "0.1.13",
-    "rxjs": "6.6.7"
-  },
   "devDependencies": {
     "@nestjs/common": "9.4.2",
     "@nestjs/core": "9.4.2",
@@ -54,13 +47,18 @@
   "dependencies": {
     "@dapr/dapr": "3.0.0",
     "@nestjs/websockets": "9.4.2",
+    "@nestjs/common": "8.4.4",
+    "@nestjs/core": "8.4.4",
     "aws-sdk": "2.1392.0",
     "cookie": "0.5.0",
+    "express": "4.17.3",
     "ioredis": "5.3.2",
     "lodash": "4.17.21",
     "nanoid": "3.3.3",
     "pino": "8.14.1",
-    "pino-pretty": "10.0.0"
+    "pino-pretty": "10.0.0",
+    "reflect-metadata": "0.1.13",
+    "rxjs": "6.6.7"
   },
   "gitHead": "e757a752497e9c4ee4ad85603998907ef3d54c22"
 }
