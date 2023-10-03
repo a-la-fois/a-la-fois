@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/nest-common",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -42,9 +42,9 @@
   },
   "dependencies": {
     "@dapr/dapr": "3.0.0",
-    "@nestjs/websockets": "9.4.2",
     "@nestjs/common": "9.4.2",
     "@nestjs/core": "9.4.2",
+    "@nestjs/websockets": "9.4.2",
     "aws-sdk": "2.1392.0",
     "cookie": "0.5.0",
     "express": "4.17.3",
