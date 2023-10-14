@@ -1,25 +1,31 @@
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material';
+import { CssBaseline } from '@mui/material';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { basePath, isDev } from './config';
 import { MainPage } from './pages/MainPage';
 import { MonacoPage } from './pages/MonacoPage';
 import { PixelCanvasPage } from './pages/PixelCanvas';
 import { SwitchTokenPage } from './pages/SwitchTokenPage';
-// import { basePath } from './config';
+import { Layout } from './shared/components/Layout';
+import { defaultTheme } from './shared/theme';
 
 import './App.css';
 
 const App = () => {
     return (
-        <Router>
-            {/* TODO: return  when move from hash router <Router basename={basePath}> */}
-            <div className="App">
-                <Routes>
-                    <Route path="/" element={<MainPage />} />
-                    <Route path="/monaco" element={<MonacoPage />} />
-                    <Route path="/pixelCanvas" element={<PixelCanvasPage />} />
-                    <Route path="/switchToken" element={<SwitchTokenPage />} />
-                </Routes>
-            </div>
-        </Router>
+        <ThemeProvider theme={defaultTheme}>
+            <Router basename={basePath}>
+                <CssBaseline />
+                <Layout>
+                    <Routes>
+                        <Route path="/" element={<MainPage />} />
+                        <Route path="/monaco" element={<MonacoPage />} />
+                        <Route path="/pixelCanvas" element={<PixelCanvasPage />} />
+                        {isDev && <Route path="/switchToken" element={<SwitchTokenPage />} />}
+                    </Routes>
+                </Layout>
+            </Router>
+        </ThemeProvider>
     );
 };
 

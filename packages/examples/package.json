@@ -16,12 +16,17 @@
   },
   "dependencies": {
     "@a-la-fois/doc-client": "0.0.31",
+    "@emotion/react": "11.11.1",
+    "@emotion/styled": "11.11.0",
     "@monaco-editor/react": "4.5.1",
+    "@mui/icons-material": "5.14.13",
+    "@mui/material": "5.14.13",
     "monaco-editor": "0.39.0",
     "react": "18.2.0",
     "react-color": "2.19.3",
     "react-dom": "18.2.0",
     "react-router-dom": "6.12.0",
+    "react-use": "17.4.0",
     "y-monaco": "0.1.4"
   },
   "devDependencies": {
