@@ -12,7 +12,7 @@
     "preview": "vite preview"
   },
   "resolutions": {
-    "@types/react": "18.0.18"
+    "@types/react": "18.2.8"
   },
   "dependencies": {
     "@a-la-fois/doc-client": "0.0.32",
