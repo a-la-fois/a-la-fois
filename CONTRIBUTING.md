@@ -31,7 +31,7 @@ yarn build
 yarn dev
 ```
 
-After application start:
+After application starts for the first time
 
 ```bash
 yarn setup:dev # generate tokens for correct work of collaboration
