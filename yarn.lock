@@ -2210,10 +2210,10 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@18.2.8":
-  version "18.2.8"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.8.tgz#a77dcffe4e9af148ca4aa8000c51a1e8ed99e2c8"
-  integrity sha512-lTyWUNrd8ntVkqycEEplasWy2OxNlShj3zqS0LuB1ENUGis5HodmhM7DtCoUGbxj3VW/WsGA0DUhpG6XrM7gPA==
+"@types/react@18.2.38":
+  version "18.2.38"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.38.tgz#3605ca41d3daff2c434e0b98d79a2469d4c2dd52"
+  integrity sha512-cBBXHzuPtQK6wNthuVMV6IjHAFkdl/FOPFIlkd81/Cd1+IqkHu/A+w4g43kaQQoYHik/ruaQBDL72HyCy1vuMw==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -8803,6 +8803,17 @@ rimraf@5.0.1:
   integrity sha512-OfFZdwtd3lZ+XZzYP/6gTACubwFcHdLRqS9UX3UwpU2dnGQYkPFISRwvM3w9IiB2w7bW5qGo/uAwE4SmXXSKvg==
   dependencies:
     glob "^10.2.5"
+
+roarr@7.15.2:
+  version "7.15.2"
+  resolved "https://registry.yarnpkg.com/roarr/-/roarr-7.15.2.tgz#019fefb11dc6fcbb5757a28e0580ea932b716c41"
+  integrity sha512-H+RN/7W7U0ZjABjjXVdDm9+W5UmgsrAhTI4zrL1pvYGs7Pug++gwZ9c48rbPZiyXyTEplqZMqf2A2YAPWpc2FA==
+  dependencies:
+    fast-json-stringify "^5.8.0"
+    fast-printf "^1.6.9"
+    globalthis "^1.0.2"
+    safe-stable-stringify "^2.4.3"
+    semver-compare "^1.0.0"
 
 roarr@^7.0.4:
   version "7.15.1"
