@@ -58,6 +58,7 @@
     "uuid": "9.0.0"
   },
   "dependencies": {
-    "@nestjs/config": "2.3.2"
+    "@nestjs/config": "2.3.2",
+    "roarr": "7.15.2"
   }
 }

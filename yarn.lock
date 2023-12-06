@@ -8804,6 +8804,17 @@ rimraf@5.0.1:
   dependencies:
     glob "^10.2.5"
 
+roarr@7.15.2:
+  version "7.15.2"
+  resolved "https://registry.yarnpkg.com/roarr/-/roarr-7.15.2.tgz#019fefb11dc6fcbb5757a28e0580ea932b716c41"
+  integrity sha512-H+RN/7W7U0ZjABjjXVdDm9+W5UmgsrAhTI4zrL1pvYGs7Pug++gwZ9c48rbPZiyXyTEplqZMqf2A2YAPWpc2FA==
+  dependencies:
+    fast-json-stringify "^5.8.0"
+    fast-printf "^1.6.9"
+    globalthis "^1.0.2"
+    safe-stable-stringify "^2.4.3"
+    semver-compare "^1.0.0"
+
 roarr@^7.0.4:
   version "7.15.1"
   resolved "https://registry.yarnpkg.com/roarr/-/roarr-7.15.1.tgz#e4d93105c37b5ea7dd1200d96a3500f757ddc39f"
