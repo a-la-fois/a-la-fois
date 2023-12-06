@@ -1,6 +1,6 @@
 {
   "name": "@a-la-fois/pubsub",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "license": "MIT",
   "files": [
     "dist"
@@ -29,7 +29,7 @@
     "@nestjs/core": "8.4.4"
   },
   "dependencies": {
-    "@a-la-fois/nest-common": "0.0.37",
+    "@a-la-fois/nest-common": "0.0.38",
     "kafkajs": "2.2.0"
   },
   "devDependencies": {
