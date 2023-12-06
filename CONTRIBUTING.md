@@ -2,7 +2,7 @@
 
 ### Requirements
 
-node 16+
+node 18+
 
 ### Bootstrap
 
