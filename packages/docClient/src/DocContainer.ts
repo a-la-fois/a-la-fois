@@ -48,6 +48,9 @@ export class DocContainer {
         this.messenger.on(broadcastAwarenessEvent, this.handleReceiveAwareness);
         this.messenger.on(broadcastChangesEvent, this.handleReceiveChanges);
         this.messenger.on(serviceEvent, this.handleServiceEvent);
+        this.messenger.on('reconnect', this.handleReconnect);
+
+        // Perform sync every successful join event
         this.messenger.once(joinResponseEvent, (data: JoinResponsePayload) => {
             if (data.status === 'ok') {
                 this.sync();
@@ -56,6 +59,17 @@ export class DocContainer {
     }
 
     async init() {
+        await this.join();
+    }
+
+    /**
+     * @deprecated
+     */
+    async getHistory() {
+        return this.api.getHistory(this.id);
+    }
+
+    private async join() {
         this.messenger.sendJoin({ docId: this.id });
 
         const joinResult = await this.messenger.waitFor(joinResponseEvent);
@@ -75,11 +89,8 @@ export class DocContainer {
         }
     }
 
-    /**
-     * @deprecated
-     */
-    async getHistory() {
-        return this.api.getHistory(this.id);
+    private handleReconnect() {
+        this.join();
     }
 
     dispose() {

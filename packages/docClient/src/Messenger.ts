@@ -45,7 +45,13 @@ type IncomeEvents = {
     [serviceEvent]: PossibleServiceEvent['data'];
 };
 
-type IncomeEventType = keyof IncomeEvents;
+type InternalEvents = {
+    reconnect: null;
+};
+
+type MessengerEvents = IncomeEvents & InternalEvents;
+
+type MessengerEventType = keyof MessengerEvents;
 
 export class Messenger extends EventEmitter {
     private readonly connection: WsConnection;
@@ -54,10 +60,16 @@ export class Messenger extends EventEmitter {
         super();
         this.connection = connection;
         this.connection.on('message', this.handleMessage);
+        this.connection.on('reconnect', this.onReconnect);
+    }
+
+    private onReconnect() {
+        this.emit('reconnect', null);
     }
 
     dispose() {
         this.connection.off('message', this.handleMessage);
+        this.connection.off('reconnect', this.onReconnect);
     }
 
     sendJoin(payload: JoinPayload) {
@@ -116,28 +128,31 @@ export class Messenger extends EventEmitter {
     }
 
     // @ts-ignore
-    on<TType extends IncomeEventType>(type: TType, listener: (payload: IncomeEvents[TType]) => void): this {
+    on<TType extends MessengerEventType>(type: TType, listener: (payload: MessengerEvents[TType]) => void): this {
         return super.on(type, listener);
     }
 
     // @ts-ignore
-    once<TType extends IncomeEventType>(type: TType, listener: (payload: IncomeEvents[TType]) => void): this {
+    once<TType extends MessengerEventType>(type: TType, listener: (payload: MessengerEvents[TType]) => void): this {
         return super.once(type, listener);
     }
 
     // @ts-ignore
-    off<TType extends IncomeEventType>(type: TType, listener: (payload: IncomeEvents[TType]) => void): this {
+    off<TType extends MessengerEventType>(type: TType, listener: (payload: MessengerEvents[TType]) => void): this {
         return super.off(type, listener);
     }
 
     // @ts-ignore
-    emit<TType extends IncomeEventType>(type: TType, payload: IncomeEvents[TType]): boolean {
+    emit<TType extends MessengerEventType>(type: TType, payload: MessengerEvents[TType]): boolean {
         return super.emit(type, payload);
     }
 
-    async waitFor<TType extends IncomeEventType>(type: TType, timeout: number = 5000): Promise<IncomeEvents[TType]> {
-        return new Promise<IncomeEvents[TType]>((resolve, reject) => {
-            const listener = (payload: IncomeEvents[TType]) => {
+    async waitFor<TType extends MessengerEventType>(
+        type: TType,
+        timeout: number = 5000,
+    ): Promise<MessengerEvents[TType]> {
+        return new Promise<MessengerEvents[TType]>((resolve, reject) => {
+            const listener = (payload: MessengerEvents[TType]) => {
                 clearTimeout(timeoutId);
                 resolve(payload);
             };
