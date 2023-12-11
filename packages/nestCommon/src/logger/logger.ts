@@ -41,7 +41,7 @@ export const createLogger = (userOptions: Partial<LoggerOptions> = defaultOption
         timestamp: () => `,"time":"${new Date().toISOString()}"`,
         formatters: {
             level(label: string) {
-                return { level: label };
+                return { log_level: label };
             },
         },
     });

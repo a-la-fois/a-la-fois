@@ -54,7 +54,7 @@ export class DocService implements OnModuleDestroy {
         this.pubsub.subscribe<typeof disconnectMessageType>(disconnectMessageType, this.onDisconnectMessage);
     }
 
-    applyChanges(conn: WebSocketConnection, payload: ChangesPayload) {
+    async applyChanges(conn: WebSocketConnection, payload: ChangesPayload) {
         this.assertClientJoined(conn, payload.docId);
 
         const doc = this.docs.get(payload.docId);
@@ -70,7 +70,7 @@ export class DocService implements OnModuleDestroy {
             },
         } as ChangesPubsubMessage);
 
-        this.actorService.sendChanges(conn.id, payload);
+        await this.actorService.sendChanges(conn.id, payload);
     }
 
     applyAwareness(conn: WebSocketConnection, payload: AwarenessPayload) {
