@@ -209,7 +209,6 @@ export class DocContainer {
                     resolve(payload);
                 }
             };
-
             this.messenger.on(syncResponseEvent, handler);
         });
     }
