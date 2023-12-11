@@ -48,10 +48,10 @@ export class DocContainer {
         this.messenger.on(broadcastAwarenessEvent, this.handleReceiveAwareness);
         this.messenger.on(broadcastChangesEvent, this.handleReceiveChanges);
         this.messenger.on(serviceEvent, this.handleServiceEvent);
-        this.messenger.on('reconnect', this.handleReconnect);
+        this.messenger.on('connected', this.handleConnected);
 
-        // Perform sync every successful join event
-        this.messenger.once(joinResponseEvent, (data: JoinResponsePayload) => {
+        // Perform the sync every successful join event in case of reconnection
+        this.messenger.on(joinResponseEvent, (data: JoinResponsePayload) => {
             if (data.status === 'ok') {
                 this.sync();
             }
@@ -89,9 +89,12 @@ export class DocContainer {
         }
     }
 
-    private handleReconnect() {
+    private handleConnected = () => {
+        // Under normal circumstances this handler will not be called
+        // because DocContainer is initialized after ws connection.
+        // But it is called when the ws connection is reconnected because the instance of DocContainer exists.
         this.join();
-    }
+    };
 
     dispose() {
         this.messenger.off(broadcastChangesEvent, this.handleReceiveChanges);

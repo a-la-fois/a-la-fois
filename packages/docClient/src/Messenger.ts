@@ -46,7 +46,7 @@ type IncomeEvents = {
 };
 
 type InternalEvents = {
-    reconnect: null;
+    connected: null;
 };
 
 type MessengerEvents = IncomeEvents & InternalEvents;
@@ -60,16 +60,16 @@ export class Messenger extends EventEmitter {
         super();
         this.connection = connection;
         this.connection.on('message', this.handleMessage);
-        this.connection.on('reconnect', this.onReconnect);
+        this.connection.on('connect', this.onConnect);
     }
 
-    private onReconnect() {
-        this.emit('reconnect', null);
-    }
+    private onConnect = () => {
+        this.emit('connected', null);
+    };
 
     dispose() {
         this.connection.off('message', this.handleMessage);
-        this.connection.off('reconnect', this.onReconnect);
+        this.connection.off('connect', this.onConnect);
     }
 
     sendJoin(payload: JoinPayload) {
