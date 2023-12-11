@@ -123,7 +123,7 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
 
         try {
-            this.docService.applyChanges(conn, payload);
+            await this.docService.applyChanges(conn, payload);
             this.logger.debug(logInfo(conn, payload.docId), 'Changes applied');
         } catch (err) {
             this.logger.error(logInfo(conn, payload.docId, err), `Couldn't apply changes`);
@@ -147,10 +147,19 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
             });
         }
 
-        const data = await this.docService.syncStart(conn, payload);
-        this.logger.debug(logInfo(conn, payload.docId), 'Sync started successfully');
+        try {
+            const data = await this.docService.syncStart(conn, payload);
+            this.logger.debug(logInfo(conn, payload.docId), 'Sync started successfully');
 
-        return syncResponse(data);
+            return syncResponse(data);
+        } catch (err) {
+            this.logger.error(logInfo(conn, payload.docId, err), 'SyncStart failed');
+            if (err instanceof MessageError) {
+                return err.toMessage();
+            } else {
+                return baseErrorMessage;
+            }
+        }
     }
 
     @SubscribeMessage(syncCompleteEvent)
@@ -165,8 +174,17 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
             });
         }
 
-        this.docService.syncComplete(conn, payload);
-        this.logger.debug(logInfo(conn, payload.docId), 'Sync completed successfully');
+        try {
+            this.docService.syncComplete(conn, payload);
+            this.logger.debug(logInfo(conn, payload.docId), 'Sync completed successfully');
+        } catch (err) {
+            this.logger.error(logInfo(conn, payload.docId, err), 'SyncComplete failed');
+            if (err instanceof MessageError) {
+                return err.toMessage();
+            } else {
+                return baseErrorMessage;
+            }
+        }
     }
 
     @SubscribeMessage(awarenessEvent)

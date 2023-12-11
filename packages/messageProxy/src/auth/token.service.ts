@@ -194,7 +194,7 @@ export class TokenService implements OnModuleDestroy {
     }
 
     private checkTokenExpiration = () => {
-        this.logger.debug({}, 'Token expiration check started');
+        this.logger.trace({}, 'Token expiration check started');
         for (const [tokenId, connections] of this.tokenConnections) {
             // Check only one because all connections with the same token
             // have the same expiration time
