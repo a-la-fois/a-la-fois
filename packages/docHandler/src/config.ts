@@ -12,6 +12,7 @@ export const config = {
         host: process.env.SERVER_HOST || '127.0.0.1',
         port: process.env.SERVER_PORT || '3001',
         healthPort: process.env.HEALTH_PORT || '3100',
+        clientSyncAwaitMs: process.env.CLIENT_SYNC_AWAIT_MS || '3000',
     },
     dapr: {
         host: process.env.DAPR_SIDECAR_HOST || '127.0.0.1',

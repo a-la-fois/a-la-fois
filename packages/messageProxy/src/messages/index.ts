@@ -10,6 +10,7 @@ export * from './joinResponse';
 export * from './message';
 export * from './ping';
 export * from './pong';
+export * from './requestSync';
 export * from './service';
 export * from './setToken';
 export * from './setTokenResponse';

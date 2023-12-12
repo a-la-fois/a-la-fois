@@ -7,6 +7,7 @@ import {
     SyncCompletePayload,
     JoinResponsePayload,
     AwarenessPayload,
+    RequestSyncPayload,
 } from '../messages';
 
 import { WebSocketConnection } from '../ws/types';
@@ -54,7 +55,7 @@ export class DocService implements OnModuleDestroy {
         this.pubsub.subscribe<typeof disconnectMessageType>(disconnectMessageType, this.onDisconnectMessage);
     }
 
-    async applyChanges(conn: WebSocketConnection, payload: ChangesPayload) {
+    async applyChanges(conn: WebSocketConnection, payload: ChangesPayload): Promise<RequestSyncPayload> {
         this.assertClientJoined(conn, payload.docId);
 
         const doc = this.docs.get(payload.docId);
@@ -70,7 +71,7 @@ export class DocService implements OnModuleDestroy {
             },
         } as ChangesPubsubMessage);
 
-        await this.actorService.sendChanges(conn.id, payload);
+        return await this.actorService.sendChanges(conn.id, payload);
     }
 
     applyAwareness(conn: WebSocketConnection, payload: AwarenessPayload) {

@@ -3,14 +3,23 @@ import { Doc } from '@a-la-fois/models';
 import { applyUpdate, Doc as YDoc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { fromUint8Array, toUint8Array } from 'js-base64';
 import { DocModel, UpdateModel } from '../models';
-import { ApplyDiffRequest, Changes, SyncCompleteRequest, SyncStartRequest, SyncStartResponse } from '../messages';
+import {
+    ApplyDiffRequest,
+    ApplyDiffResponse,
+    Changes,
+    SyncCompleteRequest,
+    SyncStartRequest,
+    SyncStartResponse,
+} from '../messages';
 import { IDocHandler } from './docHandler.interface';
 import mongoose from 'mongoose';
 import { logger } from '../logger';
+import { config } from '../config';
 
 export class DocHandler extends AbstractActor implements IDocHandler {
     private ydoc!: YDoc;
     private docId!: mongoose.Types.ObjectId;
+    private syncAwait: Map<string, boolean> = new Map();
 
     private getId(): string {
         return this.getActorId().getId();
@@ -34,9 +43,19 @@ export class DocHandler extends AbstractActor implements IDocHandler {
         logger.info({ docId: this.docId }, 'Actor activated');
     }
 
-    async applyDiff({ changes, userId }: ApplyDiffRequest) {
+    async applyDiff({ changes, userId }: ApplyDiffRequest): Promise<ApplyDiffResponse> {
         await this.saveDiff(changes, userId);
+
+        if (!this.syncAwait.has(userId) && this.needSync()) {
+            logger.info({ docId: this.docId, userId }, 'Actor fell behind, requesting sync');
+            this.syncAwait.set(userId, true);
+            setTimeout(() => this.syncAwait.delete(userId), parseInt(config.server.clientSyncAwaitMs));
+
+            return { syncNeeded: true };
+        }
+
         logger.debug({ docId: this.docId, userId }, 'Changes applied');
+        return { syncNeeded: false };
     }
 
     async syncStart({ vector }: SyncStartRequest): Promise<SyncStartResponse> {
@@ -83,6 +102,10 @@ export class DocHandler extends AbstractActor implements IDocHandler {
                 userId: userId,
             }),
         ]);
+    }
+
+    private needSync() {
+        return this.ydoc.store.pendingDs !== null || this.ydoc.store.pendingStructs !== null;
     }
 
     private equalVectors(a: Uint8Array, b: Uint8Array) {

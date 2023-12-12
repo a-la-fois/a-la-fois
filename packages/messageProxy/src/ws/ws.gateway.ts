@@ -15,6 +15,7 @@ import {
     SyncStartPayload,
     baseErrorMessage,
     changesEvent,
+    requestSync,
     connectResponse,
     error,
     joinEvent,
@@ -123,8 +124,12 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
 
         try {
-            await this.docService.applyChanges(conn, payload);
+            const result = await this.docService.applyChanges(conn, payload);
             this.logger.debug(logInfo(conn, payload.docId), 'Changes applied');
+
+            if (result.syncNeeded) {
+                return requestSync(result);
+            }
         } catch (err) {
             this.logger.error(logInfo(conn, payload.docId, err), `Couldn't apply changes`);
             if (err instanceof MessageError) {
