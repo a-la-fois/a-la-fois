@@ -18,6 +18,7 @@ describe('DocContainer', () => {
         doc = new DocContainer({
             id: '1',
             messenger,
+            api: null!, // TODO: mock api
         });
         await connection.connect();
         return await server?.connected;

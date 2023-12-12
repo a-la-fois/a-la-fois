@@ -35,10 +35,10 @@ export class DocContainer {
     private messenger: Messenger;
     private api: Api;
 
-    constructor({ id, messenger, api }: DocContainerConfig) {
-        this.id = id;
-        this.messenger = messenger;
-        this.api = api;
+    constructor(config: DocContainerConfig) {
+        this.id = config.id;
+        this.messenger = config.messenger;
+        this.api = config.api;
         this.doc = new Doc();
         this.awareness = new Awareness(new Doc());
 

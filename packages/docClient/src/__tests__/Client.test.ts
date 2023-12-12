@@ -11,6 +11,7 @@ describe('Client', () => {
     const init = async () => {
         client = new Client({
             url: wsUrl,
+            apiUrl: 'http://localhost:1234',
         });
         await client.connect();
 
