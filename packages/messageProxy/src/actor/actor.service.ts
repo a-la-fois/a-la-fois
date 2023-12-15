@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { DaprClient, ActorProxyBuilder, ActorId } from '@dapr/dapr';
 import { IDocHandler, DocHandler } from '@a-la-fois/doc-handler';
-import { ChangesPayload, SyncCompletePayload, SyncResponsePayload, SyncStartPayload } from '../messages';
+import {
+    ChangesPayload,
+    RequestSyncPayload,
+    SyncCompletePayload,
+    SyncResponsePayload,
+    SyncStartPayload,
+} from '../messages';
 import { DaprClient as DaprClientDecorator } from '@a-la-fois/nest-common';
 import { ActorConnectionError } from '../errors/actor';
 
@@ -14,11 +20,11 @@ export class ActorService {
         this.builder = new ActorProxyBuilder<IDocHandler>(DocHandler, this.daprClient);
     }
 
-    async sendChanges(userId: string, payload: ChangesPayload) {
+    async sendChanges(userId: string, payload: ChangesPayload): Promise<RequestSyncPayload> {
         const actor: IDocHandler = this.getOrCreateActor(payload.docId);
 
         try {
-            await actor.applyDiff({
+            return await actor.applyDiff({
                 changes: payload.changes,
                 userId,
             });

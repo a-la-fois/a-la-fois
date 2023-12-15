@@ -6,6 +6,7 @@ import {
     joinResponseEvent,
     JoinResponsePayload,
     PossibleServiceEvent,
+    requestSyncEvent,
     serviceEvent,
     syncResponseEvent,
     SyncResponsePayload,
@@ -47,6 +48,7 @@ export class DocContainer {
 
         this.messenger.on(broadcastAwarenessEvent, this.handleReceiveAwareness);
         this.messenger.on(broadcastChangesEvent, this.handleReceiveChanges);
+        this.messenger.on(requestSyncEvent, this.sync);
         this.messenger.on(serviceEvent, this.handleServiceEvent);
         this.messenger.once(joinResponseEvent, (data: JoinResponsePayload) => {
             if (data.status === 'ok') {
@@ -142,7 +144,7 @@ export class DocContainer {
         return this.doc.store.pendingDs !== null || this.doc.store.pendingStructs !== null;
     }
 
-    private async sync() {
+    private sync = async () => {
         if (this.syncPromise) {
             return this.syncPromise;
         }
@@ -155,7 +157,7 @@ export class DocContainer {
         } finally {
             this.syncPromise = null;
         }
-    }
+    };
 
     private async syncProcess() {
         const vector = encodeStateVector(this.doc);

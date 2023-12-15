@@ -1,7 +1,13 @@
-import { ApplyDiffRequest, SyncCompleteRequest, SyncStartRequest, SyncStartResponse } from '../messages';
+import {
+    ApplyDiffRequest,
+    ApplyDiffResponse,
+    SyncCompleteRequest,
+    SyncStartRequest,
+    SyncStartResponse,
+} from '../messages';
 
 export interface IDocHandler {
-    applyDiff(changes: ApplyDiffRequest): Promise<void>;
+    applyDiff(changes: ApplyDiffRequest): Promise<ApplyDiffResponse>;
 
     syncStart(vector: SyncStartRequest): Promise<SyncStartResponse>;
 

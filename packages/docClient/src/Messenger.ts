@@ -7,6 +7,7 @@ import {
     JoinResponsePayload,
     PingMessage,
     PossibleServiceEvent,
+    RequestSyncPayload,
     SetTokenMessage,
     SetTokenPayload,
     SetTokenResponsePayload,
@@ -22,6 +23,7 @@ import {
     joinEvent,
     joinResponseEvent,
     pingEvent,
+    requestSyncEvent,
     serviceEvent,
     setTokenEvent,
     setTokenResponseEvent,
@@ -38,6 +40,7 @@ export type MessengerConfig = {
 
 type IncomeEvents = {
     [joinResponseEvent]: JoinResponsePayload;
+    [requestSyncEvent]: RequestSyncPayload;
     [syncResponseEvent]: SyncResponsePayload;
     [broadcastChangesEvent]: BroadcastChangesPayload;
     [broadcastAwarenessEvent]: BroadcastAwarenessPayload;
@@ -158,6 +161,9 @@ export class Messenger extends EventEmitter {
         switch (messageEvent) {
             case joinResponseEvent:
                 this.emit(joinResponseEvent, message.data);
+                break;
+            case requestSyncEvent:
+                this.emit(requestSyncEvent, message.data);
                 break;
             case broadcastChangesEvent:
                 this.emit(broadcastChangesEvent, message.data);
