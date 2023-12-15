@@ -102,17 +102,11 @@ export class WsConnection extends EventEmitter {
         });
     }
 
-    private async reconnect() {
-        this.emit('reconnect');
-
-        await this.connectWithRetry();
-    }
-
     private handleClose = (event: CloseEvent) => {
         this.emit('disconnect');
 
         if (event.code !== WS_CLOSE_STATUS_NORMAL) {
-            this.reconnect();
+            this.connect();
         }
     };
 

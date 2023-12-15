@@ -40,10 +40,10 @@ export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['dat
         this.connection = new WsConnection({ url: this.config.url, token: this.config.token });
         this.ping = new Ping({ connection: this.connection });
 
-        await this.connection.connect();
-
         this.messenger = new Messenger({ connection: this.connection });
         this.messenger.on(serviceEvent, this.handleServiceEvent);
+
+        await this.connection.connect();
 
         this.api = new Api({
             url: this.config.apiUrl,
