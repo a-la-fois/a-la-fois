@@ -51,6 +51,13 @@ export const MonacoPage = () => {
                 const code = docContainer.doc.getText('code');
 
                 new MonacoBinding(code, editor.getModel()!, new Set([editor]), docContainer.awareness);
+                client.on('connect', () => {
+                    console.debug('connected');
+                });
+
+                client.on('disconnect', () => {
+                    console.debug('disconnected');
+                });
             };
 
             init();

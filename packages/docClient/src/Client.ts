@@ -12,8 +12,22 @@ export type ClientConfig = {
     token?: string;
 };
 
-export type ServiceEvent = PossibleServiceEvent['data']['event'];
-export type ServicePayload<T extends ServiceEvent> = Extract<PossibleServiceEvent['data'], { event: T }>['data'];
+type connectEvent = {
+    event: 'connect';
+    data: null;
+};
+
+type disconnectEvent = {
+    event: 'disconnect';
+    data: null;
+};
+
+type PossibleConnectionEvent = connectEvent | disconnectEvent;
+
+export type ServiceEvent = PossibleServiceEvent['data']['event'] | PossibleConnectionEvent['event'];
+export type ServicePayload<T extends ServiceEvent> =
+    | Extract<PossibleServiceEvent['data'], { event: T }>['data']
+    | Extract<PossibleConnectionEvent, { event: T }>['data'];
 
 export interface Client {
     once<T extends ServiceEvent>(event: T, listener: (payload: ServicePayload<T>) => void): this;
@@ -25,7 +39,7 @@ export interface Client {
     emit<T extends ServiceEvent>(event: T, payload: ServicePayload<T>): boolean;
 }
 
-export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['data']> {
+export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['data'] | PossibleConnectionEvent> {
     private connection!: WsConnection;
     private ping!: Ping;
     private docs: Record<string, DocContainer> = {};
@@ -38,12 +52,15 @@ export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['dat
 
     async connect() {
         this.connection = new WsConnection({ url: this.config.url, token: this.config.token });
+        this.connection.on('connect', this.handleConnectionEvent({ event: 'connect', data: null }));
+        this.connection.on('disconnect', this.handleConnectionEvent({ event: 'disconnect', data: null }));
+
         this.ping = new Ping({ connection: this.connection });
+
+        await this.connection.connect();
 
         this.messenger = new Messenger({ connection: this.connection });
         this.messenger.on(serviceEvent, this.handleServiceEvent);
-
-        await this.connection.connect();
 
         this.api = new Api({
             url: this.config.apiUrl,
@@ -105,5 +122,11 @@ export class Client extends EventEmitter<ServiceEvent, PossibleServiceEvent['dat
             this.dispose();
         }
         this.emit<ServiceEvent>(payload.event, payload.data);
+    };
+
+    private handleConnectionEvent = (event: PossibleConnectionEvent) => {
+        return () => {
+            this.emit(event.event, event.data);
+        };
     };
 }
